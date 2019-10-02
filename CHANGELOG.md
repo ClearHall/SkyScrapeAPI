@@ -1,3 +1,7 @@
+## [0.0.1+1] - Rename to Camel Case
+
+Like the title, rename files to Camel Case
+
 ## [0.0.1] - Initial Release
 
 SkyScrapeAPI is a dart API that allows you to login and pull data from Skyward. SkyScrapeAPI was separated from the original SkyMobile app to allow the API to develop separately from the main app.
