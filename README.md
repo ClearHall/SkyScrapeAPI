@@ -1,3 +1,3 @@
-# SkyScrapeAPI 0.0.1+1
+# SkyScrapeAPI
 
 SkyMobile API is the API that was taken from the original SkyMobile app.
