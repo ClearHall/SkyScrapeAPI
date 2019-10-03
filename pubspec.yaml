@@ -1,6 +1,6 @@
 name: skyscrapeapi
 description: SkyMobile API is the API that was taken from the original SkyMobile app. SkyMobile API allows easy Skyward access for developers.
-version: 1.0.0+1
+version: 1.0.1+1
 author: Hunter Han <hunter.han@gmail.com>
 homepage: https://github.com/skuweakyskies/SkyScrapeAPI
 

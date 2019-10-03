@@ -1,8 +1,7 @@
 import 'package:skyscrapeapi/skywardAPITypes.dart';
+import 'package:skyscrapeapi/skywardAPICore.dart';
 import 'package:test/test.dart';
 import 'dart:io';
-
-import 'package:skyscrapeapi/skywardAPICore.dart';
 
 void main() async {
   group('Group tests', () {

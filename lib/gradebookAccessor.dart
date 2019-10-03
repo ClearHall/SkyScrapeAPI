@@ -6,16 +6,16 @@ import 'skywardAPITypes.dart';
 import 'skywardUniversal.dart';
 
 class GradebookAccessor {
-  List<String> sffData = [];
+  static List<String> sffData = [];
   /*
   This decoded json string is super weird. Look at initGradebookHTML if you need to understand it.
    */
-  List termElements = [];
-  List gradesElements = [];
+  static List termElements = [];
+  static List gradesElements = [];
   static final _termJsonDeliminater =
       "sff.sv('sf_gridObjects',\$.extend((sff.getValue('sf_gridObjects') ";
 
-  getGradebookHTML(Map<String, String> codes, String baseURL) async {
+  static getGradebookHTML(Map<String, String> codes, String baseURL) async {
     final String gradebookURL = baseURL + 'sfgradebook001.w';
     final postReq = await http.post(gradebookURL, body: codes);
 
@@ -26,21 +26,21 @@ class GradebookAccessor {
     return postReq.body;
   }
 
-  getTermsFromDocCode() {
+  static getTermsFromDocCode() {
     var terms = [];
-    terms = _detectTermsFromScriptByParsing();
+    terms = detectTermsFromScriptByParsing();
     return terms;
   }
 
   //TODO: Implement server quick scrape assignments algorithm from sff.sv() script code.
 
-  getGradeBoxesFromDocCode(String docHtml, List<Term> terms) {
+  static getGradeBoxesFromDocCode(String docHtml, List<Term> terms) {
     var gradeBoxes = [];
-    gradeBoxes = _scrapeGradeBoxesFromSff(docHtml, terms);
+    gradeBoxes = scrapeGradeBoxesFromSff(docHtml, terms);
     return gradeBoxes;
   }
 
-  List<GridBox> _scrapeGradeBoxesFromSff(String docHtml, List<Term> terms) {
+  static List<GridBox> scrapeGradeBoxesFromSff(String docHtml, List<Term> terms) {
     List<GridBox> gradeBoxes = [];
     var parsedHTML = parse(docHtml);
     for (var sffBrak in gradesElements) {
@@ -71,7 +71,7 @@ class GradebookAccessor {
     return gradeBoxes;
   }
 
-  initGradebookAndGradesHTML(String html) {
+  static initGradebookAndGradesHTML(String html) {
     Document doc = parse(html);
 
     if (!didSessionExpire(html)) {
@@ -97,7 +97,7 @@ class GradebookAccessor {
     }
   }
 
-  List<Term> _detectTermsFromScriptByParsing() {
+  static List<Term> detectTermsFromScriptByParsing() {
     List<Term> terms = [];
     for (var termHTMLA in termElements) {
       String termHTML = termHTMLA['h'];

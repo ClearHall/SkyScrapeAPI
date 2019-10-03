@@ -1,3 +1,7 @@
+## [1.0.1+1] - Documentation Update
+
+Documentation is now available for developers to view.
+
 ## [1.0.0+1] - First Official Pub Release
 
 I am confident now in my code and the errors it produces. The API tester code has been finished.

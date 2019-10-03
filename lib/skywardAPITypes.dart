@@ -1,10 +1,15 @@
+/// [Term] allow for the scrapers to sort through the grades and retrieve grades for certain terms.
+///
+/// [Term] is JSON compatible and can be converted to a JSON if needed.
 class Term {
+  /// TermCode is the identifier used to identify the term.
   String termCode;
+  /// TermName is the name of the term used if needed for extra identification or display
   String termName;
 
+  // Simple constructor to initialize the termCode and termName
   Term(this.termCode, this.termName);
 
-  //For debugging only.
   @override
   String toString() {
     return "$termCode : $termName";
@@ -20,6 +25,7 @@ class Term {
         'termName': termName,
       };
 
+  /// Compares the term codes only
   @override
   bool operator ==(other) {
     if(other is Term){
@@ -33,10 +39,42 @@ class Term {
   int get hashCode => termCode.hashCode;
 }
 
+/// [GridBox] is a root type that has many children. These children correspond to the boxes in your grade book.
+///
+/// [GridBox] only has 3 children
+/// * [TeacherIDBox]
+/// * [GradeTextBox] has more children that allow actual grades to be distinguished from teacher information or course information
+/// * [AssignmentsGridBox]
 class GridBox{
+  /// Does the [GridBox] lead to another page? Usually only [GradeBox] will have a true [clickable] attribute.
   bool clickable = false;
 }
 
+/// [TeacherIDBox] tells you course and teacher information.
+///
+/// [TeacherIDBox] gives only gives you information about a specific course and is usually the first in a [GridBox] List.
+/// [TeacherIDBox] **USUALLY** marks the beginning of a new course. If you are using the API, you can make a for loop like the following
+///
+/// ```dart
+/// for(GridBox x in list){
+///   if(x is TeacherIDBox) <init code>
+///   else <check for the other types>
+/// }
+/// ```
+/// You can also use a switch case statement.
+///
+/// ```dart
+/// for(GridBox x in list){
+///   switch(x.runtimeType) {
+///   case TeacherIDBox:
+///      <init code>
+///      break;
+///   <more cases>
+///   default:
+///     <default case, most likely an error>
+///   }
+/// }
+/// ```
 class TeacherIDBox extends GridBox{
   String teacherName;
   String timePeriod;
@@ -50,15 +88,22 @@ class TeacherIDBox extends GridBox{
   }
 }
 
+/// [GradeTextBox] is a root that helps distinguish the difference between grades and teacher information
+///
+/// There are only two children of [GradeTextBox]
+/// * [LessInfoBox]
+/// * [GradeBox]
 class GradeTextBox extends GridBox{
   Term term;
 
   GradeTextBox(this.term);
 }
 
+/// [LessInfoBox] is an unclickable behavior or letter grade.
 class LessInfoBox extends GradeTextBox{
   String behavior;
 
+  /// Identification for which term [LessInfoBox] is in.
   LessInfoBox(this.behavior, Term term):super(term);
 
   @override
@@ -67,11 +112,13 @@ class LessInfoBox extends GradeTextBox{
   }
 }
 
+/// [GradeBox] is most likely a clickable numbered grade part of a specific term
 class GradeBox extends GradeTextBox{
   String courseNumber;
   String grade;
   String studentID;
 
+  /// Identification for which term [GradeBox] is in.
   GradeBox(this.courseNumber, Term term, this.grade, this.studentID):super(term);
 
   //For debugging only.
@@ -81,7 +128,10 @@ class GradeBox extends GradeTextBox{
   }
 }
 
+/// [AssignmentsGridBox] is the parent of multiple child types that allow for more categorization
 class AssignmentsGridBox extends GridBox{
+  /// All the attributes like grades, post values, and more.
+  /// **NOTE: THIS MAP IS NOT SAFE TO MODIFY IN YOUR CODE. DO IT WITH CAUTION**
   Map<String, String> attributes;
 
   AssignmentsGridBox(this.attributes);
@@ -91,10 +141,14 @@ class AssignmentsGridBox extends GridBox{
     return "";
   }
 
+  /// Attempts to get the assignment name
   String getAssignment(){
     return attributes[attributes.keys.toList()[1]];
   }
 
+  /// Attempts to get a decimal grade if there is one.
+  /// If there is no decimal grade in the map, then it'll attempt to find and return the integer grade by calling [getIntGrade()]
+  /// Read [getIntGrade()] documentation to see what it returns.
   String getDecimal(){
       for(String a in attributes.values){
         if(double.tryParse(a) != null && a.contains('.')){
@@ -104,6 +158,9 @@ class AssignmentsGridBox extends GridBox{
       return getIntGrade();
   }
 
+  /// Attempts to find an integer grade in the map.
+  /// If one is not found, it'll return null.
+  /// **NOTE: REMEMBER TO CHECK FOR THIS NULL IN YOUR CODE**
   String getIntGrade(){
     for(String val in attributes.values){
       if(int.tryParse(val) != null){
@@ -114,9 +171,15 @@ class AssignmentsGridBox extends GridBox{
   }
 }
 
+/// [Assignment] is an assignment scraped from the API
+///
+/// [Assignment] is really hard to make, so custom declarations of Assignments is highly discouraged.
 class Assignment extends AssignmentsGridBox{
+  /// Post required attribute. Do not worry about this value if you do not plan to modify [Assignment]
   String studentID;
+  /// Post required attribute. Do not worry about this value if you do not plan to modify [Assignment]
   String assignmentID;
+  /// Post required attribute. Do not worry about this value if you do not plan to modify [Assignment]
   String gbID;
   String assignmentName;
 
@@ -128,6 +191,9 @@ class Assignment extends AssignmentsGridBox{
   }
 }
 
+/// [CategoryHeader] is an category scraped from the API
+///
+/// [CategoryHeader] marks the beginning of a new Category, so it contains weight information and juicy stuff that allows you to distinguish assignments from categories
 class CategoryHeader extends AssignmentsGridBox{
   String catName;
   String weight;
@@ -140,6 +206,8 @@ class CategoryHeader extends AssignmentsGridBox{
   }
 }
 
+/// [AssignmentInfoBox] contains the attribute name and the value that the attribute holds
+/// [infoName] and [info] are both paired together to declare a specific value. For example, "Due Date" and "9/3/19"
 class AssignmentInfoBox{
   String infoName;
   String info;
@@ -156,6 +224,7 @@ class AssignmentInfoBox{
   }
 }
 
+/// [SkywardSearchState] is a US State, except for "International" that has an ID to input into the District Searcher
 class SkywardSearchState{
   String stateName;
   String stateID;
@@ -168,6 +237,9 @@ class SkywardSearchState{
   }
 }
 
+/// [SkywardDistrict] are usually returned a list and contains results taken from searching for districts.
+///
+/// [SkywardDistrict] is JSON compatible and can be used to store SkywardDistricts or use it in a server to return as a json file.
 class SkywardDistrict{
   String districtName;
   String districtLink;
@@ -193,11 +265,19 @@ class SkywardDistrict{
   }
 
   @override
+  int get hashCode => districtLink.hashCode;
+
+  @override
   String toString() {
     return 'SkywardDistrict{districtName: $districtName, districtLink: $districtLink}';
   }
 }
 
+/// [SchoolYear] is usually returned in a List from [SkywardAPICore.getHistory()]
+///
+/// SchoolYear provides information about the school year and is JSON Compatible so it can be saved or returned from a server
+/// The [description] of the [SchoolYear] is just the name of the [SchoolYear] under Skyward. [terms] are also taken just in case your district has changed terms in its skyward history.
+/// [classes] is a list of [Class], for more information, read up on [Class] documentation.
 class SchoolYear{
   String description;
   List<Term> terms;
@@ -214,6 +294,7 @@ class SchoolYear{
         classes = getClassesFromEncodedClassesList(json['classes']),
         isEnabled = json['isEnabled'];
 
+  /// Function to convert encoded terms to a list of terms. Be careful while using this because this should only be used by the API and not the user. Unless the user is trying to make a custom JSON Manager.
   static List<Term> getTermsFromEncodedTermsList(List terms){
     List<Term> fin = [];
     for(var x in terms){
@@ -222,6 +303,7 @@ class SchoolYear{
     return fin;
   }
 
+  /// Classes retrieved. **MAY CAUSE ERRORS IF YOU ATTEMPT TO USE THIS FUNCTION**
   static List<Class> getClassesFromEncodedClassesList(List classes){
     List<Class> fin = [];
     for(var x in classes){
@@ -244,9 +326,14 @@ class SchoolYear{
   }
 }
 
+/// [Class] is a rich information class that holds settings and information about your classes.
+///
+/// **Some Things to Note**
+/// * [classLevel] is set by the developer or user, not automatically retrieved.
+/// * [credits] is set by the developer or user, not automatically retrieved.
 class Class{
   String name;
-  List<String> grades; //Assumed all terms in parent terms are correct
+  List<String> grades;
   double credits;
   ClassLevel classLevel;
 
@@ -288,6 +375,7 @@ class Class{
   }
 }
 
+/// Just ClassLevels, nothing special.
 enum ClassLevel{
   Regular,
   PreAP,
