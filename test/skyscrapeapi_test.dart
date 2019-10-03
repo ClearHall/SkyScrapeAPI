@@ -1,5 +1,6 @@
 import 'package:skyscrapeapi/skywardAPITypes.dart';
 import 'package:skyscrapeapi/skywardAPICore.dart';
+import 'package:skyscrapeapi/skywardUniversal.dart';
 import 'package:test/test.dart';
 import 'dart:io';
 
@@ -21,7 +22,9 @@ void main() async {
         contents = await file.readAsString();
         List split = contents.toString().split('\n');
 
-        await skyward.getSkywardAuthenticationCodes(split[0], split[1]);
+        if (!await skyward.getSkywardAuthenticationCodes(split[0], split[1])){
+          throw SkywardError('OH POOP WE FAIL TO LOG IN PLZ FIX BUG');
+        }
       }
     });
 
@@ -31,12 +34,14 @@ void main() async {
         terms = (await skyward.getGradeBookTerms());
       }catch(e){
         print('Should not fail: ' + e);
+        throw SkywardError('SHOULD SUCCEED');
       }
 
       try{
         gradebook = await skyward.getGradeBookGrades(terms);
       }catch(e){
         print('Should not fail: ' + e.toString());
+        throw SkywardError('SHOULD SUCCEED');
       }
 
       try{
@@ -67,6 +72,7 @@ void main() async {
         assignment = (await skyward.getAssignmentsFromGradeBox(gradebook[1]));
       }catch(e){
         print('Should succeed: ${e.toString()}');
+        throw SkywardError('SHOULD SUCCEED');
       }
     });
 
@@ -85,6 +91,7 @@ void main() async {
         var _ = (await skyward.getAssignmentInfoFromAssignment(assignment[6]));
       }catch(e){
         print('Should succeed: ${e.toString()}');
+        throw SkywardError('SHOULD SUCCEED');
       }
     });
 
@@ -95,6 +102,7 @@ void main() async {
         var _ = (await skyward.getHistory());
       }catch(e){
         print('Should succeed: ${e.toString()}');
+        throw SkywardError('SHOULD SUCCEED');
       }
     });
   });

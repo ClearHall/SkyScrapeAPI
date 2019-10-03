@@ -29,6 +29,10 @@
 .pub/
 build/
 
+# Remove Sensative Files
+test/testCredentials.txt
+pubspec.lock
+
 # Android related
 **/android/**/gradle-wrapper.jar
 **/android/.gradle

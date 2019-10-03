@@ -1,12 +1,12 @@
-library skyscrapeapi;
+library sky_core;
 
 import 'skywardUniversal.dart';
-import 'skywardAuthenticator.dart';
-import 'gradebookAccessor.dart';
-import 'assignmentAccessor.dart';
+import 'src/skywardAuthenticator.dart';
+import 'src/gradebookAccessor.dart';
+import 'src/assignmentAccessor.dart';
 import 'skywardAPITypes.dart';
-import 'assignmentInfoAccessor.dart';
-import 'historyAccessor.dart';
+import 'src/assignmentInfoAccessor.dart';
+import 'src/historyAccessor.dart';
 
 /// Skyward API Core is the heart of the API. It is essentially the only class you need to really use the API.
 ///

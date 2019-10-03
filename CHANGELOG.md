@@ -1,3 +1,7 @@
+## [1.0.1+2] - Organization Update
+
+Minor update for renaming and organizing library stuff.
+
 ## [1.0.1+1] - Documentation Update
 
 Documentation is now available for developers to view.

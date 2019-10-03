@@ -1,6 +1,9 @@
+library sky_universal;
+
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
 
+/// Checks two items to make sure your session did not expire yet. Though, this may slow down your code, it'll help reduce error. [doc] should be valid HTML, if not, no error will be thrown.
 bool didSessionExpire(String doc) {
   Document docs = parse(doc);
   List<Element> elems = docs.getElementsByClassName('sfLogout');
@@ -22,6 +25,9 @@ bool didSessionExpire(String doc) {
   return false;
 }
 
+/// SkyScrapeAPI Custom errors to locate errors and give proper causes.
+///
+/// **NOTE: THE WHOLE API WILL USE THIS EXCEPTION**
 class SkywardError implements Exception{
   String cause;
   SkywardError(this.cause);

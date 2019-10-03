@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart';
-import 'skywardUniversal.dart';
-import 'skywardAPITypes.dart';
+import '../skywardUniversal.dart';
+import '../skywardAPITypes.dart';
 import 'dart:convert';
 
 class HistoryAccessor {

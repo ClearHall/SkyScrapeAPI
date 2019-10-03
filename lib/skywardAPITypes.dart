@@ -1,3 +1,5 @@
+library sky_types;
+
 /// [Term] allow for the scrapers to sort through the grades and retrieve grades for certain terms.
 ///
 /// [Term] is JSON compatible and can be converted to a JSON if needed.
@@ -212,6 +214,7 @@ class AssignmentInfoBox{
   String infoName;
   String info;
 
+  /// UI Message for apps. It essentially combines the [infoName] and [info].
   String getUIMessage(){
     return infoName + ' ' + (info != null ? info : "");
   }
@@ -283,7 +286,7 @@ class SchoolYear{
   List<Term> terms;
   //First String represents class, in each class theres a map of the term and then the grade of that term.
   List<Class> classes;
-  //SKYMOBILE SPECIFIC ATTRIBUTE
+  /// This is an extra attribute you can use in your application just in case you need it.
   bool isEnabled = true;
 
   SchoolYear();
