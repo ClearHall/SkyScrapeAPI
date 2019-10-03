@@ -2,9 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
-import 'skywardAPICore.dart';
 import 'skywardAPITypes.dart';
-import 'skywardUniversalFunctions.dart';
+import 'skywardUniversal.dart';
 
 class GradebookAccessor {
   List<String> sffData = [];
@@ -21,7 +20,7 @@ class GradebookAccessor {
     final postReq = await http.post(gradebookURL, body: codes);
 
     if (didSessionExpire(postReq.body)) {
-      return SkywardAPIErrorCodes.LoginSessionExpired;
+      throw SkywardError('Session Expired');
     }else
       initGradebookAndGradesHTML(postReq.body);
     return postReq.body;
@@ -72,7 +71,7 @@ class GradebookAccessor {
     return gradeBoxes;
   }
 
-  SkywardAPIErrorCodes initGradebookAndGradesHTML(String html) {
+  initGradebookAndGradesHTML(String html) {
     Document doc = parse(html);
 
     if (!didSessionExpire(html)) {
@@ -93,9 +92,8 @@ class GradebookAccessor {
           gradesElements = mapOfFutureParsedHTML['tb']['r'];
         }
       }
-      return SkywardAPIErrorCodes.Succeeded;
     } else {
-      return SkywardAPIErrorCodes.LoginSessionExpired;
+      throw SkywardError('Session Expired');
     }
   }
 

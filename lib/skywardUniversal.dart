@@ -21,3 +21,13 @@ bool didSessionExpire(String doc) {
 
   return false;
 }
+
+class SkywardError implements Exception{
+  String cause;
+  SkywardError(this.cause);
+
+  @override
+  String toString() {
+    return cause;
+  }
+}

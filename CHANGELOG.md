@@ -1,3 +1,7 @@
+## [1.0.0+1] - First Official Pub Release
+
+I am confident now in my code and the errors it produces. The API tester code has been finished.
+
 ## [0.0.1+2] - Rename to Camel Case
 
 Like the title, rename files to Camel Case

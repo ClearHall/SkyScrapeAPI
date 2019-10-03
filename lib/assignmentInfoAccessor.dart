@@ -1,8 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart';
-import 'skywardUniversalFunctions.dart';
+import 'skywardUniversal.dart';
 import 'skywardAPITypes.dart';
-import 'skywardAPICore.dart';
 
 class AssignmentInfoAccessor{
 
@@ -17,7 +16,7 @@ class AssignmentInfoAccessor{
 
     var response = await http.post(gradebookURL, body: codes);
 
-    if(didSessionExpire(response.body)) return SkywardAPIErrorCodes.AssignmentInfoScrapeFailed;
+    if(didSessionExpire(response.body)) throw SkywardError('Session Expired');
 
     return response.body;
   }

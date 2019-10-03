@@ -1,11 +1,11 @@
 name: skyscrapeapi
-description: SkyMobile API
-version: 0.0.1+2
+description: SkyMobile API is the API that was taken from the original SkyMobile app. SkyMobile API allows easy Skyward access for developers.
+version: 1.0.0+1
 author: Hunter Han <hunter.han@gmail.com>
 homepage: https://github.com/skuweakyskies/SkyScrapeAPI
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=1.19.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -14,8 +14,7 @@ dependencies:
   html: ^0.14.0+2
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  test: ^1.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

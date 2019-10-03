@@ -4,6 +4,8 @@ library skyscrapeapi;
   In-Code documentation will be written for those who would like to modify the API for their own purposes.
  */
 
+import 'package:skyscrapeapi/skywardUniversal.dart';
+
 import 'skywardAuthenticator.dart';
 import 'gradebookAccessor.dart';
 import 'assignmentAccessor.dart';
@@ -39,108 +41,97 @@ class SkywardAPICore {
     pass = p;
     var loginSessionMap =
         await SkywardAuthenticator.getNewSessionCodes(user, pass, _baseURL);
-    if (loginSessionMap == null) {
-      return SkywardAPIErrorCodes.LoginFailed;
-    } else {
+    if (loginSessionMap != null) {
       loginSessionRequiredBodyElements = loginSessionMap;
     }
   }
 
   _initGradebook({int timeRan = 0}) async {
-    if (timeRan > 10) return SkywardAPIErrorCodes.CouldNotRefresh;
+    if (timeRan > 10) throw SkywardError('Could not refresh credentials at _initGradebook for user $user');
     if (_gradebookHTML == null) {
-      var result = await gradebookAccessor.getGradebookHTML(
-          loginSessionRequiredBodyElements, _baseURL);
-      if (result == SkywardAPIErrorCodes.LoginSessionExpired) {
-        await getSkywardAuthenticationCodes(user, pass);
-        return _initGradebook(timeRan: timeRan + 1);
+      try{
+        var result = await gradebookAccessor.getGradebookHTML(
+            loginSessionRequiredBodyElements, _baseURL);
+         _gradebookHTML = result;
+      }catch(e){
+          await getSkywardAuthenticationCodes(user, pass);
+          await _initGradebook(timeRan: timeRan + 1);
       }
-      _gradebookHTML = result;
     }
   }
 
   getGradeBookTerms() async {
-    var result = await _initGradebook();
-    if (result == SkywardAPIErrorCodes.CouldNotRefresh)
-      return SkywardAPIErrorCodes.CouldNotRefresh;
+    await _initGradebook();
     return gradebookAccessor.getTermsFromDocCode();
   }
 
   getGradeBookGrades(List<Term> terms) async {
     try {
-      var result = await _initGradebook();
-      if (result == SkywardAPIErrorCodes.CouldNotRefresh)
-        return SkywardAPIErrorCodes.CouldNotRefresh;
+      await _initGradebook();
       return gradebookAccessor.getGradeBoxesFromDocCode(_gradebookHTML, terms);
-    } catch (e, s) {
-      print(s);
-      return SkywardAPIErrorCodes.CouldNotScrapeGradeBook;
+    } catch (e) {
+      throw SkywardError('Cannot parse gradebook grades.');
     }
   }
 
   getAssignmentsFromGradeBox(GradeBox gradeBox, {int timesRan = 0}) async {
-    if (timesRan > 10) return SkywardAPIErrorCodes.CouldNotRefresh;
+    if (timesRan > 10) throw SkywardError('Could not refresh credentials at _initGradebook for user $user}');
     Map<String, String> assignmentsPostCodes =
         Map.from(loginSessionRequiredBodyElements);
-    var html = await AssignmentAccessor.getAssignmentsHTML(assignmentsPostCodes,
-        _baseURL, gradeBox.courseNumber, gradeBox.term.termName);
-    if (html == SkywardAPIErrorCodes.AssignmentScrapeFailed) {
+
+    String html;
+
+    try {
+      html = await AssignmentAccessor.getAssignmentsHTML(
+          assignmentsPostCodes,
+          _baseURL, gradeBox.courseNumber, gradeBox.term.termName);
+    }catch(e){
       await getSkywardAuthenticationCodes(user, pass);
       return getAssignmentsFromGradeBox(gradeBox, timesRan: timesRan + 1);
-    } else {
+    }
+
       try {
         return AssignmentAccessor.getAssignmentsDialog(html);
       } catch (e) {
-        return SkywardAPIErrorCodes.AssignmentParseFailed;
+        throw SkywardError('Failed to parse assignments');
       }
-    }
   }
 
   getAssignmentInfoFromAssignment(Assignment assignment,
       {int timesRan = 0}) async {
-    if (timesRan > 10) return SkywardAPIErrorCodes.CouldNotRefresh;
+    if (timesRan > 10) throw SkywardError('Could not refresh credentials at _initGradebook for user $user}');
     Map<String, String> assignmentsPostCodes =
         Map.from(loginSessionRequiredBodyElements);
-    var html = await AssignmentInfoAccessor.getAssignmentsDialogHTML(
-        assignmentsPostCodes, _baseURL, assignment);
-    if (html == SkywardAPIErrorCodes.AssignmentInfoScrapeFailed) {
+    var html;
+    try {
+      html = await AssignmentInfoAccessor.getAssignmentsDialogHTML(
+          assignmentsPostCodes, _baseURL, assignment);
+    }catch(e) {
       await getSkywardAuthenticationCodes(user, pass);
-      return getAssignmentInfoFromAssignment(assignment,
+      getAssignmentInfoFromAssignment(assignment,
           timesRan: timesRan + 1);
     }
     try {
       return AssignmentInfoAccessor.getAssignmentInfoBoxesFromHTML(html);
     } catch (e) {
-      return SkywardAPIErrorCodes.AssignmentParseFailed;
+      throw SkywardError('Failed to parse assignment info');
     }
   }
 
   getHistory({int timesRan = 0}) async {
-    if (timesRan > 10) return SkywardAPIErrorCodes.CouldNotRefresh;
-    var html = await HistoryAccessor.getGradebookHTML(
-        loginSessionRequiredBodyElements, _baseURL);
-    if (html == SkywardAPIErrorCodes.HistoryScrapeFailed) {
+    if (timesRan > 10) throw SkywardError('Could not refresh credentials at _initGradebook for user $user}');
+    var html;
+    try{
+      html = await HistoryAccessor.getGradebookHTML(
+          loginSessionRequiredBodyElements, _baseURL);
+    } catch(e) {
       await getSkywardAuthenticationCodes(user, pass);
       return getHistory(timesRan: timesRan + 1);
     }
     try {
       return (await HistoryAccessor.parseGradebookHTML(html));
     } catch (e) {
-      return SkywardAPIErrorCodes.HistoryParseFailed;
+      throw SkywardError('Could not parse history. This district most likely does not support academic history');
     }
   }
-}
-
-enum SkywardAPIErrorCodes {
-  Succeeded, //Placeholder
-  LoginFailed,
-  LoginSessionExpired,
-  CouldNotScrapeGradeBook,
-  CouldNotRefresh,
-  AssignmentScrapeFailed,
-  AssignmentParseFailed,
-  AssignmentInfoScrapeFailed,
-  AssignmentInfoParseFailed,
-  HistoryScrapeFailed,
-  HistoryParseFailed
 }

@@ -269,7 +269,7 @@ class Class{
   static ClassLevel getClassLevelFromText(String txt){
     try{
       return ClassLevel.values.firstWhere((e) => e.toString() == txt);
-    }catch(e, s){
+    }catch(e){
       return ClassLevel.Regular;
     }
   }

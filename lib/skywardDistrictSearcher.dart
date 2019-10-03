@@ -4,8 +4,8 @@ import 'package:html/dom.dart';
 import 'skywardAPITypes.dart';
 
 class SkywardDistrictSearcher {
-  static String __EVENTVALIDATION;
-  static String __VIEWSTATE;
+  static String _eventValidation;
+  static String _viewState;
   static List<SkywardSearchState> states;
 
   static getStatesAndPostRequiredBodyElements() async {
@@ -23,23 +23,23 @@ class SkywardDistrictSearcher {
       }
       SkywardDistrictSearcher.states = searchStates;
 
-      __EVENTVALIDATION =
+      _eventValidation =
           doc.getElementById('__EVENTVALIDATION').attributes['value'];
-      __VIEWSTATE = doc.getElementById('__VIEWSTATE').attributes['value'];
+      _viewState = doc.getElementById('__VIEWSTATE').attributes['value'];
     } else {
       return 'ERROR';
     }
   }
 
   static searchForDistrictLinkFromState(String stateCode, String searchQuery) async {
-    if (__EVENTVALIDATION == null || __VIEWSTATE == null) {
+    if (_eventValidation == null || _viewState == null) {
       await getStatesAndPostRequiredBodyElements();
       return 'Failed';
     } else {
       var postBody = await http
           .post('https://www.skyward.com/Marketing/LoginPage.aspx', body: {
-        '__EVENTVALIDATION': __EVENTVALIDATION,
-        '__VIEWSTATE': __VIEWSTATE,
+        '__EVENTVALIDATION': _eventValidation,
+        '__VIEWSTATE': _viewState,
         'btnSearch': 'Search',
         'ddlStates': stateCode,
         'txtSearch': searchQuery
