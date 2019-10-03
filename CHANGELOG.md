@@ -1,4 +1,4 @@
-## [0.0.1+1] - Rename to Camel Case
+## [0.0.1+2] - Rename to Camel Case
 
 Like the title, rename files to Camel Case
 
