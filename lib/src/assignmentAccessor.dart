@@ -16,7 +16,7 @@ class AssignmentAccessor {
 
     var response = await http.post(gradebookURL, body: codes);
 
-    if(didSessionExpire(response.body)) throw SkywardError('Session Expired');
+    if (didSessionExpire(response.body)) throw SkywardError('Session Expired');
 
     return response.body;
   }
@@ -37,41 +37,48 @@ class AssignmentAccessor {
       }
     }
 
-    for(Element row in elementsInsideTable){
+    for (Element row in elementsInsideTable) {
       List<Element> tdVals = row.querySelectorAll('td');
       List<String> attributes = [];
-      if(row.classes.contains('sf_Section') && row.classes.contains('cat')){
+      if (row.classes.contains('sf_Section') && row.classes.contains('cat')) {
         CategoryHeader catHeader = CategoryHeader(null, null, null);
-        for(Element td in tdVals){
-          if(td.classes.contains('nWp') && td.classes.contains('noLBdr')){
+        for (Element td in tdVals) {
+          if (td.classes.contains('nWp') && td.classes.contains('noLBdr')) {
             List<Element> weighted = td.querySelectorAll('span');
             String weightedText;
-            if(weighted.length > 0) {
+            if (weighted.length > 0) {
               weightedText = weighted != null ? weighted.last.text : null;
               catHeader.weight = weightedText;
             }
-            attributes.add(td.text.substring(0,
-                weightedText != null ? td.text.indexOf(weightedText) : td
-                    .text.length));
-          }else{
+            attributes.add(td.text.substring(
+                0,
+                weightedText != null
+                    ? td.text.indexOf(weightedText)
+                    : td.text.length));
+          } else {
             attributes.add(td.text);
           }
         }
-        for(int i = attributes.length; i < headers.length; i++){
+        for (int i = attributes.length; i < headers.length; i++) {
           attributes.add("");
         }
         catHeader.catName = attributes[1];
         catHeader.attributes = Map.fromIterables(headers, attributes);
         gridBoxes.add(catHeader);
-      }else{
+      } else {
         Element assignment = row.querySelector('#showAssignmentInfo');
-        for(Element td in tdVals) {
+        for (Element td in tdVals) {
           attributes.add(td.text);
         }
-        if(assignment != null)
-          gridBoxes.add(Assignment(assignment.attributes['data-sid'], assignment.attributes['data-aid'], assignment.attributes['data-gid'], attributes[1], Map.fromIterables(headers, attributes)));
+        if (assignment != null)
+          gridBoxes.add(Assignment(
+              assignment.attributes['data-sid'],
+              assignment.attributes['data-aid'],
+              assignment.attributes['data-gid'],
+              attributes[1],
+              Map.fromIterables(headers, attributes)));
         else {
-          for(int i = attributes.length; i < headers.length; i++){
+          for (int i = attributes.length; i < headers.length; i++) {
             attributes.add("");
           }
           gridBoxes.add(Assignment(null, null, null, attributes.first,

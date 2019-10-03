@@ -12,7 +12,7 @@ class HistoryAccessor {
     final String gradebookURL = baseURL + 'sfacademichistory001.w';
     final postReq = await http.post(gradebookURL, body: codes);
 
-    if(didSessionExpire(postReq.body)) throw SkywardError('Session Expired');
+    if (didSessionExpire(postReq.body)) throw SkywardError('Session Expired');
 
     return postReq.body;
   }
@@ -85,13 +85,16 @@ class HistoryAccessor {
                                               <body>${x.values.first}</body>
                                              </html>""");
             if (type == 'terms') {
-              var attrElem = curr.querySelector('span')?? curr.querySelector('body');
-              tempTerms.add(Term(attrElem.text, attrElem.attributes['tooltip']));
+              var attrElem =
+                  curr.querySelector('span') ?? curr.querySelector('body');
+              tempTerms
+                  .add(Term(attrElem.text, attrElem.attributes['tooltip']));
             } else {
-              currentYear.classes.last.grades.add(curr.querySelector('body').text);
+              currentYear.classes.last.grades
+                  .add(curr.querySelector('body').text);
             }
           }
-        if(type == 'terms') currentYear.terms = tempTerms;
+        if (type == 'terms') currentYear.terms = tempTerms;
       }
     }
     return schoolYears;

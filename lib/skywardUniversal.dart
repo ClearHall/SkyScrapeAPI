@@ -19,8 +19,10 @@ bool didSessionExpire(String doc) {
     }
   }
 
-  if(doc.contains("sff.httpCalls[''] = {") && doc.contains("'messages':[{show:true ,type:'dialog',target:'',message:'',code:''}],") && doc.contains("'options':{status:\"logout\"}"))
-    return true;
+  if (doc.contains("sff.httpCalls[''] = {") &&
+      doc.contains(
+          "'messages':[{show:true ,type:'dialog',target:'',message:'',code:''}],") &&
+      doc.contains("'options':{status:\"logout\"}")) return true;
 
   return false;
 }
@@ -28,7 +30,7 @@ bool didSessionExpire(String doc) {
 /// SkyScrapeAPI Custom errors to locate errors and give proper causes.
 ///
 /// **NOTE: THE WHOLE API WILL USE THIS EXCEPTION**
-class SkywardError implements Exception{
+class SkywardError implements Exception {
   String cause;
   SkywardError(this.cause);
 

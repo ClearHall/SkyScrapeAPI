@@ -1,3 +1,9 @@
+## [1.0.1+3] - Maintenance Update
+
+Added an example for developers to use in case they do not understand the documentation.
+
+Reformatted all files to fit flutter's requests.
+
 ## [1.0.1+2] - Organization Update
 
 Minor update for renaming and organizing library stuff.

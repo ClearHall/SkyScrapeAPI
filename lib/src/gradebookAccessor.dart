@@ -21,7 +21,7 @@ class GradebookAccessor {
 
     if (didSessionExpire(postReq.body)) {
       throw SkywardError('Session Expired');
-    }else
+    } else
       initGradebookAndGradesHTML(postReq.body);
     return postReq.body;
   }
@@ -40,7 +40,8 @@ class GradebookAccessor {
     return gradeBoxes;
   }
 
-  static List<GridBox> scrapeGradeBoxesFromSff(String docHtml, List<Term> terms) {
+  static List<GridBox> scrapeGradeBoxesFromSff(
+      String docHtml, List<Term> terms) {
     List<GridBox> gradeBoxes = [];
     var parsedHTML = parse(docHtml);
     for (var sffBrak in gradesElements) {

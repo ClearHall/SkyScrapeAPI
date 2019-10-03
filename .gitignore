@@ -32,6 +32,7 @@ build/
 # Remove Sensative Files
 test/testCredentials.txt
 pubspec.lock
+/example/pubspec.yaml
 
 # Android related
 **/android/**/gradle-wrapper.jar

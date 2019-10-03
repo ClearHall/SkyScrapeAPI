@@ -43,7 +43,8 @@ class SkywardDistrictSearcher {
   /// ```dart
   /// String stateNumber = SkywardDistrictSearcher.states[<index>].stateID;
   /// ```
-  static searchForDistrictLinkFromState(String stateCode, String searchQuery) async {
+  static searchForDistrictLinkFromState(
+      String stateCode, String searchQuery) async {
     if (_eventValidation == null || _viewState == null) {
       await getStatesAndPostRequiredBodyElements();
       return 'Failed';
@@ -58,15 +59,17 @@ class SkywardDistrictSearcher {
       });
       List<SkywardDistrict> districts = [];
       Document parsed = parse(postBody.body);
-      Element loginResults = parsed.querySelector('div.login-flex-container.rowCount');
-      if(loginResults == null) return districts;
-      List<Element> districtsElems = loginResults.querySelectorAll('.login-flex-item');
+      Element loginResults =
+          parsed.querySelector('div.login-flex-container.rowCount');
+      if (loginResults == null) return districts;
+      List<Element> districtsElems =
+          loginResults.querySelectorAll('.login-flex-item');
 
+      if (districtsElems.length == 0) return districts;
 
-      if(districtsElems.length == 0) return districts;
-
-      for(Element elem in districtsElems){
-        districts.add(SkywardDistrict(elem.querySelector('span').text, elem.querySelector('a').attributes['href']));
+      for (Element elem in districtsElems) {
+        districts.add(SkywardDistrict(elem.querySelector('span').text,
+            elem.querySelector('a').attributes['href']));
       }
 
       return districts;
