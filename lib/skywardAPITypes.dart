@@ -58,16 +58,16 @@ class GridBox {
 /// [TeacherIDBox] **USUALLY** marks the beginning of a new course. If you are using the API, you can make a for loop like the following
 ///
 /// ```dart
-/// for(GridBox x in list){
-///   if(x is TeacherIDBox) <init code>
+/// for (GridBox x in list){
+///   if (x is TeacherIDBox) <init code>
 ///   else <check for the other types>
 /// }
 /// ```
 /// You can also use a switch case statement.
 ///
 /// ```dart
-/// for(GridBox x in list){
-///   switch(x.runtimeType) {
+/// for (GridBox x in list){
+///   switch (x.runtimeType) {
 ///   case TeacherIDBox:
 ///      <init code>
 ///      break;

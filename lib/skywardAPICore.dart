@@ -17,6 +17,11 @@ class SkywardAPICore {
   Map<String, String> loginSessionRequiredBodyElements;
 
   /// Base URL to use for skyward page navigation
+  ///
+  /// You may just enter your login URL for skyward, though it is recommended to use a base URL.
+  /// The API will automatically remove anything that comes after wsEAplus in your URL.
+  ///
+  /// If your base URL requires wsEAplus, contact the developer at hunter.han@gmail.com and he will help you
   String _baseURL;
 
   /// Storing username and password for refresh when session expires

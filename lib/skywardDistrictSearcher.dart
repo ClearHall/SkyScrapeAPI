@@ -3,6 +3,7 @@ library skyward_district_searcher;
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
+import 'package:skyscrapeapi/skywardUniversal.dart';
 import 'skywardAPITypes.dart';
 
 /// [SkywardDistrictSearcher] is a completely static class that'll search for districts.
@@ -45,6 +46,9 @@ class SkywardDistrictSearcher {
   /// ```
   static searchForDistrictLinkFromState(
       String stateCode, String searchQuery) async {
+    if (searchQuery.length < 3)
+      throw SkywardError(
+          'Parameter searchQuery should be at least 3 characters long.');
     if (_eventValidation == null || _viewState == null) {
       await getStatesAndPostRequiredBodyElements();
       return 'Failed';
@@ -58,20 +62,25 @@ class SkywardDistrictSearcher {
         'txtSearch': searchQuery
       });
       List<SkywardDistrict> districts = [];
-      Document parsed = parse(postBody.body);
-      Element loginResults =
-          parsed.querySelector('div.login-flex-container.rowCount');
-      if (loginResults == null) return districts;
-      List<Element> districtsElems =
-          loginResults.querySelectorAll('.login-flex-item');
 
-      if (districtsElems.length == 0) return districts;
+      try {
+        Document parsed = parse(postBody.body);
+        Element loginResults =
+            parsed.querySelector('div.login-flex-container.rowCount');
+        if (loginResults == null) return districts;
+        List<Element> districtsElems =
+            loginResults.querySelectorAll('.login-flex-item');
 
-      for (Element elem in districtsElems) {
-        districts.add(SkywardDistrict(elem.querySelector('span').text,
-            elem.querySelector('a').attributes['href']));
+        if (districtsElems.length == 0) return districts;
+
+        for (Element elem in districtsElems) {
+          districts.add(SkywardDistrict(elem.querySelector('span').text,
+              elem.querySelector('a').attributes['href']));
+        }
+      } catch (e) {
+        throw SkywardError(
+            'Invalid state ID or search query\nThings to note: Check your state ID and make sure it corresponds to a state ID retrieved.\nMake sure you also check your search query and make sure it\'s valid');
       }
-
       return districts;
     }
   }

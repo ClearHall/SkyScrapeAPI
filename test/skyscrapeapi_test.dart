@@ -1,20 +1,21 @@
 import 'package:skyscrapeapi/skywardAPITypes.dart';
 import 'package:skyscrapeapi/skywardAPICore.dart';
 import 'package:skyscrapeapi/skywardUniversal.dart';
+import 'package:skyscrapeapi/skywardDistrictSearcher.dart';
 import 'package:test/test.dart';
 import 'dart:io';
 
 void main() async {
-  group('Group tests', () {
-    final skyward = SkywardAPICore("https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w");
+  final skyward = SkywardAPICore("https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w");
 
-    var file = File('test/testCredentials.txt');
-    var contents;
+  var file = File('test/testCredentials.txt');
+  var contents;
 
-    var terms;
-    var gradebook;
-    var assignment;
+  var terms;
+  var gradebook;
+  var assignment;
 
+  group('Group tests on network', () {
     bool skipLongTestTimes = true;
 
     test('test file input', () async{
@@ -43,6 +44,7 @@ void main() async {
         print('Should not fail: ' + e.toString());
         throw SkywardError('SHOULD SUCCEED');
       }
+
 
       try{
         gradebook = await skyward.getGradeBookGrades(null);
@@ -103,6 +105,30 @@ void main() async {
       }catch(e){
         print('Should succeed: ${e.toString()}');
         throw SkywardError('SHOULD SUCCEED');
+      }
+    });
+
+    test('test district searcher', () async{
+      await SkywardDistrictSearcher.getStatesAndPostRequiredBodyElements();
+
+      try{
+        var _ = await SkywardDistrictSearcher.searchForDistrictLinkFromState(SkywardDistrictSearcher.states[1].stateID, 'Search');
+      }catch (e){
+        throw SkywardError('Should not fail');
+      }
+
+      try{
+        if ((await SkywardDistrictSearcher.searchForDistrictLinkFromState('9999', 'Search')).length != 0)
+          throw SkywardError('POOPOO');
+      }catch(e){
+        throw SkywardError('Should not fail');
+      }
+
+      try{
+        // 180 is Texas at the time of writing
+        var _ = await SkywardDistrictSearcher.searchForDistrictLinkFromState('180', 'OH');
+      }catch(e){
+        print('Should fail with: ${e.toString()}');
       }
     });
   });
