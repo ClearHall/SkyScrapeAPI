@@ -24,13 +24,27 @@ class SkywardAPICore {
   /// If your base URL requires wsEAplus, contact the developer at hunter.han@gmail.com and he will help you
   String _baseURL;
 
+  /// SkyMobile will automatically attempt to log back in if your session expired or too many requests were sent at once and skyward is refusing to respond.
+  ///
+  /// If you would like to disable this convenient feature, then you may do so in the constructor.
+  /// If you would like the change the amount of times skyscrapeapi attempts to refresh your account, look at [refreshTimes]
+  bool shouldRefreshWhenFailedLogin;
+
+  /// Refresh Times will be useless if [shouldRefreshWhenFailedLogin] is false.
+  ///
+  /// The amount of times to refresh skyward authentication.
+  /// If this value is set to a value less than 1, then skyscrapeapi will throw an error.
+  /// If this value is set too high and something went wrong with your server/app or the API, skyscrapeapi will not stop, it'll keep trying for a looooooong time.
+  int refreshTimes;
+
   /// Storing username and password for refresh when session expires
   String user, pass;
 
   /// Constructor that instantiates [_baseURL].
   ///
   /// If [_baseURL] contains extra materials, it'll be cut down to the last "/"
-  SkywardAPICore(this._baseURL) {
+  SkywardAPICore(this._baseURL, {this.shouldRefreshWhenFailedLogin = true , this.refreshTimes = 10}) {
+    if(this.shouldRefreshWhenFailedLogin && this.refreshTimes < 1) throw SkywardError('Refresh times cannot be set to a value less than 1');
     if (!this._baseURL.endsWith('/')) {
       this._baseURL =
           this._baseURL.substring(0, this._baseURL.lastIndexOf('/') + 1);
@@ -45,7 +59,8 @@ class SkywardAPICore {
   ///
   /// [u] is the username and [p] is the password. The function uses these two parameters to login to skyward and retrieve the necessary items to continue skyward navigation.
   /// If the operation succeeded and the login requirements were successfully retrieved, the function returns true. If not, the function returns false.
-  getSkywardAuthenticationCodes(String u, String p) async {
+  getSkywardAuthenticationCodes(String u, String p, {int timesRan = 0}) async {
+    if(timesRan > refreshTimes) return false;
     user = u;
     pass = p;
     var loginSessionMap =
@@ -53,8 +68,10 @@ class SkywardAPICore {
     if (loginSessionMap != null) {
       loginSessionRequiredBodyElements = loginSessionMap;
       return true;
-    }
-    return false;
+    }else if(shouldRefreshWhenFailedLogin){
+      return getSkywardAuthenticationCodes(u, p, timesRan: timesRan + 1);
+    }else
+      return false;
   }
 
   // Temporary grade book html variable to store the grade book html for better efficiency.
@@ -66,9 +83,9 @@ class SkywardAPICore {
   /// The function will attempt to log back in when your session expires or an errors occurs.
   /// The function initializes the grade book HTML for parsing use.
   _initGradeBook({int timeRan = 0}) async {
-    if (timeRan > 10)
+    if (timeRan > refreshTimes)
       throw SkywardError(
-          'Could not refresh credentials at _initGradebook for user $user');
+          'Unexpected error, _gradeBookHTML is still null');
     if (_gradeBookHTML == null) {
       try {
         var result = await GradebookAccessor.getGradebookHTML(
@@ -99,9 +116,9 @@ class SkywardAPICore {
 
   /// The assignments from a specific term. Returns a list of [AssignmentsGridBox].
   getAssignmentsFromGradeBox(GradeBox gradeBox, {int timesRan = 0}) async {
-    if (timesRan > 10)
+    if (timesRan > refreshTimes)
       throw SkywardError(
-          'Could not refresh credentials at _initGradebook for user $user}');
+          'Still could not retrieve correct information from assignments');
     Map<String, String> assignmentsPostCodes =
         Map.from(loginSessionRequiredBodyElements);
 
@@ -115,6 +132,8 @@ class SkywardAPICore {
       return getAssignmentsFromGradeBox(gradeBox, timesRan: timesRan + 1);
     }
 
+    if(html == null) throw SkywardError('Somehow, Assignment HTML is still null and got passed first error check');
+
     try {
       return AssignmentAccessor.getAssignmentsDialog(html);
     } catch (e) {
@@ -125,9 +144,9 @@ class SkywardAPICore {
   /// The assignment info boxes from a specific assignment. Returns a list of [AssignmentInfoBox].
   getAssignmentInfoFromAssignment(Assignment assignment,
       {int timesRan = 0}) async {
-    if (timesRan > 10)
+    if (timesRan > refreshTimes)
       throw SkywardError(
-          'Could not refresh credentials at _initGradebook for user $user}');
+          'Could not get assignment info');
     Map<String, String> assignmentsPostCodes =
         Map.from(loginSessionRequiredBodyElements);
     var html;
@@ -149,9 +168,9 @@ class SkywardAPICore {
   ///
   /// Returns a list of [SchoolYear].
   getHistory({int timesRan = 0}) async {
-    if (timesRan > 10)
+    if (timesRan > refreshTimes)
       throw SkywardError(
-          'Could not refresh credentials at _initGradebook for user $user}');
+          'Failed to get history');
     var html;
     try {
       html = await HistoryAccessor.getGradebookHTML(

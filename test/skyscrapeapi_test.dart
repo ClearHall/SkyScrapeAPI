@@ -8,25 +8,63 @@ import 'dart:io';
 void main() async {
   final skyward = SkywardAPICore("https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w");
 
-  var file = File('test/testCredentials.txt');
+  var credentialFile = File('test/testCredentials.txt');
+  var settingsFile = File('test/testSettings.skyTest');
   var contents;
+
+  int assignmentTestIndex = 3;
+  int assignmentTestInfoIndex = 5;
+  int loginAttemptsTest = 10;
 
   var terms;
   var gradebook;
   var assignment;
 
+  var user;
+  var pass;
+
   group('Group tests on network', () {
     bool skipLongTestTimes = true;
 
     test('test file input', () async{
-      if (await file.exists()) {
-        contents = await file.readAsString();
+      if (await credentialFile.exists()) {
+        contents = await credentialFile.readAsString();
         List split = contents.toString().split('\n');
 
-        if (!await skyward.getSkywardAuthenticationCodes(split[0], split[1])){
+        user = split[0];
+        pass = split[1];
+
+        contents = await settingsFile.readAsString();
+        split = contents.toString().split('\n');
+
+        for(String s in split){
+          List ssplit = [];
+          ssplit = s.split(':');
+
+          switch(ssplit[0]){
+            case 'assignmentTestIndex':
+              assignmentTestIndex = int.parse(ssplit[1]);
+              break;
+            case 'assignmentTestInfoIndex':
+             assignmentTestInfoIndex = int.parse(ssplit[1]);
+             break;
+            case 'loginAttemptsTest':
+              loginAttemptsTest = int.parse(ssplit[1]);
+              break;
+            default:
+              break;
+          }
+        }
+
+        if (!await skyward.getSkywardAuthenticationCodes(user, pass)){
           throw SkywardError('OH POOP WE FAIL TO LOG IN PLZ FIX BUG');
         }
       }
+    });
+
+    test('test multiple logins quickly', () async{
+      for(int i = 0; i < loginAttemptsTest; i++)
+        print(await skyward.getSkywardAuthenticationCodes(user, pass));
     });
 
     test('test login & get gradebook', () async {
@@ -57,7 +95,7 @@ void main() async {
       skyward.loginSessionRequiredBodyElements['dwd'] = 'ON_PURPOSE_TRY_TO_GET_ERROR';
 
       try {
-        print(await skyward.getAssignmentsFromGradeBox(gradebook[0]));
+        print(await skyward.getAssignmentsFromGradeBox(gradebook[assignmentTestIndex]));
       }catch(e){
         print('Should fail with type error: ${e.toString()}');
       }
@@ -82,7 +120,7 @@ void main() async {
       skyward.loginSessionRequiredBodyElements['dwd'] = 'ON_PURPOSE_TRY_TO_GET_ERROR';
 
       try {
-        Assignment assoonmentttt = assignment[3];
+        Assignment assoonmentttt = assignment[assignmentTestInfoIndex];
         assoonmentttt.assignmentID = '123';
         print(await skyward.getAssignmentInfoFromAssignment(assoonmentttt));
       }catch(e){
@@ -90,7 +128,7 @@ void main() async {
       }
 
       try {
-        var _ = (await skyward.getAssignmentInfoFromAssignment(assignment[6]));
+        var _ = (await skyward.getAssignmentInfoFromAssignment(assignment[assignmentTestInfoIndex]));
       }catch(e){
         print('Should succeed: ${e.toString()}');
         throw SkywardError('SHOULD SUCCEED');
