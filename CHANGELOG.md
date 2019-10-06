@@ -1,3 +1,14 @@
+## [1.1.0+3] - Bug Fix
+
+Fixed bug that caused second login to grade book of the same API object would fail.
+
+- Made Grade Book accessor values non static
+- Made initgradebook return list
+
+## [1.1.0+2] - Dev Test
+
+Testing
+
 ## [1.1.0+1] - Refresh Rate Update
 
 To give the developer more flexibility over skyscrapeapi.

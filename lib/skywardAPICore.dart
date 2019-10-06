@@ -75,7 +75,7 @@ class SkywardAPICore {
   }
 
   // Temporary grade book html variable to store the grade book html for better efficiency.
-  String _gradeBookHTML;
+  List _gradeBookList;
 
   /// Initializes and scrapes the grade book HTML
   ///
@@ -86,11 +86,11 @@ class SkywardAPICore {
     if (timeRan > refreshTimes)
       throw SkywardError(
           'Unexpected error, _gradeBookHTML is still null');
-    if (_gradeBookHTML == null) {
+    if (_gradeBookList == null) {
       try {
         var result = await GradebookAccessor.getGradebookHTML(
             loginSessionRequiredBodyElements, _baseURL);
-        _gradeBookHTML = result;
+        _gradeBookList = result;
       } catch (e) {
         if(shouldRefreshWhenFailedLogin) {
           await getSkywardAuthenticationCodes(user, pass);
@@ -103,16 +103,16 @@ class SkywardAPICore {
   /// The terms retrieved from the grade book HTML. Returns a list of [Term].
   getGradeBookTerms() async {
     await _initGradeBook();
-    return GradebookAccessor.getTermsFromDocCode();
+    return GradebookAccessor.getTermsFromDocCode(_gradeBookList);
   }
 
   /// The grade boxes retrieved from grade book HTML. Returns a list of [GridBox].
   getGradeBookGrades(List<Term> terms) async {
     try {
       await _initGradeBook();
-      return GradebookAccessor.getGradeBoxesFromDocCode(_gradeBookHTML, terms);
+      return GradebookAccessor.getGradeBoxesFromDocCode(_gradeBookList, terms);
     } catch (e) {
-      throw SkywardError('Cannot parse gradebook grades.');
+      throw SkywardError('Cannot parse gradebook grades.' + e.toString());
     }
   }
 

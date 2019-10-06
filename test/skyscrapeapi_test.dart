@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 import 'dart:io';
 
 void main() async {
-  final skyward = SkywardAPICore("https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w");
+  var skyward = SkywardAPICore("https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w");
 
   var credentialFile = File('test/testCredentials.txt');
   var settingsFile = File('test/testSettings.skyTest');
@@ -72,6 +72,32 @@ void main() async {
 
     test('test login & get gradebook', () async {
       skyward.loginSessionRequiredBodyElements['dwd'] = 'ON_PURPOSE_TRY_TO_GET_ERROR';
+      try {
+        terms = (await skyward.getGradeBookTerms());
+      }catch(e){
+        print('Should not fail: ' + e);
+        throw SkywardError('SHOULD SUCCEED');
+      }
+
+      try{
+        gradebook = await skyward.getGradeBookGrades(terms);
+      }catch(e){
+        print('Should not fail: ' + e.toString());
+        throw SkywardError('SHOULD SUCCEED');
+      }
+
+
+      try{
+        gradebook = await skyward.getGradeBookGrades(null);
+      }catch(e){
+        print('On purpose failed: ' + e.toString());
+      }
+    });
+
+    test('test login & get gradebook second', () async {
+      skyward.loginSessionRequiredBodyElements['dwd'] = 'ON_PURPOSE_TRY_TO_GET_ERROR';
+      skyward = SkywardAPICore("https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w");
+      skyward.getSkywardAuthenticationCodes(user, pass);
       try {
         terms = (await skyward.getGradeBookTerms());
       }catch(e){

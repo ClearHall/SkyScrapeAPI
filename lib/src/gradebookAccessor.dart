@@ -6,12 +6,9 @@ import '../skywardAPITypes.dart';
 import '../skywardUniversal.dart';
 
 class GradebookAccessor {
-  static List<String> sffData = [];
   /*
   This decoded json string is super weird. Look at initGradebookHTML if you need to understand it.
    */
-  static List termElements = [];
-  static List gradesElements = [];
   static final _termJsonDeliminater =
       "sff.sv('sf_gridObjects',\$.extend((sff.getValue('sf_gridObjects') ";
 
@@ -21,30 +18,30 @@ class GradebookAccessor {
 
     if (didSessionExpire(postReq.body)) {
       throw SkywardError('Session Expired');
-    } else
-      initGradebookAndGradesHTML(postReq.body);
-    return postReq.body;
+    }
+
+    return initGradebookAndGradesHTML(postReq.body);
   }
 
-  static getTermsFromDocCode() {
+  static getTermsFromDocCode(List infoList) {
     var terms = [];
-    terms = detectTermsFromScriptByParsing();
+    terms = detectTermsFromScriptByParsing(infoList);
     return terms;
   }
 
   //TODO: Implement server quick scrape assignments algorithm from sff.sv() script code.
 
-  static getGradeBoxesFromDocCode(String docHtml, List<Term> terms) {
+  static getGradeBoxesFromDocCode(List infoList, List<Term> terms) {
     var gradeBoxes = [];
-    gradeBoxes = scrapeGradeBoxesFromSff(docHtml, terms);
+    gradeBoxes = scrapeGradeBoxesFromSff(infoList, terms);
     return gradeBoxes;
   }
 
   static List<GridBox> scrapeGradeBoxesFromSff(
-      String docHtml, List<Term> terms) {
+      List infoList, List<Term> terms) {
     List<GridBox> gradeBoxes = [];
-    var parsedHTML = parse(docHtml);
-    for (var sffBrak in gradesElements) {
+    var parsedHTML = parse(infoList[2]);
+    for (var sffBrak in infoList[1]) {
       for (var i = 0; i < sffBrak['c'].length; i++) {
         var c = sffBrak['c'][i];
         var cDoc = DocumentFragment.html(c['h']);
@@ -72,7 +69,7 @@ class GradebookAccessor {
     return gradeBoxes;
   }
 
-  static initGradebookAndGradesHTML(String html) {
+  static List initGradebookAndGradesHTML(String html) {
     Document doc = parse(html);
 
     if (!didSessionExpire(html)) {
@@ -86,21 +83,18 @@ class GradebookAccessor {
             needToDecodeJson.substring(needToDecodeJson.indexOf(':') + 1);
         var mapOfFutureParsedHTML = jsonDecode(needToDecodeJson);
 
-        if (termElements.isEmpty) {
-          termElements = mapOfFutureParsedHTML['th']['r'][0]['c'];
-        }
-        if (gradesElements.isEmpty) {
-          gradesElements = mapOfFutureParsedHTML['tb']['r'];
-        }
+        return [mapOfFutureParsedHTML['th']['r'][0]['c'],mapOfFutureParsedHTML['tb']['r'], html];
       }
     } else {
       throw SkywardError('Session Expired');
     }
+
+    return [];
   }
 
-  static List<Term> detectTermsFromScriptByParsing() {
+  static List<Term> detectTermsFromScriptByParsing(List infoList) {
     List<Term> terms = [];
-    for (var termHTMLA in termElements) {
+    for (var termHTMLA in infoList[0]) {
       String termHTML = termHTMLA['h'];
       termHTML =
           termHTML.replaceFirst('th', 'a').substring(0, termHTML.length - 4) +
