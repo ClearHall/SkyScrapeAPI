@@ -1,3 +1,13 @@
+## [1.1.0+1] - Refresh Rate Update
+
+To give the developer more flexibility over skyscrapeapi.
+
+This update gives more power to the developer and allows for developers to relax more.
+
+- Refresh rates will now affect skyward log-ins
+- The developer can now choose **IF** they want to refresh skyward authentication automatically
+- Testing files now have settings testSettings.skyTest
+
 ## [1.0.1+3] - Maintenance Update
 
 Added an example for developers to use in case they do not understand the documentation.

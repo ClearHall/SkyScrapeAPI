@@ -92,8 +92,10 @@ class SkywardAPICore {
             loginSessionRequiredBodyElements, _baseURL);
         _gradeBookHTML = result;
       } catch (e) {
-        await getSkywardAuthenticationCodes(user, pass);
-        await _initGradeBook(timeRan: timeRan + 1);
+        if(shouldRefreshWhenFailedLogin) {
+          await getSkywardAuthenticationCodes(user, pass);
+          await _initGradeBook(timeRan: timeRan + 1);
+        }else throw SkywardError('Session could have expired, failed to get gradebook');
       }
     }
   }
@@ -128,8 +130,10 @@ class SkywardAPICore {
       html = await AssignmentAccessor.getAssignmentsHTML(assignmentsPostCodes,
           _baseURL, gradeBox.courseNumber, gradeBox.term.termName);
     } catch (e) {
-      await getSkywardAuthenticationCodes(user, pass);
-      return getAssignmentsFromGradeBox(gradeBox, timesRan: timesRan + 1);
+        if(shouldRefreshWhenFailedLogin) {
+          await getSkywardAuthenticationCodes(user, pass);
+          return getAssignmentsFromGradeBox(gradeBox, timesRan: timesRan + 1);
+        }else throw SkywardError('Session could have expired, failed to get assignment');
     }
 
     if(html == null) throw SkywardError('Somehow, Assignment HTML is still null and got passed first error check');
@@ -154,8 +158,10 @@ class SkywardAPICore {
       html = await AssignmentInfoAccessor.getAssignmentsDialogHTML(
           assignmentsPostCodes, _baseURL, assignment);
     } catch (e) {
-      await getSkywardAuthenticationCodes(user, pass);
-      getAssignmentInfoFromAssignment(assignment, timesRan: timesRan + 1);
+      if(shouldRefreshWhenFailedLogin) {
+        await getSkywardAuthenticationCodes(user, pass);
+        return getAssignmentInfoFromAssignment(assignment, timesRan: timesRan + 1);
+      }else throw SkywardError('Session could have expired, failed to get assignment info');
     }
     try {
       return AssignmentInfoAccessor.getAssignmentInfoBoxesFromHTML(html);
@@ -176,8 +182,10 @@ class SkywardAPICore {
       html = await HistoryAccessor.getGradebookHTML(
           loginSessionRequiredBodyElements, _baseURL);
     } catch (e) {
-      await getSkywardAuthenticationCodes(user, pass);
-      return getHistory(timesRan: timesRan + 1);
+      if(shouldRefreshWhenFailedLogin) {
+        await getSkywardAuthenticationCodes(user, pass);
+        return getHistory(timesRan: timesRan + 1);
+      }else throw SkywardError('Session could have expired, failed to get history');
     }
     try {
       return (await HistoryAccessor.parseGradebookHTML(html));

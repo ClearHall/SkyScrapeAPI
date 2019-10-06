@@ -1,3 +1,10 @@
+# Test Settings!!!
+
+# Assignments to get from your grade book. Try not to use 0 because that index is most likely a teacher id box.
 assignmentTestIndex:1
+# Assignment to get from your assignments for a specific grade book. Again, try not to use 0 (sometimes 1 or 2) because those are usually category headers.
 assignmentTestInfoIndex:1
+# How many login attempts you want the tester to test. Hopefully they are all true.
 loginAttemptsTest:10
+# Should skip multiple failed login test
+skipLongTestTimes:true
