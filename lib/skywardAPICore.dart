@@ -141,7 +141,10 @@ class SkywardAPICore {
     try {
       return AssignmentAccessor.getAssignmentsDialog(html);
     } catch (e) {
-      throw SkywardError('Failed to parse assignments');
+      if(shouldRefreshWhenFailedLogin) {
+        await getSkywardAuthenticationCodes(user, pass);
+        return getAssignmentsFromGradeBox(gradeBox, timesRan: timesRan + 1);
+      }else throw SkywardError('Session could have expired, failed to parse assignment');
     }
   }
 
@@ -166,7 +169,10 @@ class SkywardAPICore {
     try {
       return AssignmentInfoAccessor.getAssignmentInfoBoxesFromHTML(html);
     } catch (e) {
-      throw SkywardError('Failed to parse assignment info');
+      if(shouldRefreshWhenFailedLogin) {
+        await getSkywardAuthenticationCodes(user, pass);
+        return getAssignmentInfoFromAssignment(assignment, timesRan: timesRan + 1);
+      }else throw SkywardError('Session could have expired, failed to parse assignment info');
     }
   }
 
@@ -190,8 +196,10 @@ class SkywardAPICore {
     try {
       return (await HistoryAccessor.parseGradebookHTML(html));
     } catch (e) {
-      throw SkywardError(
-          'Could not parse history. This district most likely does not support academic history');
+      if(shouldRefreshWhenFailedLogin) {
+        await getSkywardAuthenticationCodes(user, pass);
+        return getHistory(timesRan: timesRan + 1);
+      }else throw SkywardError('Session could have expired, failed to get history or history not supported');
     }
   }
 }

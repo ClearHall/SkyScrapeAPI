@@ -1,3 +1,11 @@
+## [1.1.1+2] - Bug Fix Revision 2
+
+Not only has a more loose session expired check. Will now refresh.
+
+## [1.1.1+1] - Bug Fix
+
+Changed how didSessionExpire worked so it will (should at least) detect timeouts (hopefully).
+
 ## [1.1.0+3] - Bug Fix
 
 Fixed bug that caused second login to grade book of the same API object would fail.
