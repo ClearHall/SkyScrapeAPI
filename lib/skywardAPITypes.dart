@@ -1,5 +1,7 @@
 library sky_types;
 
+import 'package:flutter/foundation.dart';
+
 /// [Term] allow for the scrapers to sort through the grades and retrieve grades for certain terms.
 ///
 /// [Term] is JSON compatible and can be converted to a JSON if needed.
@@ -332,6 +334,14 @@ class SchoolYear {
   String toString() {
     return 'SchoolYear{description: $description, classes: $classes}';
   }
+
+  @override
+  bool operator ==(other) {
+    return listEquals<Class>(classes, classes);
+  }
+
+  @override
+  int get hashCode => description.hashCode;
 }
 
 /// [Class] is a rich information class that holds settings and information about your classes.
@@ -380,6 +390,14 @@ class Class {
   String toString() {
     return 'GPACalculatorClass{name: $name, grades: $grades, credits: $credits, classLevel: $classLevel}';
   }
+
+  @override
+  bool operator ==(other) {
+    return name == other.name;
+  }
+
+  @override
+  int get hashCode => name.hashCode;
 }
 
 /// Just ClassLevels, nothing special.

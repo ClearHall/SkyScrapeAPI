@@ -1,3 +1,14 @@
+## [1.2.0+2] - Time Stamp Fix
+
+OOPS, Windows is retarded.
+
+## [1.2.0+1] - Comparable School Years
+
+Make SchoolYears and Class comparable and sortable.
+- SchoolYear == operator compares list of classes it has
+- SchoolYear hashCode is the description hash code
+- Class == operator and hashCode are both class name
+
 ## [1.1.1+2] - Bug Fix Revision 2
 
 Not only has a more loose session expired check. Will now refresh.
