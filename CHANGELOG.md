@@ -1,3 +1,7 @@
+## [1.2.0+3] - Time Stamp Fix
+
+ISTG IF WINDOWS DOES SOMETHING STUPID AGAIN
+
 ## [1.2.0+2] - Time Stamp Fix
 
 OOPS, Windows is retarded.
