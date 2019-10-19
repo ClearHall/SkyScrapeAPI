@@ -59,19 +59,20 @@ class SkywardAPICore {
   ///
   /// [u] is the username and [p] is the password. The function uses these two parameters to login to skyward and retrieve the necessary items to continue skyward navigation.
   /// If the operation succeeded and the login requirements were successfully retrieved, the function returns true. If not, the function returns false.
+  /// Try catching this statement is recommended just in case that skyward returned an error and it wasn't clearly displayed
   getSkywardAuthenticationCodes(String u, String p, {int timesRan = 0}) async {
     if(timesRan > refreshTimes) return false;
     user = u;
     pass = p;
-    var loginSessionMap =
-        await SkywardAuthenticator.getNewSessionCodes(user, pass, _baseURL);
-    if (loginSessionMap != null) {
-      loginSessionRequiredBodyElements = loginSessionMap;
-      return true;
-    }else if(shouldRefreshWhenFailedLogin){
-      return getSkywardAuthenticationCodes(u, p, timesRan: timesRan + 1);
-    }else
-      return false;
+      var loginSessionMap =
+      await SkywardAuthenticator.getNewSessionCodes(user, pass, _baseURL);
+      if (loginSessionMap != null) {
+        loginSessionRequiredBodyElements = loginSessionMap;
+        return true;
+      } else if (shouldRefreshWhenFailedLogin) {
+        return getSkywardAuthenticationCodes(u, p, timesRan: timesRan + 1);
+      } else
+        return false;
   }
 
   // Temporary grade book html variable to store the grade book html for better efficiency.

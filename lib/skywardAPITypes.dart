@@ -1,7 +1,5 @@
 library sky_types;
 
-import 'package:flutter/foundation.dart';
-
 /// [Term] allow for the scrapers to sort through the grades and retrieve grades for certain terms.
 ///
 /// [Term] is JSON compatible and can be converted to a JSON if needed.
@@ -337,7 +335,7 @@ class SchoolYear {
 
   @override
   bool operator ==(other) {
-    return listEquals<Class>(classes, classes);
+    return classes.length == other.classes.length;
   }
 
   @override
