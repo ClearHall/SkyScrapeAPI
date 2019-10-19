@@ -19,7 +19,7 @@ class SkywardAuthenticator {
     String dissectedString = postResponse.substring(4, postResponse.length - 5);
     var toks = dissectedString.split('^');
     if (toks.length < 15) {
-      throw SkywardError('Your Skyward Service is under maintenence or a critical error has occured.');
+      throw SkywardError('Invalid Login or Password.\nYour district\'s skyward server may also be under maintenence');
     } else {
       return Map.fromIterables(
           ['dwd', 'wfaacl', 'encses'], [toks[0], toks[3], toks[14]]);
