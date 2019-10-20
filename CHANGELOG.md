@@ -1,3 +1,11 @@
+## [1.3.1+1] - District Searcher Bug Fix
+
+Fixed the district searcher so it would return actual URLs
+
+## [1.3.0+1] - Skyward Authentication Errors
+
+Improves skyward authentication errors so when post response contains an under maintenance error it'll throw that argument.
+
 ## [1.2.0+3] - Time Stamp Fix
 
 ISTG IF WINDOWS DOES SOMETHING STUPID AGAIN

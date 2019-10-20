@@ -67,8 +67,9 @@ void main() async {
 
   group('Group tests on network WITH enabled refresh', () {
     test('test multiple logins quickly', () async{
-      for(int i = 0; i < loginAttemptsTest; i++)
-        print(await skyward.getSkywardAuthenticationCodes(user, pass));
+      if(!skipLongTestTimes)
+       for(int i = 0; i < loginAttemptsTest; i++)
+         print(await skyward.getSkywardAuthenticationCodes(user, pass));
     });
 
     test('test login & get gradebook', () async {
@@ -224,6 +225,13 @@ void main() async {
       try{
         // 180 is Texas at the time of writing
         var _ = await SkywardDistrictSearcher.searchForDistrictLinkFromState('180', 'OH');
+      }catch(e){
+        print('Should fail with: ${e.toString()}');
+      }
+
+      try{
+        // 180 is Texas at the time of writing
+        print(await SkywardDistrictSearcher.searchForDistrictLinkFromState('180', 'Alv'));
       }catch(e){
         print('Should fail with: ${e.toString()}');
       }

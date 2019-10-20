@@ -74,8 +74,14 @@ class SkywardDistrictSearcher {
         if (districtsElems.length == 0) return districts;
 
         for (Element elem in districtsElems) {
-          districts.add(SkywardDistrict(elem.querySelector('span').text,
-              elem.querySelector('a').attributes['href']));
+          List split = elem.querySelector('a').attributes['href'].split("'");
+          for(String s in split){
+            if(Uri.parse(s).host.isNotEmpty){
+              districts.add(SkywardDistrict(elem.querySelector('span').text,
+              s));
+              break;
+            }
+          }
         }
       } catch (e) {
         throw SkywardError(
