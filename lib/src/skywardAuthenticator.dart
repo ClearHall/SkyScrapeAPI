@@ -4,7 +4,6 @@ import 'package:skyscrapeapi/skywardUniversal.dart';
 class SkywardAuthenticator {
   static getNewSessionCodes(String user, String pass, String baseURL) async {
     final String authenticationURL = baseURL + 'skyporthttp.w';
-    print(authenticationURL);
     var postResponse = await http.post(authenticationURL, body: {
       'codeType': 'tryLogin',
       'login': user,
@@ -16,13 +15,18 @@ class SkywardAuthenticator {
   }
 
   static Map<String, String> parsePostResponse(String postResponse) {
-    String dissectedString = postResponse.substring(4, postResponse.length - 5);
-    var toks = dissectedString.split('^');
-    if (toks.length < 15) {
-      throw SkywardError('Invalid Login or Password.\nYour district\'s skyward server may also be under maintenence');
-    } else {
-      return Map.fromIterables(
-          ['dwd', 'wfaacl', 'encses'], [toks[0], toks[3], toks[14]]);
+    if (postResponse.isNotEmpty) {
+      String dissectedString = postResponse.substring(
+          4, postResponse.length - 5);
+      var toks = dissectedString.split('^');
+      if (toks.length < 15) {
+        return null;
+      } else {
+        return Map.fromIterables(
+            ['dwd', 'wfaacl', 'encses'], [toks[0], toks[3], toks[14]]);
+      }
+    }else{
+      return null;
     }
   }
 }
