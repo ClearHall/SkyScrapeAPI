@@ -1,33 +1,13 @@
-## [1.3.1+1] - District Searcher Bug Fix
+## [2.0.0+2] - Fix Github Retardation
 
-Fixed the district searcher so it would return actual URLs
+No description needed.
 
-## [1.3.0+1] - Skyward Authentication Errors
+## [2.0.0+1] - Server Implementation
 
-Improves skyward authentication errors so when post response contains an under maintenance error it'll throw that argument.
-
-## [1.2.0+3] - Time Stamp Fix
-
-ISTG IF WINDOWS DOES SOMETHING STUPID AGAIN
-
-## [1.2.0+2] - Time Stamp Fix
-
-OOPS, Windows is retarded.
-
-## [1.2.0+1] - Comparable School Years
-
-Make SchoolYears and Class comparable and sortable.
-- SchoolYear == operator compares list of classes it has
-- SchoolYear hashCode is the description hash code
-- Class == operator and hashCode are both class name
-
-## [1.1.1+2] - Bug Fix Revision 2
-
-Not only has a more loose session expired check. Will now refresh.
-
-## [1.1.1+1] - Bug Fix
-
-Changed how didSessionExpire worked so it will (should at least) detect timeouts (hopefully).
+Added quick retrieval of assignments in the grade book.
+- Added new data type that allows you to store assignments from the grade book
+- Made for servers
+- Retrieves post-able assignment, grade, and term the grade is from
 
 ## [1.1.0+3] - Bug Fix
 

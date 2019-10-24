@@ -52,6 +52,21 @@ class GridBox {
   bool clickable = false;
 }
 
+/// AssignmentListSmaller is mainly used for servers who want quick and precise loading of assignments.
+/// This data type stores assignments in the grade book, so it can easily be accessed with one post statement.
+class AssignmentsListSmaller extends GridBox {
+  List<Assignment> assignments = [];
+
+  AssignmentsListSmaller() {
+    super.clickable = true;
+  }
+
+  @override
+  String toString() {
+    return 'AssignmentsListSmaller{assignments: $assignments}';
+  }
+}
+
 /// [TeacherIDBox] tells you course and teacher information.
 ///
 /// [TeacherIDBox] gives only gives you information about a specific course and is usually the first in a [GridBox] List.
@@ -194,7 +209,7 @@ class Assignment extends AssignmentsGridBox {
 
   @override
   String toString() {
-    return 'Assignment{studentID: $studentID, assignmentID: $assignmentID,gbID: $gbID, assignmentName: $assignmentName}';
+    return 'Assignment{studentID: $studentID, assignmentID: $assignmentID,gbID: $gbID, assignmentName: $assignmentName, attributes: $attributes}';
   }
 }
 

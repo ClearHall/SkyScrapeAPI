@@ -43,8 +43,10 @@ class SkywardAPICore {
   /// Constructor that instantiates [_baseURL].
   ///
   /// If [_baseURL] contains extra materials, it'll be cut down to the last "/"
-  SkywardAPICore(this._baseURL, {this.shouldRefreshWhenFailedLogin = true , this.refreshTimes = 10}) {
-    if(this.shouldRefreshWhenFailedLogin && this.refreshTimes < 1) throw SkywardError('Refresh times cannot be set to a value less than 1');
+  SkywardAPICore(this._baseURL,
+      {this.shouldRefreshWhenFailedLogin = true, this.refreshTimes = 10}) {
+    if (this.shouldRefreshWhenFailedLogin && this.refreshTimes < 1)
+      throw SkywardError('Refresh times cannot be set to a value less than 1');
     if (!this._baseURL.endsWith('/')) {
       this._baseURL =
           this._baseURL.substring(0, this._baseURL.lastIndexOf('/') + 1);
@@ -59,20 +61,19 @@ class SkywardAPICore {
   ///
   /// [u] is the username and [p] is the password. The function uses these two parameters to login to skyward and retrieve the necessary items to continue skyward navigation.
   /// If the operation succeeded and the login requirements were successfully retrieved, the function returns true. If not, the function returns false.
-  /// Try catching this statement is recommended just in case that skyward returned an error and it wasn't clearly displayed
-  getSkywardAuthenticationCodes(String u, String p, {int timesRan = 0, bool overrideShouldRefresh}) async {
-    if(timesRan > refreshTimes) return false;
+  getSkywardAuthenticationCodes(String u, String p, {int timesRan = 0}) async {
+    if (timesRan > refreshTimes) return false;
     user = u;
     pass = p;
-      var loginSessionMap =
-      await SkywardAuthenticator.getNewSessionCodes(user, pass, _baseURL);
-      if (loginSessionMap != null) {
-        loginSessionRequiredBodyElements = loginSessionMap;
-        return true;
-      } else if (overrideShouldRefresh == null ? shouldRefreshWhenFailedLogin : overrideShouldRefresh) {
-        return getSkywardAuthenticationCodes(u, p, timesRan: timesRan + 1);
-      } else
-        return false;
+    var loginSessionMap =
+        await SkywardAuthenticator.getNewSessionCodes(user, pass, _baseURL);
+    if (loginSessionMap != null) {
+      loginSessionRequiredBodyElements = loginSessionMap;
+      return true;
+    } else if (shouldRefreshWhenFailedLogin) {
+      return getSkywardAuthenticationCodes(u, p, timesRan: timesRan + 1);
+    } else
+      return false;
   }
 
   // Temporary grade book html variable to store the grade book html for better efficiency.
@@ -85,18 +86,19 @@ class SkywardAPICore {
   /// The function initializes the grade book HTML for parsing use.
   _initGradeBook({int timeRan = 0}) async {
     if (timeRan > refreshTimes)
-      throw SkywardError(
-          'Unexpected error, _gradeBookHTML is still null');
+      throw SkywardError('Unexpected error, _gradeBookHTML is still null');
     if (_gradeBookList == null) {
       try {
         var result = await GradebookAccessor.getGradebookHTML(
             loginSessionRequiredBodyElements, _baseURL);
         _gradeBookList = result;
       } catch (e) {
-        if(shouldRefreshWhenFailedLogin) {
-          await getSkywardAuthenticationCodes(user, pass, overrideShouldRefresh: false);
+        if (shouldRefreshWhenFailedLogin) {
+          await getSkywardAuthenticationCodes(user, pass);
           await _initGradeBook(timeRan: timeRan + 1);
-        }else throw SkywardError('Session could have expired, failed to get gradebook');
+        } else
+          throw SkywardError(
+              'Session could have expired, failed to get gradebook');
       }
     }
   }
@@ -131,21 +133,22 @@ class SkywardAPICore {
       html = await AssignmentAccessor.getAssignmentsHTML(assignmentsPostCodes,
           _baseURL, gradeBox.courseNumber, gradeBox.term.termName);
     } catch (e) {
-        if(shouldRefreshWhenFailedLogin) {
-          await getSkywardAuthenticationCodes(user, pass);
-          return getAssignmentsFromGradeBox(gradeBox, timesRan: timesRan + 1);
-        }else throw SkywardError('Session could have expired, failed to get assignment');
+      if (shouldRefreshWhenFailedLogin) {
+        await getSkywardAuthenticationCodes(user, pass);
+        return getAssignmentsFromGradeBox(gradeBox, timesRan: timesRan + 1);
+      } else
+        throw SkywardError(
+            'Session could have expired, failed to get assignment');
     }
 
-    if(html == null) throw SkywardError('Somehow, Assignment HTML is still null and got passed first error check');
+    if (html == null)
+      throw SkywardError(
+          'Somehow, Assignment HTML is still null and got passed first error check');
 
     try {
       return AssignmentAccessor.getAssignmentsDialog(html);
     } catch (e) {
-      if(shouldRefreshWhenFailedLogin) {
-        await getSkywardAuthenticationCodes(user, pass);
-        return getAssignmentsFromGradeBox(gradeBox, timesRan: timesRan + 1);
-      }else throw SkywardError('Session could have expired, failed to parse assignment');
+      throw SkywardError('Failed to parse assignments');
     }
   }
 
@@ -153,8 +156,7 @@ class SkywardAPICore {
   getAssignmentInfoFromAssignment(Assignment assignment,
       {int timesRan = 0}) async {
     if (timesRan > refreshTimes)
-      throw SkywardError(
-          'Could not get assignment info');
+      throw SkywardError('Could not get assignment info');
     Map<String, String> assignmentsPostCodes =
         Map.from(loginSessionRequiredBodyElements);
     var html;
@@ -162,18 +164,18 @@ class SkywardAPICore {
       html = await AssignmentInfoAccessor.getAssignmentsDialogHTML(
           assignmentsPostCodes, _baseURL, assignment);
     } catch (e) {
-      if(shouldRefreshWhenFailedLogin) {
+      if (shouldRefreshWhenFailedLogin) {
         await getSkywardAuthenticationCodes(user, pass);
-        return getAssignmentInfoFromAssignment(assignment, timesRan: timesRan + 1);
-      }else throw SkywardError('Session could have expired, failed to get assignment info');
+        return getAssignmentInfoFromAssignment(assignment,
+            timesRan: timesRan + 1);
+      } else
+        throw SkywardError(
+            'Session could have expired, failed to get assignment info');
     }
     try {
       return AssignmentInfoAccessor.getAssignmentInfoBoxesFromHTML(html);
     } catch (e) {
-      if(shouldRefreshWhenFailedLogin) {
-        await getSkywardAuthenticationCodes(user, pass);
-        return getAssignmentInfoFromAssignment(assignment, timesRan: timesRan + 1);
-      }else throw SkywardError('Session could have expired, failed to parse assignment info');
+      throw SkywardError('Failed to parse assignment info');
     }
   }
 
@@ -181,26 +183,23 @@ class SkywardAPICore {
   ///
   /// Returns a list of [SchoolYear].
   getHistory({int timesRan = 0}) async {
-    if (timesRan > refreshTimes)
-      throw SkywardError(
-          'Failed to get history');
+    if (timesRan > refreshTimes) throw SkywardError('Failed to get history');
     var html;
     try {
       html = await HistoryAccessor.getGradebookHTML(
           loginSessionRequiredBodyElements, _baseURL);
     } catch (e) {
-      if(shouldRefreshWhenFailedLogin) {
+      if (shouldRefreshWhenFailedLogin) {
         await getSkywardAuthenticationCodes(user, pass);
         return getHistory(timesRan: timesRan + 1);
-      }else throw SkywardError('Session could have expired, failed to get history');
+      } else
+        throw SkywardError('Session could have expired, failed to get history');
     }
     try {
       return (await HistoryAccessor.parseGradebookHTML(html));
     } catch (e) {
-      if(shouldRefreshWhenFailedLogin) {
-        await getSkywardAuthenticationCodes(user, pass);
-        return getHistory(timesRan: timesRan + 1);
-      }else throw SkywardError('Session could have expired, failed to get history or history not supported');
+      throw SkywardError(
+          'Could not parse history. This district most likely does not support academic history');
     }
   }
 }

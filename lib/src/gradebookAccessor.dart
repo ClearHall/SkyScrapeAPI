@@ -29,8 +29,6 @@ class GradebookAccessor {
     return terms;
   }
 
-  //TODO: Implement server quick scrape assignments algorithm from sff.sv() script code.
-
   static getGradeBoxesFromDocCode(List infoList, List<Term> terms) {
     var gradeBoxes = [];
     gradeBoxes = scrapeGradeBoxesFromSff(infoList, terms);
@@ -46,7 +44,38 @@ class GradebookAccessor {
         var c = sffBrak['c'][i];
         var cDoc = DocumentFragment.html(c['h']);
         Element gradeElem = cDoc.getElementById('showGradeInfo');
-        if (gradeElem != null) {
+        Element assignmentInfoElem = cDoc.getElementById('showAssignmentInfo');
+        if (assignmentInfoElem != null) {
+          int grade;
+          for (var index = i + 1; index < sffBrak['c'].length; index++) {
+            var frag = DocumentFragment.html(sffBrak['c'][index]['h']);
+            int attemptedParse = int.tryParse(frag.text);
+            if (attemptedParse != null) {
+              grade = attemptedParse;
+            }
+          }
+          String assignmentLabels = cDoc.querySelectorAll('span')[0].text;
+          Assignment temp = Assignment(
+              assignmentInfoElem.attributes['data-sid'],
+              assignmentInfoElem.attributes['data-aid'],
+              assignmentInfoElem.attributes['data-gid'],
+              cDoc.querySelectorAll('a')[0].text,
+              Map.fromIterables([
+                'term',
+                'grade'
+              ], [
+                assignmentLabels.substring(assignmentLabels.indexOf('('),
+                    assignmentLabels.indexOf(')')),
+                grade.toString()
+              ]));
+
+          if (!(gradeBoxes.length < 1 ||
+              gradeBoxes.last is AssignmentsListSmaller)) {
+            gradeBoxes.add(AssignmentsListSmaller());
+          }
+          (gradeBoxes.last as AssignmentsListSmaller).assignments.add(temp);
+          break;
+        } else if (gradeElem != null) {
           GradeBox x = GradeBox(
               gradeElem.attributes['data-cni'],
               Term(gradeElem.attributes['data-lit'],
@@ -60,8 +89,7 @@ class GradebookAccessor {
           var tdElements = (tdElement.children[0].querySelectorAll('td'));
           gradeBoxes.add(TeacherIDBox(
               tdElements[3].text, tdElements[1].text, tdElements[2].text));
-        } else if (cDoc.text.trim().isNotEmpty &&
-            cDoc.getElementById('showAssignmentInfo') == null) {
+        } else if (cDoc.text.trim().isNotEmpty) {
           gradeBoxes.add(LessInfoBox(cDoc.text, terms[i - 1]));
         }
       }
@@ -83,7 +111,11 @@ class GradebookAccessor {
             needToDecodeJson.substring(needToDecodeJson.indexOf(':') + 1);
         var mapOfFutureParsedHTML = jsonDecode(needToDecodeJson);
 
-        return [mapOfFutureParsedHTML['th']['r'][0]['c'],mapOfFutureParsedHTML['tb']['r'], html];
+        return [
+          mapOfFutureParsedHTML['th']['r'][0]['c'],
+          mapOfFutureParsedHTML['tb']['r'],
+          html
+        ];
       }
     } else {
       throw SkywardError('Session Expired');
