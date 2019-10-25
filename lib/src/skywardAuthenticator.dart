@@ -16,17 +16,17 @@ class SkywardAuthenticator {
 
   static Map<String, String> parsePostResponse(String postResponse) {
     if (postResponse.isNotEmpty) {
-      String dissectedString = postResponse.substring(
-          4, postResponse.length - 5);
+      String dissectedString =
+          postResponse.substring(4, postResponse.length - 5);
       var toks = dissectedString.split('^');
       if (toks.length < 15) {
         DocumentFragment frag = DocumentFragment.html(postResponse);
-        throw(frag.text);
+        throw (frag.text);
       } else {
         return Map.fromIterables(
             ['dwd', 'wfaacl', 'encses'], [toks[0], toks[3], toks[14]]);
       }
-    }else{
+    } else {
       return null;
     }
   }

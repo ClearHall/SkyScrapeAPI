@@ -3,8 +3,8 @@ library skyward_district_searcher;
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
-import 'package:skyscrapeapi/skywardUniversal.dart';
-import 'skywardAPITypes.dart';
+import 'package:skyscrapeapi/src/skywardUniversal.dart';
+import 'data_types.dart';
 
 /// [SkywardDistrictSearcher] is a completely static class that'll search for districts.
 ///
@@ -75,10 +75,10 @@ class SkywardDistrictSearcher {
 
         for (Element elem in districtsElems) {
           List split = elem.querySelector('a').attributes['href'].split("'");
-          for(String s in split){
-            if(Uri.parse(s).host.isNotEmpty){
-              districts.add(SkywardDistrict(elem.querySelector('span').text,
-              s));
+          for (String s in split) {
+            if (Uri.parse(s).host.isNotEmpty) {
+              districts
+                  .add(SkywardDistrict(elem.querySelector('span').text, s));
               break;
             }
           }

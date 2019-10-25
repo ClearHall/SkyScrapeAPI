@@ -1,26 +1,7 @@
-import 'package:http/http.dart' as http;
 import 'package:html/dom.dart';
-import '../skywardUniversal.dart';
-import '../skywardAPITypes.dart';
+import '../data_types.dart';
 
 class AssignmentInfoAccessor {
-  static getAssignmentsDialogHTML(
-      Map<String, String> codes, String baseURL, Assignment assignment) async {
-    codes['action'] = 'dialog';
-    codes['ishttp'] = 'true';
-    codes['assignId'] = assignment.assignmentID;
-    codes['gbId'] = assignment.gbID;
-    codes['type'] = 'assignment';
-    codes['student'] = assignment.studentID;
-    final String gradebookURL = baseURL + 'sfdialogs.w';
-
-    var response = await http.post(gradebookURL, body: codes);
-
-    if (didSessionExpire(response.body)) throw SkywardError('Session Expired');
-
-    return response.body;
-  }
-
   static getAssignmentInfoBoxesFromHTML(String html) {
     String docHTML = html.split('<![CDATA[')[1].split(']]>')[0];
     var docFrag = DocumentFragment.html(docHTML);

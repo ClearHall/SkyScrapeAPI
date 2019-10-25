@@ -1,3 +1,10 @@
+## [2.1.0+1] - Fix Github Retardation
+
+HUGE GLOW-UP (Refactor)
+- Removed duplicate code
+- Moved files around
+- Removed unnecessary code
+
 ## [2.0.0+2] - Fix Github Retardation
 
 No description needed.

@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart';
-import '../skywardUniversal.dart';
-import '../skywardAPITypes.dart';
+import 'skywardUniversal.dart';
+import '../data_types.dart';
 import 'dart:convert';
 
 class HistoryAccessor {
@@ -9,12 +9,7 @@ class HistoryAccessor {
       "sff.sv('sf_gridObjects',\$.extend((sff.getValue('sf_gridObjects') || {}), ";
 
   static getGradebookHTML(Map<String, String> codes, String baseURL) async {
-    final String gradebookURL = baseURL + 'sfacademichistory001.w';
-    final postReq = await http.post(gradebookURL, body: codes);
-
-    if (didSessionExpire(postReq.body)) throw SkywardError('Session Expired');
-
-    return postReq.body;
+    return attemptPost(baseURL + 'sfacademichistory001.w', codes);
   }
 
   static parseGradebookHTML(String html) {

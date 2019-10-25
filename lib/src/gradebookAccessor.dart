@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
-import '../skywardAPITypes.dart';
-import '../skywardUniversal.dart';
+import '../data_types.dart';
+import 'skywardUniversal.dart';
 
 class GradebookAccessor {
   /*
@@ -12,31 +11,23 @@ class GradebookAccessor {
   static final _termJsonDeliminater =
       "sff.sv('sf_gridObjects',\$.extend((sff.getValue('sf_gridObjects') ";
 
-  static getGradebookHTML(Map<String, String> codes, String baseURL) async {
-    final String gradebookURL = baseURL + 'sfgradebook001.w';
-    final postReq = await http.post(gradebookURL, body: codes);
-
-    if (didSessionExpire(postReq.body)) {
-      throw SkywardError('Session Expired');
-    }
-
-    return initGradebookAndGradesHTML(postReq.body);
-  }
-
   static getTermsFromDocCode(List infoList) {
-    var terms = [];
-    terms = detectTermsFromScriptByParsing(infoList);
+    List<Term> terms = [];
+    for (var termHTMLA in infoList[0]) {
+      String termHTML = termHTMLA['h'];
+      termHTML =
+          termHTML.replaceFirst('th', 'a').substring(0, termHTML.length - 4) +
+              'a>';
+
+      final termDoc = DocumentFragment.html(termHTML);
+      final tooltip = termDoc.querySelector('a').attributes['tooltip'];
+
+      if (tooltip != null) terms.add(Term(termDoc.text, tooltip));
+    }
     return terms;
   }
 
   static getGradeBoxesFromDocCode(List infoList, List<Term> terms) {
-    var gradeBoxes = [];
-    gradeBoxes = scrapeGradeBoxesFromSff(infoList, terms);
-    return gradeBoxes;
-  }
-
-  static List<GridBox> scrapeGradeBoxesFromSff(
-      List infoList, List<Term> terms) {
     List<GridBox> gradeBoxes = [];
     var parsedHTML = parse(infoList[2]);
     for (var sffBrak in infoList[1]) {
@@ -122,21 +113,5 @@ class GradebookAccessor {
     }
 
     return [];
-  }
-
-  static List<Term> detectTermsFromScriptByParsing(List infoList) {
-    List<Term> terms = [];
-    for (var termHTMLA in infoList[0]) {
-      String termHTML = termHTMLA['h'];
-      termHTML =
-          termHTML.replaceFirst('th', 'a').substring(0, termHTML.length - 4) +
-              'a>';
-
-      final termDoc = DocumentFragment.html(termHTML);
-      final tooltip = termDoc.querySelector('a').attributes['tooltip'];
-
-      if (tooltip != null) terms.add(Term(termDoc.text, tooltip));
-    }
-    return terms;
   }
 }

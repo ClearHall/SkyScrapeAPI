@@ -1,7 +1,7 @@
-import 'package:skyscrapeapi/skywardAPITypes.dart';
-import 'package:skyscrapeapi/skywardAPICore.dart';
-import 'package:skyscrapeapi/skywardUniversal.dart';
-import 'package:skyscrapeapi/skywardDistrictSearcher.dart';
+import 'package:skyscrapeapi/data_types.dart';
+import 'package:skyscrapeapi/skyscrape.dart';
+import 'package:skyscrapeapi/src/skywardUniversal.dart';
+import 'package:skyscrapeapi/district_searcher.dart';
 import 'package:test/test.dart';
 import 'dart:io';
 
@@ -78,8 +78,8 @@ void main() async {
           'ON_PURPOSE_TRY_TO_GET_ERROR';
       try {
         terms = (await skyward.getGradeBookTerms());
-      } catch (e) {
-        print('Should not fail: ' + e);
+      } catch (e, s) {
+        print('Should not fail: ' + s.toString());
         throw SkywardError('SHOULD SUCCEED');
       }
 
@@ -105,8 +105,8 @@ void main() async {
       skyward.getSkywardAuthenticationCodes(user, pass);
       try {
         terms = (await skyward.getGradeBookTerms());
-      } catch (e) {
-        print('Should not fail: ' + e);
+      } catch (e, s) {
+        print('Should not fail: ' + s.toString());
         throw SkywardError('SHOULD SUCCEED');
       }
 

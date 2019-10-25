@@ -1,10 +1,10 @@
 library sky_core;
 
-import 'skywardUniversal.dart';
+import 'src/skywardUniversal.dart';
 import 'src/skywardAuthenticator.dart';
 import 'src/gradebookAccessor.dart';
 import 'src/assignmentAccessor.dart';
-import 'skywardAPITypes.dart';
+import 'data_types.dart';
 import 'src/assignmentInfoAccessor.dart';
 import 'src/historyAccessor.dart';
 
@@ -76,7 +76,40 @@ class SkywardAPICore {
       return false;
   }
 
-  // Temporary grade book html variable to store the grade book html for better efficiency.
+  _useSpecifiedFunctionsToRetrieveHTML(
+      String page, Function parseHTML, timesRan,
+      {Function(Map) modifyLoginSess}) async {
+    if (timesRan > refreshTimes)
+      throw SkywardError(
+          'Still could not retrieve correct information from assignments');
+    var html;
+
+    try {
+      Map postcodes = Map.from(loginSessionRequiredBodyElements);
+      if (modifyLoginSess != null) {
+        modifyLoginSess(postcodes);
+      }
+      html = await attemptPost(_baseURL + page, postcodes);
+
+      if (parseHTML != null) {
+        return parseHTML(html);
+      } else {
+        if (html == null) throw SkywardError('HTML Still Null');
+        return html;
+      }
+    } catch (e) {
+      if (shouldRefreshWhenFailedLogin) {
+        await getSkywardAuthenticationCodes(user, pass);
+        return _useSpecifiedFunctionsToRetrieveHTML(
+            page, parseHTML, timesRan + 1,
+            modifyLoginSess: modifyLoginSess);
+      } else {
+        throw SkywardError(
+            'Something went wrong while trying to go to $page with ${parseHTML.toString()} which ran $timesRan times. Full trace error: ${e.toString()}');
+      }
+    }
+  }
+
   List _gradeBookList;
 
   /// Initializes and scrapes the grade book HTML
@@ -85,22 +118,9 @@ class SkywardAPICore {
   /// The function will attempt to log back in when your session expires or an errors occurs.
   /// The function initializes the grade book HTML for parsing use.
   _initGradeBook({int timeRan = 0}) async {
-    if (timeRan > refreshTimes)
-      throw SkywardError('Unexpected error, _gradeBookHTML is still null');
-    if (_gradeBookList == null) {
-      try {
-        var result = await GradebookAccessor.getGradebookHTML(
-            loginSessionRequiredBodyElements, _baseURL);
-        _gradeBookList = result;
-      } catch (e) {
-        if (shouldRefreshWhenFailedLogin) {
-          await getSkywardAuthenticationCodes(user, pass);
-          await _initGradeBook(timeRan: timeRan + 1);
-        } else
-          throw SkywardError(
-              'Session could have expired, failed to get gradebook');
-      }
-    }
+    _gradeBookList = GradebookAccessor.initGradebookAndGradesHTML(
+        await _useSpecifiedFunctionsToRetrieveHTML(
+            'sfgradebook001.w', null, timeRan));
   }
 
   /// The terms retrieved from the grade book HTML. Returns a list of [Term].
@@ -121,85 +141,41 @@ class SkywardAPICore {
 
   /// The assignments from a specific term. Returns a list of [AssignmentsGridBox].
   getAssignmentsFromGradeBox(GradeBox gradeBox, {int timesRan = 0}) async {
-    if (timesRan > refreshTimes)
-      throw SkywardError(
-          'Still could not retrieve correct information from assignments');
-    Map<String, String> assignmentsPostCodes =
-        Map.from(loginSessionRequiredBodyElements);
-
-    String html;
-
-    try {
-      html = await AssignmentAccessor.getAssignmentsHTML(assignmentsPostCodes,
-          _baseURL, gradeBox.courseNumber, gradeBox.term.termName);
-    } catch (e) {
-      if (shouldRefreshWhenFailedLogin) {
-        await getSkywardAuthenticationCodes(user, pass);
-        return getAssignmentsFromGradeBox(gradeBox, timesRan: timesRan + 1);
-      } else
-        throw SkywardError(
-            'Session could have expired, failed to get assignment');
-    }
-
-    if (html == null)
-      throw SkywardError(
-          'Somehow, Assignment HTML is still null and got passed first error check');
-
-    try {
-      return AssignmentAccessor.getAssignmentsDialog(html);
-    } catch (e) {
-      throw SkywardError('Failed to parse assignments');
-    }
+    return await _useSpecifiedFunctionsToRetrieveHTML(
+        'sfgradebook001.w', AssignmentAccessor.getAssignmentsDialog, timesRan,
+        modifyLoginSess: (codes) {
+      codes['action'] = 'viewGradeInfoDialog';
+      codes['fromHttp'] = 'yes';
+      codes['ishttp'] = 'true';
+      codes['corNumId'] = gradeBox.courseNumber;
+      codes['bucket'] = gradeBox.term.termName;
+    });
   }
 
   /// The assignment info boxes from a specific assignment. Returns a list of [AssignmentInfoBox].
   getAssignmentInfoFromAssignment(Assignment assignment,
       {int timesRan = 0}) async {
-    if (timesRan > refreshTimes)
-      throw SkywardError('Could not get assignment info');
-    Map<String, String> assignmentsPostCodes =
-        Map.from(loginSessionRequiredBodyElements);
-    var html;
-    try {
-      html = await AssignmentInfoAccessor.getAssignmentsDialogHTML(
-          assignmentsPostCodes, _baseURL, assignment);
-    } catch (e) {
-      if (shouldRefreshWhenFailedLogin) {
-        await getSkywardAuthenticationCodes(user, pass);
-        return getAssignmentInfoFromAssignment(assignment,
-            timesRan: timesRan + 1);
-      } else
-        throw SkywardError(
-            'Session could have expired, failed to get assignment info');
-    }
-    try {
-      return AssignmentInfoAccessor.getAssignmentInfoBoxesFromHTML(html);
-    } catch (e) {
-      throw SkywardError('Failed to parse assignment info');
-    }
+    return await _useSpecifiedFunctionsToRetrieveHTML(
+        'sfdialogs.w',
+        AssignmentInfoAccessor.getAssignmentInfoBoxesFromHTML,
+        timesRan, modifyLoginSess: (codes) {
+      codes['action'] = 'dialog';
+      codes['ishttp'] = 'true';
+      codes['assignId'] = assignment.assignmentID;
+      codes['gbId'] = assignment.gbID;
+      codes['type'] = 'assignment';
+      codes['student'] = assignment.studentID;
+    });
   }
 
   /// Attempts to go to sfAcademicHistory if it's available. If not, it'll throw an error or return null.
   ///
   /// Returns a list of [SchoolYear].
   getHistory({int timesRan = 0}) async {
-    if (timesRan > refreshTimes) throw SkywardError('Failed to get history');
-    var html;
-    try {
-      html = await HistoryAccessor.getGradebookHTML(
-          loginSessionRequiredBodyElements, _baseURL);
-    } catch (e) {
-      if (shouldRefreshWhenFailedLogin) {
-        await getSkywardAuthenticationCodes(user, pass);
-        return getHistory(timesRan: timesRan + 1);
-      } else
-        throw SkywardError('Session could have expired, failed to get history');
-    }
-    try {
-      return (await HistoryAccessor.parseGradebookHTML(html));
-    } catch (e) {
-      throw SkywardError(
-          'Could not parse history. This district most likely does not support academic history');
-    }
+    return await _useSpecifiedFunctionsToRetrieveHTML(
+      'sfacademichistory001',
+      HistoryAccessor.parseGradebookHTML,
+      timesRan,
+    );
   }
 }
