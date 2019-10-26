@@ -1,5 +1,6 @@
 library sky_core;
 
+import 'src/messageAccessor.dart';
 import 'src/skywardUniversal.dart';
 import 'src/skywardAuthenticator.dart';
 import 'src/gradebookAccessor.dart';
@@ -137,6 +138,12 @@ class SkywardAPICore {
     } catch (e) {
       throw SkywardError('Cannot parse gradebook grades.' + e.toString());
     }
+  }
+
+  /// The last 5 messages from MessageBoard. Returns a list of [Message].
+  getMessages({int timeRan = 0}) async {
+    return await _useSpecifiedFunctionsToRetrieveHTML(
+        'sfhome01.w', MessageAccessor.getMessages, timeRan);
   }
 
   /// The assignments from a specific term. Returns a list of [AssignmentsGridBox].

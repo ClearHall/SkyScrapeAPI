@@ -412,6 +412,23 @@ class Class {
   @override
   int get hashCode => name.hashCode;
 }
+/// [Message] is a data encapsulation class used for storing data about a specific Message from the MessageBoard.
+/// Can be instantiated with Json.
+class Message {
+  String name;
+  String date;
+  String body;
+  Message.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        date = json['date'],
+        body = json['body'];
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'date': date,
+    'body': body,
+  };
+}
 
 /// Just ClassLevels, nothing special.
 enum ClassLevel { Regular, PreAP, AP, None }
