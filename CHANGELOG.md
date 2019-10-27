@@ -1,3 +1,7 @@
+## [2.1.0+3] - Small addition for maintenance checking
+
+Will return text of the error if maintenance is returned
+
 ## [2.1.0+1] - Fix Github Retardation
 
 HUGE GLOW-UP (Refactor)

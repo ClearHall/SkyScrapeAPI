@@ -62,7 +62,7 @@ class SkywardAPICore {
   /// [u] is the username and [p] is the password. The function uses these two parameters to login to skyward and retrieve the necessary items to continue skyward navigation.
   /// If the operation succeeded and the login requirements were successfully retrieved, the function returns true. If not, the function returns false.
   getSkywardAuthenticationCodes(String u, String p, {int timesRan = 0}) async {
-    if (timesRan > refreshTimes) return false;
+    if (timesRan > refreshTimes) throw SkywardError('Maintenence error.');
     user = u;
     pass = p;
     var loginSessionMap =
