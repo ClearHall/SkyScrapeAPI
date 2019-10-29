@@ -73,9 +73,17 @@ void main() async {
       }
     });
 
+    test('test parent account switching', () async {
+      await skyward.initNewAccount();
+      skyward.switchUserIndex(1);
+    });
+
     test('test login & get gradebook', () async {
       skyward.loginSessionRequiredBodyElements['dwd'] =
           'ON_PURPOSE_TRY_TO_GET_ERROR';
+      await skyward.initNewAccount();
+      skyward.switchUserIndex(1);
+
       try {
         terms = (await skyward.getGradeBookTerms());
       } catch (e, s) {
@@ -103,6 +111,8 @@ void main() async {
       skyward = SkywardAPICore(
           "https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w");
       skyward.getSkywardAuthenticationCodes(user, pass);
+      await skyward.initNewAccount();
+      skyward.switchUserIndex(1);
       try {
         terms = (await skyward.getGradeBookTerms());
       } catch (e, s) {

@@ -3,6 +3,7 @@ library sky_universal;
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
 import 'package:http/http.dart' as http;
+import 'package:skyscrapeapi/data_types.dart';
 
 attemptPost(String url, Map postCodes) async {
   final postReq = await http.post(url, body: postCodes);
@@ -26,17 +27,4 @@ bool didSessionExpire(String doc) {
       doc.contains("'options':{status:\"logout\"}")) return true;
 
   return false;
-}
-
-/// SkyScrapeAPI Custom errors to locate errors and give proper causes.
-///
-/// **NOTE: THE WHOLE API WILL USE THIS EXCEPTION**
-class SkywardError implements Exception {
-  String cause;
-  SkywardError(this.cause);
-
-  @override
-  String toString() {
-    return cause;
-  }
 }

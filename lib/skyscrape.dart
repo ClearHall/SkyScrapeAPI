@@ -6,6 +6,7 @@ import 'src/gradebookAccessor.dart';
 import 'src/assignmentAccessor.dart';
 import 'data_types.dart';
 import 'src/assignmentInfoAccessor.dart';
+import 'src/parent_account_manager.dart';
 import 'src/historyAccessor.dart';
 
 /// Skyward API Core is the heart of the API. It is essentially the only class you need to really use the API.
@@ -39,6 +40,9 @@ class SkywardAPICore {
 
   /// Storing username and password for refresh when session expires
   String user, pass;
+
+  List<SkywardAccount> children;
+  SkywardAccount currentAccount;
 
   /// Constructor that instantiates [_baseURL].
   ///
@@ -76,6 +80,26 @@ class SkywardAPICore {
       return false;
   }
 
+  /// Initializes messages and children accounts.
+  ///
+  /// WIP: Messages not implemented yet.
+  /// The function checks for children accounts and initializes them if found. It also automatically initializes Skyward messages for you.
+  initNewAccount({int timesRan = 0}) async{
+    List a = await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html){
+      return [ParentAccountUtils.checkForParent(html),];
+    }, timesRan);
+    children = a[0];
+  }
+
+  bool switchUserIndex(int newIndex){
+    if(children == null && newIndex >= children.length){
+      return false;
+    }else{
+      currentAccount = children[newIndex];
+      return true;
+    }
+  }
+
   _useSpecifiedFunctionsToRetrieveHTML(
       String page, Function parseHTML, timesRan,
       {Function(Map) modifyLoginSess}) async {
@@ -86,6 +110,7 @@ class SkywardAPICore {
 
     try {
       Map postcodes = Map.from(loginSessionRequiredBodyElements);
+      if(currentAccount != null) postcodes['studentId'] = currentAccount.dataID;
       if (modifyLoginSess != null) {
         modifyLoginSess(postcodes);
       }

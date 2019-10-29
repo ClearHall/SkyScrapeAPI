@@ -24,7 +24,7 @@ class SkywardAuthenticator {
         throw (frag.text);
       } else {
         return Map.fromIterables(
-            ['dwd', 'wfaacl', 'encses'], [toks[0], toks[3], toks[14]]);
+            ['dwd', 'wfaacl', 'encses', 'User-Type'], [toks[0], toks[3], toks[14], '1']);
       }
     } else {
       return null;

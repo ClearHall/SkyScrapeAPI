@@ -413,5 +413,52 @@ class Class {
   int get hashCode => name.hashCode;
 }
 
+
+/// SkyScrapeAPI Custom errors to locate errors and give proper causes.
+///
+/// **NOTE: THE WHOLE API WILL USE THIS EXCEPTION**
+class SkywardError implements Exception {
+  String cause;
+  ErrorCode errorCode;
+
+  SkywardError(this.cause);
+
+  String getErrorCode(){
+    return errorCode.toString().split('.')[1];
+  }
+
+  @override
+  String toString() {
+    return cause;
+  }
+}
+
+/// Account returned for internal API use when a parent account is parsed
+class SkywardAccount{
+  final String dataID, name;
+  SkywardAccount(this.dataID, this.name);
+
+  @override
+  String toString() {
+    return 'SkywardAccount{dataID: $dataID, name: $name}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is SkywardAccount &&
+              runtimeType == other.runtimeType &&
+              dataID == other.dataID;
+
+  @override
+  int get hashCode => dataID.hashCode;
+
+}
+
+// TODO: Add more error codes and use error codes!!!
+enum ErrorCode{
+  LoginFailed
+}
+
 /// Just ClassLevels, nothing special.
 enum ClassLevel { Regular, PreAP, AP, None }
