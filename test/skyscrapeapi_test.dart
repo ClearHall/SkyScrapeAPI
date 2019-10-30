@@ -81,8 +81,9 @@ void main() async {
     test('test login & get gradebook', () async {
       skyward.loginSessionRequiredBodyElements['dwd'] =
           'ON_PURPOSE_TRY_TO_GET_ERROR';
+
       await skyward.initNewAccount();
-      skyward.switchUserIndex(1);
+      skyward.switchUserIndex(2);
 
       try {
         terms = (await skyward.getGradeBookTerms());
@@ -103,6 +104,7 @@ void main() async {
       } catch (e) {
         print('On purpose failed: ' + e.toString());
       }
+      print(gradebook);
     });
 
     test('test login & get gradebook second', () async {
@@ -113,6 +115,7 @@ void main() async {
       skyward.getSkywardAuthenticationCodes(user, pass);
       await skyward.initNewAccount();
       skyward.switchUserIndex(1);
+
       try {
         terms = (await skyward.getGradeBookTerms());
       } catch (e, s) {
@@ -157,7 +160,7 @@ void main() async {
         }
 
       try {
-        assignment = (await skyward.getAssignmentsFromGradeBox(gradebook[1]));
+        assignment = (await skyward.getAssignmentsFromGradeBox(gradebook[assignmentTestIndex]));
       } catch (e) {
         print('Should succeed: ${e.toString()}');
         throw SkywardError('SHOULD SUCCEED');
@@ -273,7 +276,7 @@ void main() async {
         }
 
       try {
-        assignment = (await skyward.getAssignmentsFromGradeBox(gradebook[1]));
+        assignment = (await skyward.getAssignmentsFromGradeBox(gradebook[assignmentTestIndex]));
       } catch (e) {
         print('Should succeed: ${e.toString()}');
         throw SkywardError('SHOULD SUCCEED');

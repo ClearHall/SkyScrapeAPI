@@ -107,11 +107,11 @@ class GradebookAccessor {
           mapOfFutureParsedHTML['tb']['r'],
           html
         ];
+      }else{
+        throw SkywardError('Term JSON Deliminater missing. District not supported.');
       }
     } else {
       throw SkywardError('Session Expired');
     }
-
-    return [];
   }
 }

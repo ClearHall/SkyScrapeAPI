@@ -1,3 +1,8 @@
+## [2.2.0+1] - Parental Account Support
+
+Added support for parent accounts with initializing accounts.
+- Better documentation will be provided later.
+
 ## [2.1.0+3] - Small addition for maintenance checking
 
 Will return text of the error if maintenance is returned

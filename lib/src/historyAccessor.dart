@@ -1,4 +1,3 @@
-import 'package:http/http.dart' as http;
 import 'package:html/dom.dart';
 import 'skywardUniversal.dart';
 import '../data_types.dart';

@@ -11,11 +11,9 @@ To start, you must have already included skyscrapeapi in your pubspec.yaml file.
 Next, you must import the following.
 
 ```
-    import 'package:skyscrapeapi/skywardAPICore.dart';
-    //Optional
-    import 'package:skyscrapeapi/skywardAPITypes.dart';
+    import 'package:skyscrapeapi/skyscrape.dart';
+    import 'package:skyscrapeapi/data_types.dart';
 ```
-Importing SkywardAPITypes is optional, though it helps immensely with managing types and avoiding errors with your code.
 
 Some of the most important methods you need to know are listed below.
 - getSkywardAuthenticationCodes

@@ -85,6 +85,7 @@ class SkywardAPICore {
   /// WIP: Messages not implemented yet.
   /// The function checks for children accounts and initializes them if found. It also automatically initializes Skyward messages for you.
   initNewAccount({int timesRan = 0}) async{
+    //TODO: ADD GETTING USER NAME
     List a = await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html){
       return [ParentAccountUtils.checkForParent(html),];
     }, timesRan);
@@ -92,7 +93,7 @@ class SkywardAPICore {
   }
 
   bool switchUserIndex(int newIndex){
-    if(children == null && newIndex >= children.length){
+    if(children == null || newIndex >= children.length){
       return false;
     }else{
       currentAccount = children[newIndex];
@@ -108,6 +109,7 @@ class SkywardAPICore {
           'Still could not retrieve correct information from assignments');
     var html;
 
+    if(currentAccount?.dataID == '0') throw SkywardError('Cannot use index 0 of children. It is ALL STUDENTS.');
     try {
       Map postcodes = Map.from(loginSessionRequiredBodyElements);
       if(currentAccount != null) postcodes['studentId'] = currentAccount.dataID;
@@ -115,6 +117,7 @@ class SkywardAPICore {
         modifyLoginSess(postcodes);
       }
       html = await attemptPost(_baseURL + page, postcodes);
+      if(html == 'sfgradebook001.w') print(html);
 
       if (parseHTML != null) {
         return parseHTML(html);
