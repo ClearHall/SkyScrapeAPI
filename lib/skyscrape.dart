@@ -127,6 +127,11 @@ class SkywardAPICore {
     }
   }
 
+  SkywardAccount retrieveAccountIfParent(){
+    if(children != null) return _currentAccount;
+    else return null;
+  }
+
   _useSpecifiedFunctionsToRetrieveHTML(
       String page, Function parseHTML, timesRan,
       {Function(Map) modifyLoginSess}) async {

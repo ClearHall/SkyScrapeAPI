@@ -1,3 +1,7 @@
+## [2.2.1+2] - Retrieval of Current User
+
+Retrieve current user
+
 ## [2.2.1+1] - User Name
 
 Added getting the logged-in user's name.
