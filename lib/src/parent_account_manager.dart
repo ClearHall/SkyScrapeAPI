@@ -4,8 +4,7 @@ import 'package:skyscrapeapi/data_types.dart';
 
 class ParentAccountUtils{
   /// Tries to get student accounts from a parent. It will return null if no students are found.
-  static List<SkywardAccount> checkForParent(String html){
-    Document doc = parse(html);
+  static List<SkywardAccount> checkForParent(Document doc){
     List<Element> elems = doc.getElementById('sf_StudentList')?.querySelectorAll('a');
 
     if (elems == null) return null;

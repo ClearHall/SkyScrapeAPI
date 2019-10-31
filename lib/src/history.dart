@@ -1,5 +1,5 @@
 import 'package:html/dom.dart';
-import 'skywardUniversal.dart';
+import 'skyward_utils.dart';
 import '../data_types.dart';
 import 'dart:convert';
 

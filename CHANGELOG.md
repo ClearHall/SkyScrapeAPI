@@ -1,3 +1,10 @@
+## [2.2.1+1] - User Name
+
+Added getting the logged-in user's name.
+- Adds more documentation
+- Makes more variables private for security purposes
+- Refactor of lib/src files to fit dart naming convention
+
 ## [2.2.0+1] - Parental Account Support
 
 Added support for parent accounts with initializing accounts.

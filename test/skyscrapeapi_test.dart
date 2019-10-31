@@ -1,6 +1,6 @@
 import 'package:skyscrapeapi/data_types.dart';
 import 'package:skyscrapeapi/skyscrape.dart';
-import 'package:skyscrapeapi/src/skywardUniversal.dart';
+import 'package:skyscrapeapi/src/skyward_utils.dart';
 import 'package:skyscrapeapi/district_searcher.dart';
 import 'package:test/test.dart';
 import 'dart:io';
@@ -130,10 +130,21 @@ void main() async {
         throw SkywardError('SHOULD SUCCEED');
       }
 
+      print(gradebook);
+      skyward.switchUserIndex(2);
+
       try {
-        gradebook = await skyward.getGradeBookGrades(null);
+        terms = (await skyward.getGradeBookTerms());
+      } catch (e, s) {
+        print('Should not fail: ' + s.toString());
+        throw SkywardError('SHOULD SUCCEED');
+      }
+
+      try {
+        gradebook = await skyward.getGradeBookGrades(terms);
       } catch (e) {
-        print('On purpose failed: ' + e.toString());
+        print('Should not fail: ' + e.toString());
+        throw SkywardError('SHOULD SUCCEED');
       }
 
       print(gradebook);

@@ -1,17 +1,20 @@
 library sky_core;
 
-import 'src/skywardUniversal.dart';
-import 'src/skywardAuthenticator.dart';
-import 'src/gradebookAccessor.dart';
-import 'src/assignmentAccessor.dart';
+import 'package:html/dom.dart';
+import 'package:html/parser.dart';
+
+import 'src/skyward_utils.dart';
+import 'src/authenticator.dart';
+import 'src/gradebook.dart';
+import 'src/assignment.dart';
 import 'data_types.dart';
-import 'src/assignmentInfoAccessor.dart';
+import 'src/assignment_info.dart';
 import 'src/parent_account_manager.dart';
-import 'src/historyAccessor.dart';
+import 'src/history.dart';
 
 /// Skyward API Core is the heart of the API. It is essentially the only class you need to really use the API.
 ///
-/// Skyward API Core uses your [user] and your [pass] to retrieve your [loginSessionRequiredBodyElements] from your [_baseURL] to get a login session.
+/// Skyward API Core uses your [_user] and your [_pass] to retrieve your [loginSessionRequiredBodyElements] from your [_baseURL] to get a login session.
 /// [_baseURL] is a private value and cannot be modified after it is created.
 class SkywardAPICore {
   /// Login session requirements retrieved
@@ -39,10 +42,14 @@ class SkywardAPICore {
   int refreshTimes;
 
   /// Storing username and password for refresh when session expires
-  String user, pass;
+  String _user, _pass;
 
+  /// Children accounts if account is a parent. If account is not parent then [children] and [_currentAccount] will stay null.
   List<SkywardAccount> children;
-  SkywardAccount currentAccount;
+  SkywardAccount _currentAccount;
+
+  /// The name of the current user.
+  String currentUser;
 
   /// Constructor that instantiates [_baseURL].
   ///
@@ -65,12 +72,22 @@ class SkywardAPICore {
   ///
   /// [u] is the username and [p] is the password. The function uses these two parameters to login to skyward and retrieve the necessary items to continue skyward navigation.
   /// If the operation succeeded and the login requirements were successfully retrieved, the function returns true. If not, the function returns false.
+  ///
+  /// Resets parent accounts and current account names if the username and password applied are different than what was stored before.
+  ///
+  /// **TIP**
+  /// You should call [initNewAccount] if you are initializing a new account, unless you are sure that the account you will be using is a student account.
   getSkywardAuthenticationCodes(String u, String p, {int timesRan = 0}) async {
     if (timesRan > refreshTimes) throw SkywardError('Maintenence error.');
-    user = u;
-    pass = p;
+    if (_user != u || _pass != p) {
+      _user = u;
+      _pass = p;
+      children = null;
+      _currentAccount = null;
+      currentUser = null;
+    }
     var loginSessionMap =
-        await SkywardAuthenticator.getNewSessionCodes(user, pass, _baseURL);
+        await SkywardAuthenticator.getNewSessionCodes(_user, _pass, _baseURL);
     if (loginSessionMap != null) {
       loginSessionRequiredBodyElements = loginSessionMap;
       return true;
@@ -80,23 +97,32 @@ class SkywardAPICore {
       return false;
   }
 
-  /// Initializes messages and children accounts.
+  /// Initializes messages, children accounts, and student name.
   ///
   /// WIP: Messages not implemented yet.
   /// The function checks for children accounts and initializes them if found. It also automatically initializes Skyward messages for you.
-  initNewAccount({int timesRan = 0}) async{
-    //TODO: ADD GETTING USER NAME
-    List a = await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html){
-      return [ParentAccountUtils.checkForParent(html),];
+  initNewAccount({int timesRan = 0}) async {
+    List a = await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
+      Document doc = parse(html);
+      return [
+        ParentAccountUtils.checkForParent(doc),
+        doc
+            .getElementById('sf_UtilityArea')
+            ?.querySelector('.sf_utilUser')
+            ?.text
+            ?.trim()
+      ];
     }, timesRan);
     children = a[0];
+    currentUser = a[1];
   }
 
-  bool switchUserIndex(int newIndex){
-    if(children == null || newIndex >= children.length){
+  /// Switches the private [_currentAccount], if the operation failed, then false would be returned, else it would be false.
+  bool switchUserIndex(int newIndex) {
+    if (children == null || newIndex >= children.length) {
       return false;
-    }else{
-      currentAccount = children[newIndex];
+    } else {
+      _currentAccount = children[newIndex];
       return true;
     }
   }
@@ -109,15 +135,17 @@ class SkywardAPICore {
           'Still could not retrieve correct information from assignments');
     var html;
 
-    if(currentAccount?.dataID == '0') throw SkywardError('Cannot use index 0 of children. It is ALL STUDENTS.');
+    if (_currentAccount?.dataID == '0')
+      throw SkywardError('Cannot use index 0 of children. It is ALL STUDENTS.');
     try {
       Map postcodes = Map.from(loginSessionRequiredBodyElements);
-      if(currentAccount != null) postcodes['studentId'] = currentAccount.dataID;
+      if (_currentAccount != null)
+        postcodes['studentId'] = _currentAccount.dataID;
       if (modifyLoginSess != null) {
         modifyLoginSess(postcodes);
       }
       html = await attemptPost(_baseURL + page, postcodes);
-      if(html == 'sfgradebook001.w') print(html);
+      if (html == 'sfgradebook001.w') print(html);
 
       if (parseHTML != null) {
         return parseHTML(html);
@@ -127,7 +155,7 @@ class SkywardAPICore {
       }
     } catch (e) {
       if (shouldRefreshWhenFailedLogin) {
-        await getSkywardAuthenticationCodes(user, pass);
+        await getSkywardAuthenticationCodes(_user, _pass);
         return _useSpecifiedFunctionsToRetrieveHTML(
             page, parseHTML, timesRan + 1,
             modifyLoginSess: modifyLoginSess);
