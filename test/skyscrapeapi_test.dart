@@ -5,7 +5,8 @@ import 'package:test/test.dart';
 import 'dart:io';
 
 void main() async {
-  String url = 'https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w';
+  String url = 'https://skyward-alvinprod.iscorp.com/scripts/wsisa.dll/WService=wsedualvinisdtx/seplog01.w';
+  //String url = 'https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w';
   var skyward = SkywardAPICore(
       url);
 

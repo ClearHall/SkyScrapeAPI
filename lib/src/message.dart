@@ -33,22 +33,34 @@ class MessageParser {
           DocumentFragment.html(html.substring(firstInd, endInd));
 
       MessageBody messageBody = MessageBody();
-      List aList = documentFragment.querySelectorAll('div > div');
+      List<Element> aList = documentFragment.querySelectorAll('div');
+
+      while(aList.length > 0){
+        List tmp = aList.first.querySelectorAll('div');
+        if(tmp.isEmpty){
+          break;
+        }else{
+          aList = tmp;
+        }
+      }
+
       List bList = [];
-      for(Element aL in aList){
+      for (Element aL in aList) {
         String aLHTML = aL.innerHtml;
-        if(aL.children.length >= 1){
-          for(int i = 0; i < aL.children.length; i++){
-            List split = aLHTML.split(aL.children[i].outerHtml);
-            bList.add(Element.html('<div>' + split[0] + '</div>'));
-            bList.add(Element.html(aL.children[i].outerHtml));
-            if(split.length > 1)
-             aLHTML = split[1];
-            else
-              aLHTML = '';
+        if (aL.children.length >= 1) {
+          for (int i = 0; i < aL.children.length; i++) {
+            if (aL.children[i].outerHtml.startsWith('<a')) {
+              List split = aLHTML.split(aL.children[i].outerHtml);
+              bList.add(Element.html('<div>' + split[0] + '</div>'));
+              bList.add(Element.html(aL.children[i].outerHtml));
+              if (split.length > 1)
+                aLHTML = split[1];
+              else
+                aLHTML = '';
+            }
           }
           bList.add(Element.html('<div>' + aLHTML + '</div>'));
-        }else{
+        } else {
           bList.add(aL);
         }
       }
@@ -69,7 +81,15 @@ class MessageParser {
           rootDiv.attributes['data-wall-id'],
           rootDiv.querySelector('.messageBody > .date').text.trim(),
           rootDiv.querySelector('.messageHead').text.trim(),
-          subjects.isNotEmpty ? MessageTitle(subjects.first.text.trim(), attachments.isNotEmpty ? Link( attachments.first.children.first.attributes['href'],  attachments.first.children.first.text) : null) : null,
+          subjects.length == 0 && attachments.length == 0
+              ? null
+              : MessageTitle(
+                  subjects.isNotEmpty ? subjects.first.text.trim() : null,
+                  attachments.isNotEmpty
+                      ? Link(
+                          attachments.first.children.first.attributes['href'],
+                          attachments.first.children.first.text)
+                      : null),
           messageBody));
     }
 

@@ -1,10 +1,14 @@
+## [2.3.3+1] - Final Bug Fix
+
+Finally fixed all bugs for messages for all districts by searching through all div's.
+
 ## [2.3.2+1] - More Bug Fix
 
-More message scraping bug fix
+Split's the text and inserts link in there.
 
 ## [2.3.1+1] - Bug Fix
 
-Message scraping bug fix
+Fixed bug where there was duplicate links.
 
 ## [2.3.0+2] - Windows Retarded
 
