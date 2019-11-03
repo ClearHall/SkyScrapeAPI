@@ -2,6 +2,7 @@ library sky_core;
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
+import 'package:skyscrapeapi/src/message.dart';
 
 import 'src/skyward_utils.dart';
 import 'src/authenticator.dart';
@@ -104,6 +105,10 @@ class SkywardAPICore {
   initNewAccount({int timesRan = 0}) async {
     List a = await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
       Document doc = parse(html);
+      String delim = "sff.sv('sessionid', '";
+      int startInd = html.indexOf(delim) + delim.length;
+      String scrapedSessionid = html.substring(startInd, html.indexOf("'", startInd));
+      loginSessionRequiredBodyElements['sessionid'] = scrapedSessionid;
       return [
         ParentAccountUtils.checkForParent(doc),
         doc
@@ -115,6 +120,43 @@ class SkywardAPICore {
     }, timesRan);
     children = a[0];
     currentUser = a[1];
+  }
+
+  getMessages({int timesRan = 0}) async {
+    List<Message> messages = [];
+    await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
+      Document doc = parse(html);
+      String delim = "sff.sv('sessionid', '";
+      int startInd = html.indexOf(delim) + delim.length;
+      String scrapedSessionid = html.substring(startInd, html.indexOf("'", startInd));
+      loginSessionRequiredBodyElements['sessionid'] = scrapedSessionid;
+      var tmp = doc.getElementById('MessageFeed')?.querySelectorAll('.feedItem.allowRemove');
+      if(tmp != null && tmp.length >= 1){
+        messages.addAll(MessageParser.parseMessage(html));
+        return true;
+      }
+      return false;
+    }, timesRan);
+
+    if(messages.length > 0){
+      int prevLen = 0;
+      while(prevLen != messages.length){
+        prevLen = messages.length;
+        messages.addAll(await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', MessageParser.parseMessage, timesRan, modifyLoginSess: (Map bodyElem){
+          bodyElem['ishttp'] = 'true';
+          bodyElem['lastMessageRowId'] = messages.last.dataId;
+          bodyElem['action'] = 'moreMessages';
+        }));
+      }
+    }
+
+    for(Message m in messages){
+      if(m.title?.attachment?.link != null){
+        m.title.attachment = Link(_baseURL + m.title.attachment.link, m.title.attachment.text);
+      }
+    }
+
+    return messages;
   }
 
   /// Switches the private [_currentAccount], if the operation failed, then false would be returned, else it would be false.
@@ -150,7 +192,6 @@ class SkywardAPICore {
         modifyLoginSess(postcodes);
       }
       html = await attemptPost(_baseURL + page, postcodes);
-      if (html == 'sfgradebook001.w') print(html);
 
       if (parseHTML != null) {
         return parseHTML(html);
@@ -158,7 +199,8 @@ class SkywardAPICore {
         if (html == null) throw SkywardError('HTML Still Null');
         return html;
       }
-    } catch (e) {
+    } catch (e, s) {
+      print(s.toString());
       if (shouldRefreshWhenFailedLogin) {
         await getSkywardAuthenticationCodes(_user, _pass);
         return _useSpecifiedFunctionsToRetrieveHTML(

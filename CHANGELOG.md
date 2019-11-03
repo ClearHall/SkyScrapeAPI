@@ -1,3 +1,10 @@
+## [2.3.0+1] - Messages
+
+Added messages retrieval with attachments and hyperlinks.
+- Gets messages from Skyward
+- Retrieves attachments and attempts to keep formatting
+- Moved messages to a new method because of the sheer slowness
+
 ## [2.2.1+2] - Retrieval of Current User
 
 Retrieve current user

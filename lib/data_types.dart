@@ -413,7 +413,6 @@ class Class {
   int get hashCode => name.hashCode;
 }
 
-
 /// SkyScrapeAPI Custom errors to locate errors and give proper causes.
 ///
 /// **NOTE: THE WHOLE API WILL USE THIS EXCEPTION**
@@ -423,7 +422,7 @@ class SkywardError implements Exception {
 
   SkywardError(this.cause);
 
-  String getErrorCode(){
+  String getErrorCode() {
     return errorCode.toString().split('.')[1];
   }
 
@@ -434,7 +433,7 @@ class SkywardError implements Exception {
 }
 
 /// Account returned for internal API use when a parent account is parsed
-class SkywardAccount{
+class SkywardAccount {
   final String dataID, name;
   SkywardAccount(this.dataID, this.name);
 
@@ -446,19 +445,80 @@ class SkywardAccount{
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is SkywardAccount &&
-              runtimeType == other.runtimeType &&
-              dataID == other.dataID;
+      other is SkywardAccount &&
+          runtimeType == other.runtimeType &&
+          dataID == other.dataID;
 
   @override
   int get hashCode => dataID.hashCode;
+}
 
+class Message {
+  String date, header, dataId;
+  MessageBody body;
+  MessageTitle title;
+
+  Message(this.dataId, this.date, this.header, this.title, this.body);
+
+  @override
+  bool operator ==(other) {
+    return other is Message && other.title == this.title;
+  }
+
+  @override
+  String toString() {
+    return 'Message{date: $date, title: $title, header: $header, dataId: $dataId, body: $body}';
+  }
+
+  @override
+  int get hashCode => title.hashCode;
+}
+
+class MessageTitle {
+  String title;
+  Link attachment;
+
+  MessageTitle(this.title, this.attachment);
+
+  @override
+  String toString() {
+    return 'MessageTitle{title: $title, attachment: $attachment}';
+  }
+}
+
+class MessageBody {
+  List _arr = [];
+
+  void addTextSection(String txt) {
+    _arr.add(txt);
+  }
+
+  void addLinkSection(String link, String txt) {
+    if(_arr.last == link) _arr.removeLast();
+    _arr.add(Link(link, txt));
+  }
+
+  List getArr() => _arr;
+
+  @override
+  String toString() {
+    return 'MessageBody{_arr: $_arr}';
+  }
+}
+
+class Link {
+  final String link, text;
+
+  Link(this.link, this.text);
+
+  @override
+  String toString() {
+    return 'Link{link: $link, text: $text}';
+  }
 }
 
 // TODO: Add more error codes and use error codes!!!
-enum ErrorCode{
-  LoginFailed
-}
+enum ErrorCode { LoginFailed }
 
 /// Just ClassLevels, nothing special.
 enum ClassLevel { Regular, PreAP, AP, None }

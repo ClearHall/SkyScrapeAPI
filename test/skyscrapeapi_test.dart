@@ -1,13 +1,13 @@
 import 'package:skyscrapeapi/data_types.dart';
 import 'package:skyscrapeapi/skyscrape.dart';
-import 'package:skyscrapeapi/src/skyward_utils.dart';
 import 'package:skyscrapeapi/district_searcher.dart';
 import 'package:test/test.dart';
 import 'dart:io';
 
 void main() async {
+  String url = 'https://skyward-alvinprod.iscorp.com/scripts/wsisa.dll/WService=wsedualvinisdtx/seplog01.w';
   var skyward = SkywardAPICore(
-      "https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w");
+      url);
 
   var credentialFile = File('test/testCredentials.txt');
   var settingsFile = File('test/testSettings.skyTest');
@@ -76,6 +76,8 @@ void main() async {
     test('test parent account switching', () async {
       await skyward.initNewAccount();
       skyward.switchUserIndex(1);
+
+      print(await skyward.getMessages());
     });
 
     test('test login & get gradebook', () async {
@@ -111,7 +113,7 @@ void main() async {
       skyward.loginSessionRequiredBodyElements['dwd'] =
           'ON_PURPOSE_TRY_TO_GET_ERROR';
       skyward = SkywardAPICore(
-          "https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w");
+          url);
       skyward.getSkywardAuthenticationCodes(user, pass);
       await skyward.initNewAccount();
       skyward.switchUserIndex(1);
