@@ -10,7 +10,7 @@ class AssignmentInfoAccessor {
     List<Element> importantInfo = docFrag.querySelectorAll('td');
 
     for (int i = 0; i < importantInfo.length; i++) {
-      if (i == 0 && (importantInfo[i + 1].text.contains(':'))) {
+      if (i == 0 && (importantInfo[i + 1].querySelector('label') != null)) {
         assignInfoBox.add(AssignmentInfoBox(importantInfo[i].text, null));
       } else {
         if (importantInfo[i].text.trim().isNotEmpty) {

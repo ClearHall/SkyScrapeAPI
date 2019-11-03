@@ -1,3 +1,11 @@
+## [2.3.1+1] - Bug Fix
+
+Message scraping bug fix
+
+## [2.3.0+2] - Windows Retarded
+
+Windows RETARDED
+
 ## [2.3.0+1] - Messages
 
 Added messages retrieval with attachments and hyperlinks.

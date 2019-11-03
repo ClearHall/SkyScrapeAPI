@@ -33,9 +33,26 @@ class MessageParser {
           DocumentFragment.html(html.substring(firstInd, endInd));
 
       MessageBody messageBody = MessageBody();
-      List aList = documentFragment.querySelectorAll('div,a');
-      aList.removeAt(0);
-      for (Element element in aList) {
+      List aList = documentFragment.querySelectorAll('div > div');
+      List bList = [];
+      for(Element aL in aList){
+        String aLHTML = aL.innerHtml;
+        if(aL.children.length > 1){
+          for(int i = 1; i < aL.children.length; i++){
+            List split = aLHTML.split(aL.children[i].outerHtml);
+            bList.add(Element.html('<div>' + split[0] + '</div>'));
+            bList.add(Element.html(aL.children[i].outerHtml));
+            if(split.length > 1)
+            aLHTML = split[1];
+            else
+              aLHTML = '';
+          }
+          bList.add(Element.html('<div>' + aLHTML + '</div>'));
+        }else{
+          bList.add(aL);
+        }
+      }
+      for (Element element in bList) {
         if (element.attributes.containsKey('href')) {
           messageBody.addLinkSection(element.attributes['href'], element.text);
         } else if (element.text.isNotEmpty) {
