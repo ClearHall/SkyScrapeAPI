@@ -37,13 +37,13 @@ class MessageParser {
       List bList = [];
       for(Element aL in aList){
         String aLHTML = aL.innerHtml;
-        if(aL.children.length > 1){
-          for(int i = 1; i < aL.children.length; i++){
+        if(aL.children.length >= 1){
+          for(int i = 0; i < aL.children.length; i++){
             List split = aLHTML.split(aL.children[i].outerHtml);
             bList.add(Element.html('<div>' + split[0] + '</div>'));
             bList.add(Element.html(aL.children[i].outerHtml));
             if(split.length > 1)
-            aLHTML = split[1];
+             aLHTML = split[1];
             else
               aLHTML = '';
           }

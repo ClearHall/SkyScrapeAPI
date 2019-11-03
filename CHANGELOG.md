@@ -1,3 +1,7 @@
+## [2.3.2+1] - More Bug Fix
+
+More message scraping bug fix
+
 ## [2.3.1+1] - Bug Fix
 
 Message scraping bug fix
