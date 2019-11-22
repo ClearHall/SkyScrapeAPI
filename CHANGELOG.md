@@ -2,6 +2,10 @@
 
 Finally fixed all bugs for messages for all districts by searching through all div's.
 
+## [2.3.2+2] - More Bug Fix
+
+Fix bug of insertion.
+
 ## [2.3.2+1] - More Bug Fix
 
 Split's the text and inserts link in there.
