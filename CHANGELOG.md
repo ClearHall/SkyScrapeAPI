@@ -1,3 +1,7 @@
+## [2.3.5+3] - Assignment Info DataType getUIMessage
+
+Now detects and puts a colon in the message if there is none.
+
 ## [2.3.5+2] - Fixed Comment Support
 
 Assignment info comment support.

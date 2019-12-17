@@ -1,5 +1,5 @@
-import 'package:skyscrapeapi/skywardAPICore.dart';
-import 'package:skyscrapeapi/skywardUniversal.dart';
+import 'package:skyscrapeapi/skyscrape.dart';
+import 'package:skyscrapeapi/data_types.dart';
 import 'dart:io';
 
 void main() async {

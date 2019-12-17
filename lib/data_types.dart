@@ -237,7 +237,10 @@ class AssignmentInfoBox {
 
   /// UI Message for apps. It essentially combines the [infoName] and [info].
   String getUIMessage() {
-    return infoName + ' ' + (info != null ? info : "");
+    return infoName +
+        (!infoName.endsWith(":") ? ":" : "") +
+        ' ' +
+        (info != null ? info : "");
   }
 
   AssignmentInfoBox(this.infoName, this.info);
