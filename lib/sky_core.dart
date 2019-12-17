@@ -107,7 +107,8 @@ class SkywardAPICore {
       Document doc = parse(html);
       String delim = "sff.sv('sessionid', '";
       int startInd = html.indexOf(delim) + delim.length;
-      String scrapedSessionid = html.substring(startInd, html.indexOf("'", startInd));
+      String scrapedSessionid =
+          html.substring(startInd, html.indexOf("'", startInd));
       loginSessionRequiredBodyElements['sessionid'] = scrapedSessionid;
       return [
         ParentAccountUtils.checkForParent(doc),
@@ -128,21 +129,26 @@ class SkywardAPICore {
       Document doc = parse(html);
       String delim = "sff.sv('sessionid', '";
       int startInd = html.indexOf(delim) + delim.length;
-      String scrapedSessionid = html.substring(startInd, html.indexOf("'", startInd));
+      String scrapedSessionid =
+          html.substring(startInd, html.indexOf("'", startInd));
       loginSessionRequiredBodyElements['sessionid'] = scrapedSessionid;
-      var tmp = doc.getElementById('MessageFeed')?.querySelectorAll('.feedItem.allowRemove');
-      if(tmp != null && tmp.length >= 1){
+      var tmp = doc
+          .getElementById('MessageFeed')
+          ?.querySelectorAll('.feedItem.allowRemove');
+      if (tmp != null && tmp.length >= 1) {
         messages.addAll(MessageParser.parseMessage(html));
         return true;
       }
       return false;
     }, timesRan);
 
-    if(messages.length > 0){
+    if (messages.length > 0) {
       int prevLen = 0;
-      while(prevLen != messages.length){
+      while (prevLen != messages.length) {
         prevLen = messages.length;
-        messages.addAll(await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', MessageParser.parseMessage, timesRan, modifyLoginSess: (Map bodyElem){
+        messages.addAll(await _useSpecifiedFunctionsToRetrieveHTML(
+            'sfhome01.w', MessageParser.parseMessage, timesRan,
+            modifyLoginSess: (Map bodyElem) {
           bodyElem['ishttp'] = 'true';
           bodyElem['lastMessageRowId'] = messages.last.dataId;
           bodyElem['action'] = 'moreMessages';
@@ -150,9 +156,10 @@ class SkywardAPICore {
       }
     }
 
-    for(Message m in messages){
-      if(m.title?.attachment?.link != null){
-        m.title.attachment = Link(_baseURL + m.title.attachment.link, m.title.attachment.text);
+    for (Message m in messages) {
+      if (m.title?.attachment?.link != null) {
+        m.title.attachment =
+            Link(_baseURL + m.title.attachment.link, m.title.attachment.text);
       }
     }
 
@@ -164,14 +171,17 @@ class SkywardAPICore {
     if (children == null || newIndex >= children.length) {
       return false;
     } else {
+      print("ALERTALERTALERT");
       _currentAccount = children[newIndex];
       return true;
     }
   }
 
-  SkywardAccount retrieveAccountIfParent(){
-    if(children != null) return _currentAccount;
-    else return null;
+  SkywardAccount retrieveAccountIfParent() {
+    if (children != null)
+      return _currentAccount;
+    else
+      return null;
   }
 
   _useSpecifiedFunctionsToRetrieveHTML(
@@ -221,13 +231,16 @@ class SkywardAPICore {
   /// The function will attempt to log back in when your session expires or an errors occurs.
   /// The function initializes the grade book HTML for parsing use.
   _initGradeBook({int timeRan = 0}) async {
-    _gradeBookList = GradebookAccessor.initGradebookAndGradesHTML(
-        await _useSpecifiedFunctionsToRetrieveHTML(
-            'sfgradebook001.w', null, timeRan));
+    if (_gradeBookList == null) {
+      _gradeBookList = GradebookAccessor.initGradebookAndGradesHTML(
+          await _useSpecifiedFunctionsToRetrieveHTML(
+              'sfgradebook001.w', null, timeRan));
+    }
   }
 
   /// The terms retrieved from the grade book HTML. Returns a list of [Term].
   getGradeBookTerms() async {
+    _gradeBookList = null;
     await _initGradeBook();
     return GradebookAccessor.getTermsFromDocCode(_gradeBookList);
   }

@@ -1,3 +1,20 @@
+## [2.3.5+2] - Fixed Comment Support
+
+Assignment info comment support.
+
+## [2.3.5+1] - Added Comment Support
+
+Assignment info comment support.
+
+## [2.3.4+1] - Code Speed Up
+
+Added a long lost if statement that reduced speed of getting gradebook.
+
+Tests were performed on decent internet.
+
+One action : 7s 645 ms -> 4s 984ms
+Three actions : 21 s -> 14 s
+
 ## [2.3.3+1] - Final Bug Fix
 
 Finally fixed all bugs for messages for all districts by searching through all div's.

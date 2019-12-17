@@ -1,12 +1,12 @@
 import 'package:skyscrapeapi/data_types.dart';
-import 'package:skyscrapeapi/skyscrape.dart';
+import 'package:skyscrapeapi/sky_core.dart';
 import 'package:skyscrapeapi/district_searcher.dart';
 import 'package:test/test.dart';
 import 'dart:io';
 
 void main() async {
-  String url = 'https://skyward-alvinprod.iscorp.com/scripts/wsisa.dll/WService=wsedualvinisdtx/seplog01.w';
-  //String url = 'https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w';
+  //String url = 'https://skyward-alvinprod.iscorp.com/scripts/wsisa.dll/WService=wsedualvinisdtx/seplog01.w';
+  String url = 'https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w';
   var skyward = SkywardAPICore(
       url);
 
@@ -26,44 +26,56 @@ void main() async {
   var user;
   var pass;
 
-  test('test file input', () async {
-    if (await credentialFile.exists()) {
-      contents = await credentialFile.readAsString();
-      List split = contents.toString().split('\n');
+  group("test time of login", () {
+    test('test file input', () async {
+      if (await credentialFile.exists()) {
+        contents = await credentialFile.readAsString();
+        List split = contents.toString().split('\n');
 
-      user = split[0];
-      pass = split[1];
+        user = split[0];
+        pass = split[1];
 
-      contents = await settingsFile.readAsString();
-      split = contents.toString().split('\n');
+        contents = await settingsFile.readAsString();
+        split = contents.toString().split('\n');
 
-      for (String s in split) {
-        if (s.startsWith('# ') || s.isEmpty) continue;
-        List ssplit = [];
-        ssplit = s.split(':');
+        for (String s in split) {
+          if (s.startsWith('# ') || s.isEmpty) continue;
+          List ssplit = [];
+          ssplit = s.split(':');
 
-        switch (ssplit[0]) {
-          case 'assignmentTestIndex':
-            assignmentTestIndex = int.parse(ssplit[1]);
-            break;
-          case 'assignmentTestInfoIndex':
-            assignmentTestInfoIndex = int.parse(ssplit[1]);
-            break;
-          case 'loginAttemptsTest':
-            loginAttemptsTest = int.parse(ssplit[1]);
-            break;
-          case 'skipLongTestTimes':
-            skipLongTestTimes = ssplit[1].toString().toLowerCase() == 'true';
-            break;
-          default:
-            break;
+          switch (ssplit[0]) {
+            case 'assignmentTestIndex':
+              assignmentTestIndex = int.parse(ssplit[1]);
+              break;
+            case 'assignmentTestInfoIndex':
+              assignmentTestInfoIndex = int.parse(ssplit[1]);
+              break;
+            case 'loginAttemptsTest':
+              loginAttemptsTest = int.parse(ssplit[1]);
+              break;
+            case 'skipLongTestTimes':
+              skipLongTestTimes = ssplit[1].toString().toLowerCase() == 'true';
+              break;
+            default:
+              break;
+          }
+        }
+
+        if (!await skyward.getSkywardAuthenticationCodes(user, pass)) {
+          throw SkywardError('OH POOP WE FAIL TO LOG IN PLZ FIX BUG');
         }
       }
+    });
 
-      if (!await skyward.getSkywardAuthenticationCodes(user, pass)) {
-        throw SkywardError('OH POOP WE FAIL TO LOG IN PLZ FIX BUG');
-      }
-    }
+    test('test speed', () async{
+      await skyward.initNewAccount();
+      skyward.switchUserIndex(1);
+      print(await skyward.getGradeBookGrades(await skyward.getGradeBookTerms()));
+      print(await skyward.getGradeBookGrades(await skyward.getGradeBookTerms()));
+      await skyward.initNewAccount();
+      skyward.switchUserIndex(1);
+      print(await skyward.getGradeBookGrades(await skyward.getGradeBookTerms()));
+    });
   });
 
   group('Group tests on network WITH enabled refresh', () {
@@ -186,15 +198,13 @@ void main() async {
           'ON_PURPOSE_TRY_TO_GET_ERROR';
 
       try {
-        Assignment assoonmentttt = assignment[assignmentTestInfoIndex];
-        assoonmentttt.assignmentID = '123';
-        print(await skyward.getAssignmentInfoFromAssignment(assoonmentttt));
+        await skyward.getAssignmentInfoFromAssignment(new Assignment("23", "SJDKFJS", "WOAIMAMA", "大便", null));
       } catch (e) {
         print('Should fail: ${e.toString()}');
       }
 
       try {
-        var _ = (await skyward.getAssignmentInfoFromAssignment(
+        print(await skyward.getAssignmentInfoFromAssignment(
             assignment[assignmentTestInfoIndex]));
       } catch (e) {
         print('Should succeed: ${e.toString()}');

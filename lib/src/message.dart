@@ -35,11 +35,11 @@ class MessageParser {
       MessageBody messageBody = MessageBody();
       List<Element> aList = documentFragment.querySelectorAll('div');
 
-      while(aList.length > 0){
+      while (aList.length > 0) {
         List tmp = aList.first.querySelectorAll('div');
-        if(tmp.isEmpty){
+        if (tmp.isEmpty) {
           break;
-        }else{
+        } else {
           aList = tmp;
         }
       }

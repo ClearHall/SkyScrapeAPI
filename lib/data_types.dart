@@ -494,7 +494,7 @@ class MessageBody {
   }
 
   void addLinkSection(String link, String txt) {
-    if(_arr.last == link) _arr.removeLast();
+    if (_arr.last == link) _arr.removeLast();
     _arr.add(Link(link, txt));
   }
 
