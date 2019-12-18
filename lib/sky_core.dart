@@ -171,7 +171,6 @@ class SkywardAPICore {
     if (children == null || newIndex >= children.length) {
       return false;
     } else {
-      print("ALERTALERTALERT");
       _currentAccount = children[newIndex];
       return true;
     }
