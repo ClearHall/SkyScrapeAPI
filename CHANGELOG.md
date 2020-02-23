@@ -1,3 +1,7 @@
+## [2.3.6+1] - Bug Fix
+
+When grade bookk init gets a district not supported error. It'll try again, because this may be caused by a website session that has been inactive for too long.
+
 ## [2.3.5+3] - Assignment Info DataType getUIMessage
 
 Now detects and puts a colon in the message if there is none.

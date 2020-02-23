@@ -231,9 +231,15 @@ class SkywardAPICore {
   /// The function initializes the grade book HTML for parsing use.
   _initGradeBook({int timeRan = 0}) async {
     if (_gradeBookList == null) {
-      _gradeBookList = GradebookAccessor.initGradebookAndGradesHTML(
-          await _useSpecifiedFunctionsToRetrieveHTML(
-              'sfgradebook001.w', null, timeRan));
+      try {
+        _gradeBookList = GradebookAccessor.initGradebookAndGradesHTML(
+            await _useSpecifiedFunctionsToRetrieveHTML(
+                'sfgradebook001.w', null, timeRan));
+      }catch (e){
+        _gradeBookList = null;
+        print("The webpage has been broken for too long. Trying again.");
+        await _initGradeBook(timeRan: timeRan + 1);
+      }
     }
   }
 
