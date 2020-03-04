@@ -1,3 +1,7 @@
+## [2.3.6+2] - Bug Fix
+
+Fixed dependencies
+
 ## [2.3.6+1] - Bug Fix
 
 When grade bookk init gets a district not supported error. It'll try again, because this may be caused by a website session that has been inactive for too long.
