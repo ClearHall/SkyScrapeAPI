@@ -1,5 +1,5 @@
-import 'package:skyscrapeapi/skyscrape.dart';
 import 'package:skyscrapeapi/data_types.dart';
+import 'package:skyscrapeapi/sky_core.dart';
 import 'dart:io';
 
 void main() async {
