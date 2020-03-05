@@ -78,7 +78,7 @@ class SkywardAPICore {
   ///
   /// **TIP**
   /// You should call [initNewAccount] if you are initializing a new account, unless you are sure that the account you will be using is a student account.
-  getSkywardAuthenticationCodes(String u, String p, {int timesRan = 0}) async {
+  Future<bool> getSkywardAuthenticationCodes(String u, String p, {int timesRan = 0}) async {
     if (timesRan > refreshTimes) throw SkywardError('Maintenence error.');
     if (_user != u || _pass != p) {
       _user = u;
@@ -123,7 +123,7 @@ class SkywardAPICore {
     currentUser = a[1];
   }
 
-  getMessages({int timesRan = 0}) async {
+  Future<List<Message>> getMessages({int timesRan = 0}) async {
     List<Message> messages = [];
     await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
       Document doc = parse(html);
@@ -244,14 +244,14 @@ class SkywardAPICore {
   }
 
   /// The terms retrieved from the grade book HTML. Returns a list of [Term].
-  getGradeBookTerms() async {
+  Future<List<Term>> getGradeBookTerms() async {
     _gradeBookList = null;
     await _initGradeBook();
     return GradebookAccessor.getTermsFromDocCode(_gradeBookList);
   }
 
   /// The grade boxes retrieved from grade book HTML. Returns a list of [GridBox].
-  getGradeBookGrades(List<Term> terms) async {
+  Future<List<GridBox>> getGradeBookGrades(List<Term> terms) async {
     try {
       await _initGradeBook();
       return GradebookAccessor.getGradeBoxesFromDocCode(_gradeBookList, terms);
@@ -261,7 +261,7 @@ class SkywardAPICore {
   }
 
   /// The assignments from a specific term. Returns a list of [AssignmentsGridBox].
-  getAssignmentsFromGradeBox(GradeBox gradeBox, {int timesRan = 0}) async {
+  Future<List<AssignmentsGridBox>> getAssignmentsFromGradeBox(GradeBox gradeBox, {int timesRan = 0}) async {
     return await _useSpecifiedFunctionsToRetrieveHTML(
         'sfgradebook001.w', AssignmentAccessor.getAssignmentsDialog, timesRan,
         modifyLoginSess: (codes) {
@@ -274,7 +274,7 @@ class SkywardAPICore {
   }
 
   /// The assignment info boxes from a specific assignment. Returns a list of [AssignmentInfoBox].
-  getAssignmentInfoFromAssignment(Assignment assignment,
+  Future<List<AssignmentInfoBox>> getAssignmentInfoFromAssignment(Assignment assignment,
       {int timesRan = 0}) async {
     return await _useSpecifiedFunctionsToRetrieveHTML(
         'sfdialogs.w',
@@ -292,7 +292,7 @@ class SkywardAPICore {
   /// Attempts to go to sfAcademicHistory if it's available. If not, it'll throw an error or return null.
   ///
   /// Returns a list of [SchoolYear].
-  getHistory({int timesRan = 0}) async {
+  Future<List<SchoolYear>> getHistory({int timesRan = 0}) async {
     return await _useSpecifiedFunctionsToRetrieveHTML(
       'sfacademichistory001',
       HistoryAccessor.parseGradebookHTML,
