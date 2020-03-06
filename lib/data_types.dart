@@ -40,12 +40,16 @@ class Term {
   @override
   int get hashCode => termCode.hashCode;
 }
+//
+//class Gradebook{
+//  List<GridBox>
+//}
 
 /// [GridBox] is a root type that has many children. These children correspond to the boxes in your grade book.
 ///
 /// [GridBox] only has 3 children
 /// * [TeacherIDBox]
-/// * [GradeTextBox] has more children that allow actual grades to be distinguished from teacher information or course information
+/// * [_GradeTextBox] has more children that allow actual grades to be distinguished from teacher information or course information
 /// * [AssignmentsGridBox]
 class GridBox {
   /// Does the [GridBox] lead to another page? Usually only [GradeBox] will have a true [clickable] attribute.
@@ -65,6 +69,34 @@ class AssignmentsListSmaller extends GridBox {
   String toString() {
     return 'AssignmentsListSmaller{assignments: $assignments}';
   }
+}
+
+class Class {
+  TeacherIDBox _teacher;
+  List<_GradeTextBox> _grades;
+
+  //TODO: Do DADDY DAMIAN'S WILL
+
+  String getTeacherName(){
+    return _teacher.teacherName;
+  }
+
+  String getCourseTime(){
+    return _teacher.courseName;
+  }
+
+  String getCourseName(){
+    return _teacher.courseName;
+  }
+
+  String getGradeAt(int index){
+    Grade grade = Grade();
+  }
+}
+
+class Grade{
+  Term term;
+  String grade;
 }
 
 /// [TeacherIDBox] tells you course and teacher information.
@@ -105,19 +137,19 @@ class TeacherIDBox extends GridBox {
   }
 }
 
-/// [GradeTextBox] is a root that helps distinguish the difference between grades and teacher information
+/// [_GradeTextBox] is a root that helps distinguish the difference between grades and teacher information
 ///
-/// There are only two children of [GradeTextBox]
+/// There are only two children of [_GradeTextBox]
 /// * [LessInfoBox]
 /// * [GradeBox]
-class GradeTextBox extends GridBox {
+class _GradeTextBox extends GridBox {
   Term term;
 
-  GradeTextBox(this.term);
+  _GradeTextBox(this.term);
 }
 
-/// [LessInfoBox] is an unclickable behavior or letter grade.
-class LessInfoBox extends GradeTextBox {
+/// [LessInfoBox] is an un-clickable behavior or letter grade.
+class LessInfoBox extends _GradeTextBox {
   String behavior;
 
   /// Identification for which term [LessInfoBox] is in.
@@ -130,7 +162,7 @@ class LessInfoBox extends GradeTextBox {
 }
 
 /// [GradeBox] is most likely a clickable numbered grade part of a specific term
-class GradeBox extends GradeTextBox {
+class GradeBox extends _GradeTextBox {
   String courseNumber;
   String grade;
   String studentID;
@@ -303,12 +335,12 @@ class SkywardDistrict {
 ///
 /// SchoolYear provides information about the school year and is JSON Compatible so it can be saved or returned from a server
 /// The [description] of the [SchoolYear] is just the name of the [SchoolYear] under Skyward. [terms] are also taken just in case your district has changed terms in its skyward history.
-/// [classes] is a list of [Class], for more information, read up on [Class] documentation.
+/// [classes] is a list of [HistoricalClass], for more information, read up on [HistoricalClass] documentation.
 class SchoolYear {
   String description;
   List<Term> terms;
   //First String represents class, in each class theres a map of the term and then the grade of that term.
-  List<Class> classes;
+  List<HistoricalClass> classes;
 
   /// This is an extra attribute you can use in your application just in case you need it.
   bool isEnabled = true;
@@ -331,10 +363,10 @@ class SchoolYear {
   }
 
   /// Classes retrieved. **MAY CAUSE ERRORS IF YOU ATTEMPT TO USE THIS FUNCTION**
-  static List<Class> getClassesFromEncodedClassesList(List classes) {
-    List<Class> fin = [];
+  static List<HistoricalClass> getClassesFromEncodedClassesList(List classes) {
+    List<HistoricalClass> fin = [];
     for (var x in classes) {
-      fin.add(Class.fromJson(x));
+      fin.add(HistoricalClass.fromJson(x));
     }
     return fin;
   }
@@ -360,20 +392,20 @@ class SchoolYear {
   int get hashCode => description.hashCode;
 }
 
-/// [Class] is a rich information class that holds settings and information about your classes.
+/// [HistoricalClass] is a rich information class that holds settings and information about your classes.
 ///
 /// **Some Things to Note**
 /// * [classLevel] is set by the developer or user, not automatically retrieved.
 /// * [credits] is set by the developer or user, not automatically retrieved.
-class Class {
+class HistoricalClass {
   String name;
   List<String> grades;
   double credits;
   ClassLevel classLevel;
 
-  Class(this.name);
+  HistoricalClass(this.name);
 
-  Class.fromJson(Map<String, dynamic> json)
+  HistoricalClass.fromJson(Map<String, dynamic> json)
       : name = json['name'],
         grades = getGradesFromEncodedGradesList(json['grades']),
         credits = json['credits'],

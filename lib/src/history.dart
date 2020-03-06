@@ -67,7 +67,7 @@ class HistoryAccessor {
         } else if (!firstElemType.contains('style="vertical-align:bottom"')) {
           type = 'classandgrades';
           className = docFrag.querySelector('body').text;
-          currentYear.classes.add(Class(className));
+          currentYear.classes.add(HistoricalClass(className));
           currentYear.classes.last.grades = List<String>();
         }
 

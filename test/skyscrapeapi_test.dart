@@ -7,8 +7,7 @@ import 'dart:io';
 void main() async {
   //String url = 'https://skyward-alvinprod.iscorp.com/scripts/wsisa.dll/WService=wsedualvinisdtx/seplog01.w';
   String url = 'https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w';
-  var skyward = SkywardAPICore(
-      url);
+  var skyward;
 
   var credentialFile = File('test/testCredentials.txt');
   var settingsFile = File('test/testSettings.skyTest');
@@ -70,11 +69,11 @@ void main() async {
     test('test speed', () async{
       await skyward.initNewAccount();
       skyward.switchUserIndex(1);
-      print(await skyward.getGradeBookGrades(await skyward.getGradeBookTerms()));
-      print(await skyward.getGradeBookGrades(await skyward.getGradeBookTerms()));
+      print(await skyward.getGradebook(await skyward.getTerms()));
+      print(await skyward.getGradebook(await skyward.getTerms()));
       await skyward.initNewAccount();
       skyward.switchUserIndex(1);
-      print(await skyward.getGradeBookGrades(await skyward.getGradeBookTerms()));
+      print(await skyward.getGradebook(await skyward.getTerms()));
     });
   });
 
@@ -101,21 +100,21 @@ void main() async {
       skyward.switchUserIndex(2);
 
       try {
-        terms = (await skyward.getGradeBookTerms());
+        terms = (await skyward.getTerms());
       } catch (e, s) {
         print('Should not fail: ' + s.toString());
         throw SkywardError('SHOULD SUCCEED');
       }
 
       try {
-        gradebook = await skyward.getGradeBookGrades(terms);
+        gradebook = await skyward.getGradebook(terms);
       } catch (e) {
         print('Should not fail: ' + e.toString());
         throw SkywardError('SHOULD SUCCEED');
       }
 
       try {
-        gradebook = await skyward.getGradeBookGrades(null);
+        gradebook = await skyward.getGradebook(null);
       } catch (e) {
         print('On purpose failed: ' + e.toString());
       }
@@ -125,21 +124,19 @@ void main() async {
     test('test login & get gradebook second', () async {
       skyward.loginSessionRequiredBodyElements['dwd'] =
           'ON_PURPOSE_TRY_TO_GET_ERROR';
-      skyward = SkywardAPICore(
-          url);
-      skyward.getSkywardAuthenticationCodes(user, pass);
+      skyward = SkyCore(url, user, pass);
       await skyward.initNewAccount();
       skyward.switchUserIndex(1);
 
       try {
-        terms = (await skyward.getGradeBookTerms());
+        terms = (await skyward.getTerms());
       } catch (e, s) {
         print('Should not fail: ' + s.toString());
         throw SkywardError('SHOULD SUCCEED');
       }
 
       try {
-        gradebook = await skyward.getGradeBookGrades(terms);
+        gradebook = await skyward.getGradebook(terms);
       } catch (e) {
         print('Should not fail: ' + e.toString());
         throw SkywardError('SHOULD SUCCEED');
@@ -149,14 +146,14 @@ void main() async {
       skyward.switchUserIndex(2);
 
       try {
-        terms = (await skyward.getGradeBookTerms());
+        terms = (await skyward.getTerms());
       } catch (e, s) {
         print('Should not fail: ' + s.toString());
         throw SkywardError('SHOULD SUCCEED');
       }
 
       try {
-        gradebook = await skyward.getGradeBookGrades(terms);
+        gradebook = await skyward.getGradebook(terms);
       } catch (e) {
         print('Should not fail: ' + e.toString());
         throw SkywardError('SHOULD SUCCEED');
@@ -262,21 +259,21 @@ void main() async {
 
     test('test login & get gradebook', () async {
       try {
-        terms = (await skyward.getGradeBookTerms());
+        terms = (await skyward.getTerms());
       } catch (e) {
         print('Should not fail: ' + e);
         throw SkywardError('SHOULD SUCCEED');
       }
 
       try {
-        gradebook = await skyward.getGradeBookGrades(terms);
+        gradebook = await skyward.getGradebook(terms);
       } catch (e) {
         print('Should not fail: ' + e.toString());
         throw SkywardError('SHOULD SUCCEED');
       }
 
       try {
-        gradebook = await skyward.getGradeBookGrades(null);
+        gradebook = await skyward.getGradebook(null);
       } catch (e) {
         print('On purpose failed: ' + e.toString());
       }

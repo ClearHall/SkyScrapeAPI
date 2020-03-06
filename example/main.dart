@@ -24,14 +24,14 @@ void main() async {
   }
 
   try {
-    terms = (await skyward.getGradeBookTerms());
+    terms = (await skyward.getTerms());
   } catch (e) {
     print('Should not fail: ' + e);
     throw SkywardError('SHOULD SUCCEED');
   }
 
   try {
-    gradeBook = await skyward.getGradeBookGrades(terms);
+    gradeBook = await skyward.getGradebook(terms);
   } catch (e) {
     print('Should not fail: ' + e.toString());
     throw SkywardError('SHOULD SUCCEED');

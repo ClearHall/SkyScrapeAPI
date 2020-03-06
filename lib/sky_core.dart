@@ -17,7 +17,7 @@ import 'src/history.dart';
 ///
 /// Skyward API Core uses your [_user] and your [_pass] to retrieve your [loginSessionRequiredBodyElements] from your [_baseURL] to get a login session.
 /// [_baseURL] is a private value and cannot be modified after it is created.
-class SkywardAPICore {
+class SkyCore {
   /// Login session requirements retrieved
   Map<String, String> loginSessionRequiredBodyElements;
 
@@ -55,7 +55,7 @@ class SkywardAPICore {
   /// Constructor that instantiates [_baseURL].
   ///
   /// If [_baseURL] contains extra materials, it'll be cut down to the last "/"
-  SkywardAPICore(this._baseURL,
+  SkyCore(this._baseURL, this._user, this._pass,
       {this.shouldRefreshWhenFailedLogin = true, this.refreshTimes = 10}) {
     if (this.shouldRefreshWhenFailedLogin && this.refreshTimes < 1)
       throw SkywardError('Refresh times cannot be set to a value less than 1');
@@ -67,6 +67,8 @@ class SkywardAPICore {
       _baseURL = _baseURL.substring(
               0, _baseURL.indexOf('wsEAplus') + 'wsEAplus'.length) +
           "/";
+
+    _getSkywardAuthenticationCodes(_user, _pass);
   }
 
   /// If logging into Skyward succeeded
@@ -78,7 +80,7 @@ class SkywardAPICore {
   ///
   /// **TIP**
   /// You should call [initNewAccount] if you are initializing a new account, unless you are sure that the account you will be using is a student account.
-  Future<bool> getSkywardAuthenticationCodes(String u, String p, {int timesRan = 0}) async {
+  Future<bool> _getSkywardAuthenticationCodes(String u, String p, {int timesRan = 0}) async {
     if (timesRan > refreshTimes) throw SkywardError('Maintenence error.');
     if (_user != u || _pass != p) {
       _user = u;
@@ -93,7 +95,7 @@ class SkywardAPICore {
       loginSessionRequiredBodyElements = loginSessionMap;
       return true;
     } else if (shouldRefreshWhenFailedLogin) {
-      return getSkywardAuthenticationCodes(u, p, timesRan: timesRan + 1);
+      return _getSkywardAuthenticationCodes(u, p, timesRan: timesRan + 1);
     } else
       return false;
   }
@@ -102,7 +104,7 @@ class SkywardAPICore {
   ///
   /// WIP: Messages not implemented yet.
   /// The function checks for children accounts and initializes them if found. It also automatically initializes Skyward messages for you.
-  initNewAccount({int timesRan = 0}) async {
+  void initNewAccount({int timesRan = 0}) async {
     List a = await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
       Document doc = parse(html);
       String delim = "sff.sv('sessionid', '";
@@ -211,7 +213,7 @@ class SkywardAPICore {
     } catch (e, s) {
       print(s.toString());
       if (shouldRefreshWhenFailedLogin) {
-        await getSkywardAuthenticationCodes(_user, _pass);
+        await _getSkywardAuthenticationCodes(_user, _pass);
         return _useSpecifiedFunctionsToRetrieveHTML(
             page, parseHTML, timesRan + 1,
             modifyLoginSess: modifyLoginSess);
@@ -244,14 +246,14 @@ class SkywardAPICore {
   }
 
   /// The terms retrieved from the grade book HTML. Returns a list of [Term].
-  Future<List<Term>> getGradeBookTerms() async {
+  Future<List<Term>> getTerms() async {
     _gradeBookList = null;
     await _initGradeBook();
     return GradebookAccessor.getTermsFromDocCode(_gradeBookList);
   }
 
   /// The grade boxes retrieved from grade book HTML. Returns a list of [GridBox].
-  Future<List<GridBox>> getGradeBookGrades(List<Term> terms) async {
+  Future<List<GridBox>> getGradebook(List<Term> terms) async {
     try {
       await _initGradeBook();
       return GradebookAccessor.getGradeBoxesFromDocCode(_gradeBookList, terms);
