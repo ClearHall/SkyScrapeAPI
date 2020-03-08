@@ -1,3 +1,7 @@
+## [3.0.0+beta] - Major Refactor
+
+Makes huge changes in how the API works. More documentation will be given.
+
 ## [2.3.6+2] - Bug Fix
 
 Fixed dependencies
