@@ -103,7 +103,7 @@ class User {
   Child _currentAccount;
 
   /// The name of the current user.
-  String currentUser;
+  Future _homePage;
 
   User(this._baseURL, this.shouldRefreshWhenFailedLogin, this.refreshTimes,
       this._user, this._pass) {
@@ -123,7 +123,7 @@ class User {
   ///
   /// The function checks for children accounts and initializes them if found. It also automatically initializes Skyward messages for you.
   void _initNewAccount({int timesRan = 0}) {
-    Future a = _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
+    _homePage = _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
       Document doc = parse(html);
       String delim = "sff.sv('sessionid', '";
       int startInd = html.indexOf(delim) + delim.length;
@@ -140,9 +140,8 @@ class User {
       ];
     }, timesRan);
 
-    a.whenComplete(() => (val){
+    _homePage.whenComplete(() => (val){
       _children = val[0];
-      currentUser = val[1];
       if (_children != null){
         _isParent = true;
         _children.removeAt(0);
@@ -169,6 +168,11 @@ class User {
       return login(timesRan: timesRan + 1);
     } else
       return false;
+  }
+
+  Future<String> getName() async{
+    List a = await _homePage;
+    return a[1];
   }
 
   Future<List<Message>> getMessages({int timesRan = 0}) async {

@@ -80,6 +80,7 @@ void main() async {
       User person = await skyward.loginWith(user, pass);
       //person.switchUserIndex(1);
 
+      print(await person.getName());
       try {
         terms = await person.getTerms();
       } catch (e) {
@@ -118,6 +119,7 @@ void main() async {
         throw SkywardError('SHOULD SUCCEED');
       }
 
+      print(await person.getName());
       print(terms);
       print(gradebook);
     });
