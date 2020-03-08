@@ -15,7 +15,7 @@ import 'src/history.dart';
 
 /// Skyward API Core is the heart of the API. It is essentially the only class you need to really use the API.
 ///
-/// Skyward API Core uses your [_user] and your [_pass] to retrieve your [loginSessionRequiredBodyElements] from your [_baseURL] to get a login session.
+/// Skyward API Core uses your [_user] and your [_pass] to retrieve your [_loginCache] from your [_baseURL] to get a login session.
 /// [_baseURL] is a private value and cannot be modified after it is created.
 class SkyCore {
   /// Base URL to use for skyward page navigation
@@ -71,7 +71,7 @@ class SkyCore {
 
 class User {
   /// Login session requirements retrieved
-  Map<String, String> loginSessionRequiredBodyElements;
+  Map<String, String> _loginCache;
 
   /// Base URL to use for skyward page navigation
   ///
@@ -129,7 +129,7 @@ class User {
       int startInd = html.indexOf(delim) + delim.length;
       String scrapedSessionid =
           html.substring(startInd, html.indexOf("'", startInd));
-      loginSessionRequiredBodyElements['sessionid'] = scrapedSessionid;
+      _loginCache['sessionid'] = scrapedSessionid;
       return [
         ParentUtils.checkForParent(doc),
         doc
@@ -140,7 +140,7 @@ class User {
       ];
     }, timesRan);
 
-    _homePage.whenComplete(() => (val){
+    _homePage.then((val){
       _children = val[0];
       if (_children != null){
         _isParent = true;
@@ -148,6 +148,15 @@ class User {
         switchUserIndex(0);
       }
     });
+  }
+
+  void debugPrint(){
+    print('Debug Log');
+    print('Login Session Elements: $_loginCache');
+    print('Base URL: $_baseURL');
+    print('Credentials: \n\tUsername: $_user\n\tPassword: $_pass');
+    print('Settings: \n\tRefresh Times: $refreshTimes\n\tShould Refresh Login Credentials: $shouldRefreshWhenFailedLogin');
+    print('Parent account? $_isParent');
   }
 
   bool isParent() {
@@ -161,7 +170,7 @@ class User {
     var loginSessionMap =
         await SkywardAuthenticator.getNewSessionCodes(_user, _pass, _baseURL);
     if (loginSessionMap != null) {
-      loginSessionRequiredBodyElements = loginSessionMap;
+      _loginCache = loginSessionMap;
       _initNewAccount();
       return true;
     } else if (shouldRefreshWhenFailedLogin) {
@@ -183,7 +192,7 @@ class User {
       int startInd = html.indexOf(delim) + delim.length;
       String scrapedSessionid =
           html.substring(startInd, html.indexOf("'", startInd));
-      loginSessionRequiredBodyElements['sessionid'] = scrapedSessionid;
+      _loginCache['sessionid'] = scrapedSessionid;
       var tmp = doc
           .getElementById('MessageFeed')
           ?.querySelectorAll('.feedItem.allowRemove');
@@ -228,15 +237,25 @@ class User {
     }
   }
 
+  List<String> getChildrenNames(){
+    if(isParent()) {
+      List<String> list = List();
+      for (Child child in _children) {
+        list.add(child.name);
+      }
+      return list;
+    } else return null;
+  }
+
   int numberOfChildren() {
-    if (_children != null)
+    if (isParent())
       return _children.length;
     else
       return -1;
   }
 
   Child retrieveAccountIfParent() {
-    if (_children != null)
+    if (isParent())
       return _currentAccount;
     else
       return null;
@@ -253,7 +272,7 @@ class User {
     if (_currentAccount?.dataID == '0')
       throw SkywardError('Cannot use index 0 of children. It is ALL STUDENTS.');
     try {
-      Map postcodes = Map.from(loginSessionRequiredBodyElements);
+      Map postcodes = Map.from(_loginCache);
       if (_currentAccount != null)
         postcodes['studentId'] = _currentAccount.dataID;
       if (modifyLoginSess != null) {
@@ -262,14 +281,15 @@ class User {
       html = await attemptPost(_baseURL + page, postcodes);
 
       if (parseHTML != null) {
-        if(debug) print('ran');
+        if(debug) print(html);
         return parseHTML(html);
       } else {
         if (html == null) throw SkywardError('HTML Still Null');
         return html;
       }
     } catch (e, s) {
-      print(s.toString());
+      print(e.toString());
+      print('This error could be caused by a parent account not finished initializing or expired session code.');
       if (shouldRefreshWhenFailedLogin) {
         await login();
         return _useSpecifiedFunctionsToRetrieveHTML(
