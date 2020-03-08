@@ -29,7 +29,7 @@ class GradebookAccessor {
 
   static Gradebook getGradeBoxesFromDocCode(List infoList, List<Term> terms) {
     Gradebook gradebook = new Gradebook();
-    gradebook.quickAssignments = new List<Assignment>();
+    gradebook.quickAssignments = new List<NavigableAssignment>();
     List<Class> classes = [];
     var parsedHTML = parse(infoList[2]);
     for (var sffBrak in infoList[1]) {
@@ -48,7 +48,7 @@ class GradebookAccessor {
             }
           }
           String assignmentLabels = cDoc.querySelectorAll('span')[0].text;
-          Assignment temp = Assignment(
+          NavigableAssignment temp = NavigableAssignment(
               assignmentInfoElem.attributes['data-sid'],
               assignmentInfoElem.attributes['data-aid'],
               assignmentInfoElem.attributes['data-gid'],

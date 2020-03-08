@@ -43,7 +43,7 @@ class Term {
 
 class Gradebook{
   List<Class> classes;
-  List<Assignment> quickAssignments;
+  List<NavigableAssignment> quickAssignments;
 }
 
 class Class {
@@ -99,13 +99,13 @@ class Grade extends GradebookNode {
   }
 }
 
-/// [AssignmentsGridBox] is the parent of multiple child types that allow for more categorization
-class AssignmentsGridBox {
+/// [Assignment] is the parent of multiple child types that allow for more categorization
+class Assignment {
   /// All the attributes like grades, post values, and more.
   /// **NOTE: THIS MAP IS NOT SAFE TO MODIFY IN YOUR CODE. DO IT WITH CAUTION**
   Map<String, String> attributes;
 
-  AssignmentsGridBox(this.attributes);
+  Assignment(this.attributes);
 
   @override
   String toString() {
@@ -142,21 +142,21 @@ class AssignmentsGridBox {
   }
 }
 
-/// [Assignment] is an assignment scraped from the API
+/// [NavigableAssignment] is an assignment scraped from the API
 ///
-/// [Assignment] is really hard to make, so custom declarations of Assignments is highly discouraged.
-class Assignment extends AssignmentsGridBox {
-  /// Post required attribute. Do not worry about this value if you do not plan to modify [Assignment]
+/// [NavigableAssignment] is really hard to make, so custom declarations of Assignments is highly discouraged.
+class NavigableAssignment extends Assignment {
+  /// Post required attribute. Do not worry about this value if you do not plan to modify [NavigableAssignment]
   String studentID;
 
-  /// Post required attribute. Do not worry about this value if you do not plan to modify [Assignment]
+  /// Post required attribute. Do not worry about this value if you do not plan to modify [NavigableAssignment]
   String assignmentID;
 
-  /// Post required attribute. Do not worry about this value if you do not plan to modify [Assignment]
+  /// Post required attribute. Do not worry about this value if you do not plan to modify [NavigableAssignment]
   String gbID;
   String assignmentName;
 
-  Assignment(this.studentID, this.assignmentID, this.gbID, this.assignmentName,
+  NavigableAssignment(this.studentID, this.assignmentID, this.gbID, this.assignmentName,
       Map<String, String> attributes)
       : super(attributes);
 
@@ -169,7 +169,7 @@ class Assignment extends AssignmentsGridBox {
 /// [CategoryHeader] is an category scraped from the API
 ///
 /// [CategoryHeader] marks the beginning of a new Category, so it contains weight information and juicy stuff that allows you to distinguish assignments from categories
-class CategoryHeader extends AssignmentsGridBox {
+class CategoryHeader extends Assignment {
   String catName;
   String weight;
 
@@ -182,25 +182,20 @@ class CategoryHeader extends AssignmentsGridBox {
   }
 }
 
-/// [AssignmentInfoBox] contains the attribute name and the value that the attribute holds
+/// [AssignmentProperty] contains the attribute name and the value that the attribute holds
 /// [infoName] and [info] are both paired together to declare a specific value. For example, "Due Date" and "9/3/19"
-class AssignmentInfoBox {
+class AssignmentProperty {
   String infoName;
   String info;
 
-  /// UI Message for apps. It essentially combines the [infoName] and [info].
-  String getUIMessage() {
+  AssignmentProperty(this.infoName, this.info);
+
+  @override
+  String toString() {
     return infoName +
         (!infoName.endsWith(":") ? ":" : "") +
         ' ' +
         (info != null ? info : "");
-  }
-
-  AssignmentInfoBox(this.infoName, this.info);
-
-  @override
-  String toString() {
-    return 'AssignmentInfoBox{infoName: $infoName, info: $info}';
   }
 }
 

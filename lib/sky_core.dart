@@ -142,7 +142,11 @@ class User {
 
     _children = a[0];
     currentUser = a[1];
-    if (_children != null) _isParent = true;
+    if (_children != null){
+      _isParent = true;
+      _children.removeAt(0);
+      switchUserIndex(0);
+    }
   }
 
   bool isParent() {
@@ -280,7 +284,7 @@ class User {
   /// [timeRan] is the number of times the function ran. To avoid infinite loops, the function will throw an error if [timeRan] reaches a value greater than 10.
   /// The function will attempt to log back in when your session expires or an errors occurs.
   /// The function initializes the grade book HTML for parsing use.
-  _initGradeBook({int timeRan = 0, forceReinit = false}) async {
+  _initGradeBook({int timeRan = 0}) async {
     if (timeRan > this.refreshTimes)
       throw SkywardError('Gradebook initializing took too long. Failing!');
     if (_children != null && _currentAccount == null)
@@ -288,10 +292,8 @@ class User {
           'It looks like this is a parent account. Please choose a child account before continuing!');
     try {
       if (_internalGradebookStorage == null) {
-        _internalGradebookStorage =
-            GradebookAccessor.initGradebookAndGradesHTML(
-                await _useSpecifiedFunctionsToRetrieveHTML(
-                    'sfgradebook001.w', null, timeRan));
+        _internalGradebookStorage = await _useSpecifiedFunctionsToRetrieveHTML(
+                    'sfgradebook001.w', GradebookAccessor.initGradebookAndGradesHTML, timeRan);
       }
       _terms = GradebookAccessor.getTermsFromDocCode(_internalGradebookStorage);
       _gradebook = GradebookAccessor.getGradeBoxesFromDocCode(
@@ -304,42 +306,19 @@ class User {
   }
 
   /// The terms retrieved from the grade book HTML. Returns a list of [Term].
-  /// What [forceRefresh] does is if it's set true, it will force refresh the grade book instead of using cached results.
-  Future<List<Term>> getTerms({timesRan = 0, forceRefresh = false}) async {
-    if (timesRan <= refreshTimes) {
-      _internalGradebookStorage = null;
-      await _initGradeBook();
-      try {
-        return GradebookAccessor.getTermsFromDocCode(_internalGradebookStorage);
-      } catch (e) {
-        print("It looks like the webpage is broken... Trying again.");
-        getTerms(timesRan: timesRan + 1);
-      }
-    } else {
-      throw SkywardError(
-          "Ran too many times. Exiting to prevent infinite loop.");
-    }
+  Future<List<Term>> getTerms({timesRan = 0}) async {
+    await _initGradeBook();
+    return _terms;
   }
 
-  /// The grade boxes retrieved from grade book HTML. Returns a list of [GridBox].
+  /// The gradebook retrieved!
   Future<Gradebook> getGradebook({timesRan = 0}) async {
-    if (timesRan <= refreshTimes) {
-      await _initGradeBook();
-      try {
-        return GradebookAccessor.getGradeBoxesFromDocCode(
-            _internalGradebookStorage, _terms);
-      } catch (e) {
-        print("It looks like the webpage is broken... Trying again.");
-        getGradebook(timesRan: timesRan + 1);
-      }
-    } else {
-      throw SkywardError(
-          "Ran too many times. Exiting to prevent infinite loop.");
-    }
+    await _initGradeBook();
+    return _gradebook;
   }
 
-  /// The assignments from a specific term. Returns a list of [AssignmentsGridBox].
-  Future<List<AssignmentsGridBox>> getAssignmentsFromGradeBox(Grade gradeBox,
+  /// The assignments from a specific term. Returns a list of [Assignment].
+  Future<List<Assignment>> getAssignmentsFrom(Grade gradeBox,
       {int timesRan = 0}) async {
     return await _useSpecifiedFunctionsToRetrieveHTML(
         'sfgradebook001.w', AssignmentAccessor.getAssignmentsDialog, timesRan,
@@ -352,9 +331,9 @@ class User {
     });
   }
 
-  /// The assignment info boxes from a specific assignment. Returns a list of [AssignmentInfoBox].
-  Future<List<AssignmentInfoBox>> getAssignmentInfoFromAssignment(
-      Assignment assignment,
+  /// The assignment info boxes from a specific assignment. Returns a list of [AssignmentProperty].
+  Future<List<AssignmentProperty>> getAssignmentDetailsFrom(
+      NavigableAssignment assignment,
       {int timesRan = 0}) async {
     return await _useSpecifiedFunctionsToRetrieveHTML(
         'sfdialogs.w',

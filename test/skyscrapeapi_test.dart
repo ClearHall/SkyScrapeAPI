@@ -78,7 +78,7 @@ void main() async {
     test('test regular usage', () async {
       skyward = SkyCore(url);
       User person = await skyward.loginWith(user, pass);
-      person.switchUserIndex(1);
+      //person.switchUserIndex(1);
 
       try {
         terms = await person.getTerms();
@@ -94,7 +94,7 @@ void main() async {
         throw SkywardError('SHOULD SUCCEED');
       }
 
-      print(person.numberOfChildren());
+      //print(person.numberOfChildren());
 
 //      try {
 //        assignment = (await skyward.getAssignmentsFromGradeBox(gradeBook[indexOfTestingGradeBook]));
