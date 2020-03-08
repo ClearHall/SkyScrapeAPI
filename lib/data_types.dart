@@ -44,6 +44,11 @@ class Term {
 class Gradebook{
   List<Class> classes;
   List<Assignment> quickAssignments;
+
+  @override
+  String toString() {
+    return 'Gradebook{classes: $classes, quickAssignments: $quickAssignments}';
+  }
 }
 
 class Class {
@@ -56,6 +61,13 @@ class Class {
   Class(this.teacherName, this.timePeriod, this.courseName, {this.grades}){
     grades = List<GradebookNode>();
   }
+
+  @override
+  String toString() {
+    return 'Class{teacherName: $teacherName, timePeriod: $timePeriod, courseName: $courseName, grades: $grades}';
+  }
+
+
 }
 
 /// [GradebookNode] is a root that helps distinguish the difference between grades and teacher information

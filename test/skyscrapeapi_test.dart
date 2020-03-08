@@ -18,8 +18,8 @@ void main() async {
   int loginAttemptsTest = 10;
   bool skipLongTestTimes = true;
 
-  var terms;
-  var gradebook;
+  List<Term> terms;
+  Gradebook gradebook;
   var assignment;
 
   var user;
@@ -111,7 +111,8 @@ void main() async {
 //      }
 
       try {
-        print(await person.getHistory());
+        print("TeST");
+        print(await person.getAssignmentDetailsFrom(gradebook.quickAssignments[0]));
       } catch (e) {
         print('Should succeed: ${e.toString()}');
         throw SkywardError('SHOULD SUCCEED');
