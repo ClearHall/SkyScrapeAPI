@@ -13,6 +13,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
-      run: flutter pub get
+      run: pub get
     - name: Run tests
       run: pub run test
+      env:
+        USERNAME: ${{ secrets.USERNAME }}
+        PASSWORD: ${{ secrets.PASSWORD }}
