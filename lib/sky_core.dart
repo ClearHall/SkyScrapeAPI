@@ -122,8 +122,8 @@ class User {
   /// Initializes messages, children accounts, and student name.
   ///
   /// The function checks for children accounts and initializes them if found. It also automatically initializes Skyward messages for you.
-  void _initNewAccount({int timesRan = 0}) async {
-    List a = await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
+  void _initNewAccount({int timesRan = 0}) {
+    Future a = _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
       Document doc = parse(html);
       String delim = "sff.sv('sessionid', '";
       int startInd = html.indexOf(delim) + delim.length;
@@ -140,13 +140,15 @@ class User {
       ];
     }, timesRan);
 
-    _children = a[0];
-    currentUser = a[1];
-    if (_children != null){
-      _isParent = true;
-      _children.removeAt(0);
-      switchUserIndex(0);
-    }
+    a.whenComplete(() => (val){
+      _children = val[0];
+      currentUser = val[1];
+      if (_children != null){
+        _isParent = true;
+        _children.removeAt(0);
+        switchUserIndex(0);
+      }
+    });
   }
 
   bool isParent() {
@@ -161,7 +163,7 @@ class User {
         await SkywardAuthenticator.getNewSessionCodes(_user, _pass, _baseURL);
     if (loginSessionMap != null) {
       loginSessionRequiredBodyElements = loginSessionMap;
-      await _initNewAccount();
+      _initNewAccount();
       return true;
     } else if (shouldRefreshWhenFailedLogin) {
       return login(timesRan: timesRan + 1);
@@ -238,7 +240,7 @@ class User {
 
   _useSpecifiedFunctionsToRetrieveHTML(
       String page, Function parseHTML, timesRan,
-      {Function(Map) modifyLoginSess}) async {
+      {Function(Map) modifyLoginSess, bool debug = false}) async {
     if (timesRan > refreshTimes)
       throw SkywardError(
           'Still could not retrieve correct information from assignments');
@@ -256,6 +258,7 @@ class User {
       html = await attemptPost(_baseURL + page, postcodes);
 
       if (parseHTML != null) {
+        if(debug) print('ran');
         return parseHTML(html);
       } else {
         if (html == null) throw SkywardError('HTML Still Null');
@@ -292,8 +295,10 @@ class User {
           'It looks like this is a parent account. Please choose a child account before continuing!');
     try {
       if (_internalGradebookStorage == null) {
+        print('test');
         _internalGradebookStorage = await _useSpecifiedFunctionsToRetrieveHTML(
                     'sfgradebook001.w', GradebookAccessor.initGradebookAndGradesHTML, timeRan);
+        print('test1');
       }
       _terms = GradebookAccessor.getTermsFromDocCode(_internalGradebookStorage);
       _gradebook = GradebookAccessor.getGradeBoxesFromDocCode(
