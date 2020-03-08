@@ -53,7 +53,9 @@ class Class {
 
   List<GradebookNode> grades;
 
-  Class(this.teacherName, this.timePeriod, this.courseName, {this.grades});
+  Class(this.teacherName, this.timePeriod, this.courseName, {this.grades}){
+    grades = List<GradebookNode>();
+  }
 }
 
 /// [GradebookNode] is a root that helps distinguish the difference between grades and teacher information
