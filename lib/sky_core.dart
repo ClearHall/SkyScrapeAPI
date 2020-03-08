@@ -317,8 +317,8 @@ class User {
     return _gradebook;
   }
 
-  /// The assignments from a specific term. Returns a list of [Assignment].
-  Future<List<Assignment>> getAssignmentsFrom(Grade gradeBox,
+  /// The assignments from a specific term. Returns a list of [AssignmentNode].
+  Future<List<AssignmentNode>> getAssignmentsFrom(Grade gradeBox,
       {int timesRan = 0}) async {
     return await _useSpecifiedFunctionsToRetrieveHTML(
         'sfgradebook001.w', AssignmentAccessor.getAssignmentsDialog, timesRan,
@@ -333,7 +333,7 @@ class User {
 
   /// The assignment info boxes from a specific assignment. Returns a list of [AssignmentProperty].
   Future<List<AssignmentProperty>> getAssignmentDetailsFrom(
-      NavigableAssignment assignment,
+      Assignment assignment,
       {int timesRan = 0}) async {
     return await _useSpecifiedFunctionsToRetrieveHTML(
         'sfdialogs.w',

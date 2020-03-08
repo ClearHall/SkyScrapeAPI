@@ -43,7 +43,7 @@ class Term {
 
 class Gradebook{
   List<Class> classes;
-  List<NavigableAssignment> quickAssignments;
+  List<Assignment> quickAssignments;
 }
 
 class Class {
@@ -99,13 +99,13 @@ class Grade extends GradebookNode {
   }
 }
 
-/// [Assignment] is the parent of multiple child types that allow for more categorization
-class Assignment {
+/// [AssignmentNode] is the parent of multiple child types that allow for more categorization
+class AssignmentNode {
   /// All the attributes like grades, post values, and more.
   /// **NOTE: THIS MAP IS NOT SAFE TO MODIFY IN YOUR CODE. DO IT WITH CAUTION**
   Map<String, String> attributes;
 
-  Assignment(this.attributes);
+  AssignmentNode(this.attributes);
 
   @override
   String toString() {
@@ -142,21 +142,21 @@ class Assignment {
   }
 }
 
-/// [NavigableAssignment] is an assignment scraped from the API
+/// [Assignment] is an assignment scraped from the API
 ///
-/// [NavigableAssignment] is really hard to make, so custom declarations of Assignments is highly discouraged.
-class NavigableAssignment extends Assignment {
-  /// Post required attribute. Do not worry about this value if you do not plan to modify [NavigableAssignment]
+/// [Assignment] is really hard to make, so custom declarations of Assignments is highly discouraged.
+class Assignment extends AssignmentNode {
+  /// Post required attribute. Do not worry about this value if you do not plan to modify [Assignment]
   String studentID;
 
-  /// Post required attribute. Do not worry about this value if you do not plan to modify [NavigableAssignment]
+  /// Post required attribute. Do not worry about this value if you do not plan to modify [Assignment]
   String assignmentID;
 
-  /// Post required attribute. Do not worry about this value if you do not plan to modify [NavigableAssignment]
+  /// Post required attribute. Do not worry about this value if you do not plan to modify [Assignment]
   String gbID;
   String assignmentName;
 
-  NavigableAssignment(this.studentID, this.assignmentID, this.gbID, this.assignmentName,
+  Assignment(this.studentID, this.assignmentID, this.gbID, this.assignmentName,
       Map<String, String> attributes)
       : super(attributes);
 
@@ -169,7 +169,7 @@ class NavigableAssignment extends Assignment {
 /// [CategoryHeader] is an category scraped from the API
 ///
 /// [CategoryHeader] marks the beginning of a new Category, so it contains weight information and juicy stuff that allows you to distinguish assignments from categories
-class CategoryHeader extends Assignment {
+class CategoryHeader extends AssignmentNode {
   String catName;
   String weight;
 

@@ -4,7 +4,7 @@ import '../data_types.dart';
 class AssignmentAccessor {
   static getAssignmentsDialog(String assignmentPageHTML) {
     var doc = DocumentFragment.html(assignmentPageHTML);
-    List<Assignment> gridBoxes = [];
+    List<AssignmentNode> gridBoxes = [];
     Element table =
         doc.querySelector('table[id*=grid_stuAssignmentSummaryGrid]');
     List<String> headers = [];
@@ -52,7 +52,7 @@ class AssignmentAccessor {
           attributes.add(td.text);
         }
         if (assignment != null)
-          gridBoxes.add(NavigableAssignment(
+          gridBoxes.add(Assignment(
               assignment.attributes['data-sid'],
               assignment.attributes['data-aid'],
               assignment.attributes['data-gid'],
@@ -62,7 +62,7 @@ class AssignmentAccessor {
           for (int i = attributes.length; i < headers.length; i++) {
             attributes.add("");
           }
-          gridBoxes.add(NavigableAssignment(null, null, null, attributes.first,
+          gridBoxes.add(Assignment(null, null, null, attributes.first,
               Map.fromIterables(headers, attributes)));
         }
       }
