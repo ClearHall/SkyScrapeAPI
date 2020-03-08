@@ -10,7 +10,7 @@ import 'src/gradebook.dart';
 import 'src/assignment.dart';
 import 'data_types.dart';
 import 'src/assignment_info.dart';
-import 'src/parent_account_manager.dart';
+import 'src/parent.dart';
 import 'src/history.dart';
 
 /// Skyward API Core is the heart of the API. It is essentially the only class you need to really use the API.
@@ -18,6 +18,58 @@ import 'src/history.dart';
 /// Skyward API Core uses your [_user] and your [_pass] to retrieve your [loginSessionRequiredBodyElements] from your [_baseURL] to get a login session.
 /// [_baseURL] is a private value and cannot be modified after it is created.
 class SkyCore {
+  /// Base URL to use for skyward page navigation
+  ///
+  /// You may just enter your login URL for skyward, though it is recommended to use a base URL.
+  /// The API will automatically remove anything that comes after wsEAplus in your URL.
+  ///
+  /// If your base URL requires wsEAplus, contact the developer at hunter.han@gmail.com and he will help you
+  String _baseURL;
+
+  /// SkyMobile will automatically attempt to log back in if your session expired or too many requests were sent at once and skyward is refusing to respond.
+  ///
+  /// If you would like to disable this convenient feature, then you may do so in the constructor.
+  /// If you would like the change the amount of times skyscrapeapi attempts to refresh your account, look at [refreshTimes]
+  bool shouldRefreshWhenFailedLogin;
+
+  /// Constructor that instantiates [_baseURL].
+  ///
+  /// If [_baseURL] contains extra materials, it'll be cut down to the last "/"
+
+  /// If logging into Skyward succeeded
+  ///
+  /// [u] is the username and [p] is the password. The function uses these two parameters to login to skyward and retrieve the necessary items to continue skyward navigation.
+  /// If the operation succeeded and the login requirements were successfully retrieved, the function returns true. If not, the function returns false.
+  ///
+  /// Resets parent accounts and current account names if the username and password applied are different than what was stored before.
+  ///
+  /// **TIP**
+  /// You should call [initNewAccount] if you are initializing a new account, unless you are sure that the account you will be using is a student account.
+
+  SkyCore(this._baseURL, {this.shouldRefreshWhenFailedLogin = true}) {
+    if (!this._baseURL.endsWith('/')) {
+      this._baseURL =
+          this._baseURL.substring(0, this._baseURL.lastIndexOf('/') + 1);
+    }
+    if (_baseURL.contains("wsEAplus"))
+      _baseURL = _baseURL.substring(
+              0, _baseURL.indexOf('wsEAplus') + 'wsEAplus'.length) +
+          "/";
+  }
+
+  Future<User> loginWith(String username, String pass,
+      {refreshTimes: 10}) async {
+    User user = User(
+        _baseURL, shouldRefreshWhenFailedLogin, refreshTimes, username, pass);
+    if (await user.login()) {
+      return user;
+    } else {
+      throw SkywardError("Invalid Credentials");
+    }
+  }
+}
+
+class User {
   /// Login session requirements retrieved
   Map<String, String> loginSessionRequiredBodyElements;
 
@@ -45,18 +97,16 @@ class SkyCore {
   /// Storing username and password for refresh when session expires
   String _user, _pass;
 
-  /// Children accounts if account is a parent. If account is not parent then [children] and [_currentAccount] will stay null.
-  List<SkywardAccount> children;
-  SkywardAccount _currentAccount;
+  /// Children accounts if account is a parent. If account is not parent then [_children] and [_currentAccount] will stay null.
+  bool _isParent = false;
+  List<Child> _children;
+  Child _currentAccount;
 
   /// The name of the current user.
   String currentUser;
 
-  /// Constructor that instantiates [_baseURL].
-  ///
-  /// If [_baseURL] contains extra materials, it'll be cut down to the last "/"
-  SkyCore(this._baseURL, this._user, this._pass,
-      {this.shouldRefreshWhenFailedLogin = true, this.refreshTimes = 10}) {
+  User(this._baseURL, this.shouldRefreshWhenFailedLogin, this.refreshTimes,
+      this._user, this._pass) {
     if (this.shouldRefreshWhenFailedLogin && this.refreshTimes < 1)
       throw SkywardError('Refresh times cannot be set to a value less than 1');
     if (!this._baseURL.endsWith('/')) {
@@ -67,44 +117,12 @@ class SkyCore {
       _baseURL = _baseURL.substring(
               0, _baseURL.indexOf('wsEAplus') + 'wsEAplus'.length) +
           "/";
-
-    _getSkywardAuthenticationCodes(_user, _pass);
-  }
-
-  /// If logging into Skyward succeeded
-  ///
-  /// [u] is the username and [p] is the password. The function uses these two parameters to login to skyward and retrieve the necessary items to continue skyward navigation.
-  /// If the operation succeeded and the login requirements were successfully retrieved, the function returns true. If not, the function returns false.
-  ///
-  /// Resets parent accounts and current account names if the username and password applied are different than what was stored before.
-  ///
-  /// **TIP**
-  /// You should call [initNewAccount] if you are initializing a new account, unless you are sure that the account you will be using is a student account.
-  Future<bool> _getSkywardAuthenticationCodes(String u, String p, {int timesRan = 0}) async {
-    if (timesRan > refreshTimes) throw SkywardError('Maintenence error.');
-    if (_user != u || _pass != p) {
-      _user = u;
-      _pass = p;
-      children = null;
-      _currentAccount = null;
-      currentUser = null;
-    }
-    var loginSessionMap =
-        await SkywardAuthenticator.getNewSessionCodes(_user, _pass, _baseURL);
-    if (loginSessionMap != null) {
-      loginSessionRequiredBodyElements = loginSessionMap;
-      return true;
-    } else if (shouldRefreshWhenFailedLogin) {
-      return _getSkywardAuthenticationCodes(u, p, timesRan: timesRan + 1);
-    } else
-      return false;
   }
 
   /// Initializes messages, children accounts, and student name.
   ///
-  /// WIP: Messages not implemented yet.
   /// The function checks for children accounts and initializes them if found. It also automatically initializes Skyward messages for you.
-  void initNewAccount({int timesRan = 0}) async {
+  void _initNewAccount({int timesRan = 0}) async {
     List a = await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
       Document doc = parse(html);
       String delim = "sff.sv('sessionid', '";
@@ -113,7 +131,7 @@ class SkyCore {
           html.substring(startInd, html.indexOf("'", startInd));
       loginSessionRequiredBodyElements['sessionid'] = scrapedSessionid;
       return [
-        ParentAccountUtils.checkForParent(doc),
+        ParentUtils.checkForParent(doc),
         doc
             .getElementById('sf_UtilityArea')
             ?.querySelector('.sf_utilUser')
@@ -121,8 +139,30 @@ class SkyCore {
             ?.trim()
       ];
     }, timesRan);
-    children = a[0];
+
+    _children = a[0];
     currentUser = a[1];
+    if (_children != null) _isParent = true;
+  }
+
+  bool isParent() {
+    return _isParent;
+  }
+
+  Future<bool> login({int timesRan = 0}) async {
+    if (timesRan > refreshTimes) throw SkywardError('Maintenence error.');
+    if (_user == null || _pass == null)
+      throw SkywardError("User or password has not been initialized!");
+    var loginSessionMap =
+        await SkywardAuthenticator.getNewSessionCodes(_user, _pass, _baseURL);
+    if (loginSessionMap != null) {
+      loginSessionRequiredBodyElements = loginSessionMap;
+      await _initNewAccount();
+      return true;
+    } else if (shouldRefreshWhenFailedLogin) {
+      return login(timesRan: timesRan + 1);
+    } else
+      return false;
   }
 
   Future<List<Message>> getMessages({int timesRan = 0}) async {
@@ -170,16 +210,23 @@ class SkyCore {
 
   /// Switches the private [_currentAccount], if the operation failed, then false would be returned, else it would be false.
   bool switchUserIndex(int newIndex) {
-    if (children == null || newIndex >= children.length) {
+    if (_children == null || newIndex >= _children.length) {
       return false;
     } else {
-      _currentAccount = children[newIndex];
+      _currentAccount = _children[newIndex];
       return true;
     }
   }
 
-  SkywardAccount retrieveAccountIfParent() {
-    if (children != null)
+  int numberOfChildren() {
+    if (_children != null)
+      return _children.length;
+    else
+      return -1;
+  }
+
+  Child retrieveAccountIfParent() {
+    if (_children != null)
       return _currentAccount;
     else
       return null;
@@ -213,7 +260,7 @@ class SkyCore {
     } catch (e, s) {
       print(s.toString());
       if (shouldRefreshWhenFailedLogin) {
-        await _getSkywardAuthenticationCodes(_user, _pass);
+        await login();
         return _useSpecifiedFunctionsToRetrieveHTML(
             page, parseHTML, timesRan + 1,
             modifyLoginSess: modifyLoginSess);
@@ -224,46 +271,76 @@ class SkyCore {
     }
   }
 
-  List _gradeBookList;
+  List _internalGradebookStorage;
+  List<Term> _terms;
+  Gradebook _gradebook;
 
   /// Initializes and scrapes the grade book HTML
   ///
   /// [timeRan] is the number of times the function ran. To avoid infinite loops, the function will throw an error if [timeRan] reaches a value greater than 10.
   /// The function will attempt to log back in when your session expires or an errors occurs.
   /// The function initializes the grade book HTML for parsing use.
-  _initGradeBook({int timeRan = 0}) async {
-    if (_gradeBookList == null) {
-      try {
-        _gradeBookList = GradebookAccessor.initGradebookAndGradesHTML(
-            await _useSpecifiedFunctionsToRetrieveHTML(
-                'sfgradebook001.w', null, timeRan));
-      }catch (e){
-        _gradeBookList = null;
-        print("The webpage has been broken for too long. Trying again.");
-        await _initGradeBook(timeRan: timeRan + 1);
+  _initGradeBook({int timeRan = 0, forceReinit = false}) async {
+    if (timeRan > this.refreshTimes)
+      throw SkywardError('Gradebook initializing took too long. Failing!');
+    if (_children != null && _currentAccount == null)
+      throw SkywardError(
+          'It looks like this is a parent account. Please choose a child account before continuing!');
+    try {
+      if (_internalGradebookStorage == null) {
+        _internalGradebookStorage =
+            GradebookAccessor.initGradebookAndGradesHTML(
+                await _useSpecifiedFunctionsToRetrieveHTML(
+                    'sfgradebook001.w', null, timeRan));
       }
+      _terms = GradebookAccessor.getTermsFromDocCode(_internalGradebookStorage);
+      _gradebook = GradebookAccessor.getGradeBoxesFromDocCode(
+          _internalGradebookStorage, _terms);
+    } catch (e) {
+      _internalGradebookStorage = null;
+      print("Couldn't get your gradebook! Trying again.");
+      await _initGradeBook(timeRan: timeRan + 1);
     }
   }
 
   /// The terms retrieved from the grade book HTML. Returns a list of [Term].
-  Future<List<Term>> getTerms() async {
-    _gradeBookList = null;
-    await _initGradeBook();
-    return GradebookAccessor.getTermsFromDocCode(_gradeBookList);
+  /// What [forceRefresh] does is if it's set true, it will force refresh the grade book instead of using cached results.
+  Future<List<Term>> getTerms({timesRan = 0, forceRefresh = false}) async {
+    if (timesRan <= refreshTimes) {
+      _internalGradebookStorage = null;
+      await _initGradeBook();
+      try {
+        return GradebookAccessor.getTermsFromDocCode(_internalGradebookStorage);
+      } catch (e) {
+        print("It looks like the webpage is broken... Trying again.");
+        getTerms(timesRan: timesRan + 1);
+      }
+    } else {
+      throw SkywardError(
+          "Ran too many times. Exiting to prevent infinite loop.");
+    }
   }
 
   /// The grade boxes retrieved from grade book HTML. Returns a list of [GridBox].
-  Future<List<GridBox>> getGradebook(List<Term> terms) async {
-    try {
+  Future<Gradebook> getGradebook({timesRan = 0}) async {
+    if (timesRan <= refreshTimes) {
       await _initGradeBook();
-      return GradebookAccessor.getGradeBoxesFromDocCode(_gradeBookList, terms);
-    } catch (e) {
-      throw SkywardError('Cannot parse gradebook grades.' + e.toString());
+      try {
+        return GradebookAccessor.getGradeBoxesFromDocCode(
+            _internalGradebookStorage, _terms);
+      } catch (e) {
+        print("It looks like the webpage is broken... Trying again.");
+        getGradebook(timesRan: timesRan + 1);
+      }
+    } else {
+      throw SkywardError(
+          "Ran too many times. Exiting to prevent infinite loop.");
     }
   }
 
   /// The assignments from a specific term. Returns a list of [AssignmentsGridBox].
-  Future<List<AssignmentsGridBox>> getAssignmentsFromGradeBox(GradeBox gradeBox, {int timesRan = 0}) async {
+  Future<List<AssignmentsGridBox>> getAssignmentsFromGradeBox(Grade gradeBox,
+      {int timesRan = 0}) async {
     return await _useSpecifiedFunctionsToRetrieveHTML(
         'sfgradebook001.w', AssignmentAccessor.getAssignmentsDialog, timesRan,
         modifyLoginSess: (codes) {
@@ -276,7 +353,8 @@ class SkyCore {
   }
 
   /// The assignment info boxes from a specific assignment. Returns a list of [AssignmentInfoBox].
-  Future<List<AssignmentInfoBox>> getAssignmentInfoFromAssignment(Assignment assignment,
+  Future<List<AssignmentInfoBox>> getAssignmentInfoFromAssignment(
+      Assignment assignment,
       {int timesRan = 0}) async {
     return await _useSpecifiedFunctionsToRetrieveHTML(
         'sfdialogs.w',

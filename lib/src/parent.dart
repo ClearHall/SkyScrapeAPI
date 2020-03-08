@@ -1,16 +1,16 @@
 import 'package:html/dom.dart';
 import 'package:skyscrapeapi/data_types.dart';
 
-class ParentAccountUtils {
+class ParentUtils {
   /// Tries to get student accounts from a parent. It will return null if no students are found.
-  static List<SkywardAccount> checkForParent(Document doc) {
+  static List<Child> checkForParent(Document doc) {
     List<Element> elems =
         doc.getElementById('sf_StudentList')?.querySelectorAll('a');
 
     if (elems == null) return null;
-    List<SkywardAccount> skywardAccountList = [];
+    List<Child> skywardAccountList = [];
     for (Element htmlStudent in elems) {
-      skywardAccountList.add(SkywardAccount(
+      skywardAccountList.add(Child(
           htmlStudent.attributes['data-nameid'], htmlStudent.text));
     }
     return skywardAccountList;

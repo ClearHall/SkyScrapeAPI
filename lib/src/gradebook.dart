@@ -27,8 +27,10 @@ class GradebookAccessor {
     return terms;
   }
 
-  static getGradeBoxesFromDocCode(List infoList, List<Term> terms) {
-    List<GridBox> gradeBoxes = [];
+  static Gradebook getGradeBoxesFromDocCode(List infoList, List<Term> terms) {
+    Gradebook gradebook = new Gradebook();
+    gradebook.quickAssignments = new List<Assignment>();
+    List<Class> classes = [];
     var parsedHTML = parse(infoList[2]);
     for (var sffBrak in infoList[1]) {
       for (var i = 0; i < sffBrak['c'].length; i++) {
@@ -60,32 +62,29 @@ class GradebookAccessor {
                 grade.toString()
               ]));
 
-          if (!(gradeBoxes.length < 1 ||
-              gradeBoxes.last is AssignmentsListSmaller)) {
-            gradeBoxes.add(AssignmentsListSmaller());
-          }
-          (gradeBoxes.last as AssignmentsListSmaller).assignments.add(temp);
+          gradebook.quickAssignments.add(temp);
           break;
         } else if (gradeElem != null) {
-          GradeBox x = GradeBox(
+          Grade x = Grade(
               gradeElem.attributes['data-cni'],
               Term(gradeElem.attributes['data-lit'],
                   gradeElem.attributes['data-bkt']),
               gradeElem.text,
               gradeElem.attributes['data-sid']);
-          x.clickable = true;
-          gradeBoxes.add(x);
+          classes.last.grades.add(x);
         } else if (c['cId'] != null) {
           var tdElement = parsedHTML.getElementById(c['cId']);
           var tdElements = (tdElement.children[0].querySelectorAll('td'));
-          gradeBoxes.add(TeacherIDBox(
+          classes.add(Class(
               tdElements[3].text, tdElements[1].text, tdElements[2].text));
         } else if (cDoc.text.trim().isNotEmpty) {
-          gradeBoxes.add(LessInfoBox(cDoc.text, terms[i - 1]));
+          classes.last.grades.add(Behavior(cDoc.text, terms[i - 1]));
         }
       }
     }
-    return gradeBoxes;
+
+    gradebook.classes = classes;
+    return gradebook;
   }
 
   static List initGradebookAndGradesHTML(String html) {

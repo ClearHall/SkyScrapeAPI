@@ -40,120 +40,39 @@ class Term {
   @override
   int get hashCode => termCode.hashCode;
 }
-//
-//class Gradebook{
-//  List<GridBox>
-//}
 
-/// [GridBox] is a root type that has many children. These children correspond to the boxes in your grade book.
-///
-/// [GridBox] only has 3 children
-/// * [TeacherIDBox]
-/// * [_GradeTextBox] has more children that allow actual grades to be distinguished from teacher information or course information
-/// * [AssignmentsGridBox]
-class GridBox {
-  /// Does the [GridBox] lead to another page? Usually only [GradeBox] will have a true [clickable] attribute.
-  bool clickable = false;
-}
-
-/// AssignmentListSmaller is mainly used for servers who want quick and precise loading of assignments.
-/// This data type stores assignments in the grade book, so it can easily be accessed with one post statement.
-class AssignmentsListSmaller extends GridBox {
-  List<Assignment> assignments = [];
-
-  AssignmentsListSmaller() {
-    super.clickable = true;
-  }
-
-  @override
-  String toString() {
-    return 'AssignmentsListSmaller{assignments: $assignments}';
-  }
+class Gradebook{
+  List<Class> classes;
+  List<Assignment> quickAssignments;
 }
 
 class Class {
-  TeacherIDBox _teacher;
-  List<_GradeTextBox> _grades;
-
-  //TODO: Do DADDY DAMIAN'S WILL
-
-  String getTeacherName(){
-    return _teacher.teacherName;
-  }
-
-  String getCourseTime(){
-    return _teacher.courseName;
-  }
-
-  String getCourseName(){
-    return _teacher.courseName;
-  }
-
-  String getGradeAt(int index){
-    Grade grade = Grade();
-  }
-}
-
-class Grade{
-  Term term;
-  String grade;
-}
-
-/// [TeacherIDBox] tells you course and teacher information.
-///
-/// [TeacherIDBox] gives only gives you information about a specific course and is usually the first in a [GridBox] List.
-/// [TeacherIDBox] **USUALLY** marks the beginning of a new course. If you are using the API, you can make a for loop like the following
-///
-/// ```dart
-/// for (GridBox x in list){
-///   if (x is TeacherIDBox) <init code>
-///   else <check for the other types>
-/// }
-/// ```
-/// You can also use a switch case statement.
-///
-/// ```dart
-/// for (GridBox x in list){
-///   switch (x.runtimeType) {
-///   case TeacherIDBox:
-///      <init code>
-///      break;
-///   <more cases>
-///   default:
-///     <default case, most likely an error>
-///   }
-/// }
-/// ```
-class TeacherIDBox extends GridBox {
   String teacherName;
   String timePeriod;
   String courseName;
 
-  TeacherIDBox(this.teacherName, this.courseName, this.timePeriod);
+  List<GradebookNode> grades;
 
-  @override
-  String toString() {
-    return teacherName + ":" + courseName + ":" + timePeriod;
-  }
+  Class(this.teacherName, this.timePeriod, this.courseName, {this.grades});
 }
 
-/// [_GradeTextBox] is a root that helps distinguish the difference between grades and teacher information
+/// [GradebookNode] is a root that helps distinguish the difference between grades and teacher information
 ///
-/// There are only two children of [_GradeTextBox]
-/// * [LessInfoBox]
-/// * [GradeBox]
-class _GradeTextBox extends GridBox {
+/// There are only two children of [GradebookNode]
+/// * [Behavior]
+/// * [Grade]
+abstract class GradebookNode {
   Term term;
 
-  _GradeTextBox(this.term);
+  GradebookNode(this.term);
 }
 
-/// [LessInfoBox] is an un-clickable behavior or letter grade.
-class LessInfoBox extends _GradeTextBox {
+/// [Behavior] is an un-clickable behavior or letter grade.
+class Behavior extends GradebookNode {
   String behavior;
 
-  /// Identification for which term [LessInfoBox] is in.
-  LessInfoBox(this.behavior, Term term) : super(term);
+  /// Identification for which term [Behavior] is in.
+  Behavior(this.behavior, Term term) : super(term);
 
   @override
   String toString() {
@@ -161,14 +80,14 @@ class LessInfoBox extends _GradeTextBox {
   }
 }
 
-/// [GradeBox] is most likely a clickable numbered grade part of a specific term
-class GradeBox extends _GradeTextBox {
+/// [Grade] is most likely a clickable numbered grade part of a specific term
+class Grade extends GradebookNode {
   String courseNumber;
   String grade;
   String studentID;
 
-  /// Identification for which term [GradeBox] is in.
-  GradeBox(this.courseNumber, Term term, this.grade, this.studentID)
+  /// Identification for which term [Grade] is in.
+  Grade(this.courseNumber, Term term, this.grade, this.studentID)
       : super(term);
 
   //For debugging only.
@@ -179,7 +98,7 @@ class GradeBox extends _GradeTextBox {
 }
 
 /// [AssignmentsGridBox] is the parent of multiple child types that allow for more categorization
-class AssignmentsGridBox extends GridBox {
+class AssignmentsGridBox {
   /// All the attributes like grades, post values, and more.
   /// **NOTE: THIS MAP IS NOT SAFE TO MODIFY IN YOUR CODE. DO IT WITH CAUTION**
   Map<String, String> attributes;
@@ -468,9 +387,9 @@ class SkywardError implements Exception {
 }
 
 /// Account returned for internal API use when a parent account is parsed
-class SkywardAccount {
+class Child {
   final String dataID, name;
-  SkywardAccount(this.dataID, this.name);
+  Child(this.dataID, this.name);
 
   @override
   String toString() {
@@ -480,7 +399,7 @@ class SkywardAccount {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SkywardAccount &&
+      other is Child &&
           runtimeType == other.runtimeType &&
           dataID == other.dataID;
 
