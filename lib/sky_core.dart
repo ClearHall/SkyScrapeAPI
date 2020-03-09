@@ -2,7 +2,6 @@ library sky_core;
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-import 'package:skyscrapeapi/src/student_info/message.dart';
 
 import 'src/skyward_utils.dart';
 import 'src/authenticator.dart';
@@ -10,8 +9,9 @@ import 'src/gradebook/gradebook.dart';
 import 'src/gradebook/assignment.dart';
 import 'data_types.dart';
 import 'src/gradebook/assignment_info.dart';
-import 'src/student_info/parent.dart';
-import 'src/student_info/history.dart';
+import 'src/student_related/parent.dart';
+import 'src/student_related/history.dart';
+import 'src/student_related/message.dart';
 
 /// Skyward API Core is the heart of the API. It is essentially the only class you need to really use the API.
 ///
@@ -335,6 +335,8 @@ class User {
       codes['student'] = assignment.studentID;
     });
   }
+
+  
 
   /// Attempts to go to sfAcademicHistory if it's available. If not, it'll throw an error or return null.
   ///

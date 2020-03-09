@@ -119,7 +119,6 @@ void main() async {
       }
 
       print(person.getChildrenNames());
-      person.debugPrint();
       print(terms);
       print(gradebook);
       print(await person.getHistory());
