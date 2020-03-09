@@ -77,8 +77,7 @@ void main() async {
   {
     test('test regular usage', () async {
       Map<String, String> env = Platform.environment;
-      skyward = SkyCore(url);
-      User person = await skyward.loginWith(env['USERNAME'], env['PASSWORD']);
+      User person = await SkyCore.getUserWith(env['USERNAME'], env['PASSWORD'], url);
       //person.switchUserIndex(1);
 
       try {
@@ -112,7 +111,6 @@ void main() async {
 //      }
 
       try {
-        print("TeST");
         List<AssignmentProperty> props = (await person.getAssignmentDetailsFrom(gradebook.quickAssignments[0]));
         print(props);
       } catch (e) {
@@ -124,6 +122,7 @@ void main() async {
       person.debugPrint();
       print(terms);
       print(gradebook);
+      print(await person.getHistory());
     });
   });
 }

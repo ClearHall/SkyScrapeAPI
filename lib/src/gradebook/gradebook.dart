@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
-import '../data_types.dart';
-import 'skyward_utils.dart';
+import '../../data_types.dart';
+import '../skyward_utils.dart';
 
 class GradebookAccessor {
   /*

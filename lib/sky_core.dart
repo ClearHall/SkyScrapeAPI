@@ -2,65 +2,26 @@ library sky_core;
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-import 'package:skyscrapeapi/src/message.dart';
+import 'package:skyscrapeapi/src/student_info/message.dart';
 
 import 'src/skyward_utils.dart';
 import 'src/authenticator.dart';
-import 'src/gradebook.dart';
-import 'src/assignment.dart';
+import 'src/gradebook/gradebook.dart';
+import 'src/gradebook/assignment.dart';
 import 'data_types.dart';
-import 'src/assignment_info.dart';
-import 'src/parent.dart';
-import 'src/history.dart';
+import 'src/gradebook/assignment_info.dart';
+import 'src/student_info/parent.dart';
+import 'src/student_info/history.dart';
 
 /// Skyward API Core is the heart of the API. It is essentially the only class you need to really use the API.
 ///
 /// Skyward API Core uses your [_user] and your [_pass] to retrieve your [_loginCache] from your [_baseURL] to get a login session.
 /// [_baseURL] is a private value and cannot be modified after it is created.
 class SkyCore {
-  /// Base URL to use for skyward page navigation
-  ///
-  /// You may just enter your login URL for skyward, though it is recommended to use a base URL.
-  /// The API will automatically remove anything that comes after wsEAplus in your URL.
-  ///
-  /// If your base URL requires wsEAplus, contact the developer at hunter.han@gmail.com and he will help you
-  String _baseURL;
-
-  /// SkyMobile will automatically attempt to log back in if your session expired or too many requests were sent at once and skyward is refusing to respond.
-  ///
-  /// If you would like to disable this convenient feature, then you may do so in the constructor.
-  /// If you would like the change the amount of times skyscrapeapi attempts to refresh your account, look at [refreshTimes]
-  bool shouldRefreshWhenFailedLogin;
-
-  /// Constructor that instantiates [_baseURL].
-  ///
-  /// If [_baseURL] contains extra materials, it'll be cut down to the last "/"
-
-  /// If logging into Skyward succeeded
-  ///
-  /// [u] is the username and [p] is the password. The function uses these two parameters to login to skyward and retrieve the necessary items to continue skyward navigation.
-  /// If the operation succeeded and the login requirements were successfully retrieved, the function returns true. If not, the function returns false.
-  ///
-  /// Resets parent accounts and current account names if the username and password applied are different than what was stored before.
-  ///
-  /// **TIP**
-  /// You should call [initNewAccount] if you are initializing a new account, unless you are sure that the account you will be using is a student account.
-
-  SkyCore(this._baseURL, {this.shouldRefreshWhenFailedLogin = true}) {
-    if (!this._baseURL.endsWith('/')) {
-      this._baseURL =
-          this._baseURL.substring(0, this._baseURL.lastIndexOf('/') + 1);
-    }
-    if (_baseURL.contains("wsEAplus"))
-      _baseURL = _baseURL.substring(
-              0, _baseURL.indexOf('wsEAplus') + 'wsEAplus'.length) +
-          "/";
-  }
-
-  Future<User> loginWith(String username, String pass,
-      {refreshTimes: 10}) async {
-    User user = User(
-        _baseURL, shouldRefreshWhenFailedLogin, refreshTimes, username, pass);
+  static Future<User> getUserWith(String username, String pass, String url,
+      {refreshTimes: 10, shouldRefreshWhenFailedLogin: true}) async {
+    User user = User._(
+        url, shouldRefreshWhenFailedLogin, refreshTimes, username, pass);
     if (await user.login()) {
       return user;
     } else {
@@ -105,7 +66,7 @@ class User {
   /// The name of the current user.
   Future _homePage;
 
-  User(this._baseURL, this.shouldRefreshWhenFailedLogin, this.refreshTimes,
+  User._(this._baseURL, this.shouldRefreshWhenFailedLogin, this.refreshTimes,
       this._user, this._pass) {
     if (this.shouldRefreshWhenFailedLogin && this.refreshTimes < 1)
       throw SkywardError('Refresh times cannot be set to a value less than 1');
@@ -319,10 +280,8 @@ class User {
           'It looks like this is a parent account. Please choose a child account before continuing!');
     try {
       if (_internalGradebookStorage == null) {
-        print('test');
         _internalGradebookStorage = await _useSpecifiedFunctionsToRetrieveHTML(
                     'sfgradebook001.w', GradebookAccessor.initGradebookAndGradesHTML, timeRan);
-        print('test1');
       }
       _terms = GradebookAccessor.getTermsFromDocCode(_internalGradebookStorage);
       _gradebook = GradebookAccessor.getGradeBoxesFromDocCode(

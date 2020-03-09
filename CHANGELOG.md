@@ -1,6 +1,6 @@
-## [3.0.0+beta] - Major Refactor
+## [3.0.0+5] - Beta Version
 
-Makes huge changes in how the API works. More documentation will be given.
+This is a test version. **DO NOT USER THIS VERSION if you do not know what you are doing.**
 
 ## [2.3.6+2] - Bug Fix
 

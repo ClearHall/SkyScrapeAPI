@@ -1,6 +1,6 @@
 import 'package:html/dom.dart';
-import 'skyward_utils.dart';
-import '../data_types.dart';
+import '../skyward_utils.dart';
+import '../../data_types.dart';
 import 'dart:convert';
 
 class HistoryAccessor {
@@ -60,13 +60,15 @@ class HistoryAccessor {
         if (docFrag.querySelector('div') != null) {
           type = 'schoolyear';
           currentYear = SchoolYear();
-          currentYear.description = docFrag.querySelector('div').text;
+          String tmpDesc = docFrag.querySelector('div').text;
+          currentYear.description = tmpDesc?.trim();
           currentYear.classes = List();
           if (currentYear != null) schoolYears.add(currentYear);
           tempTerms = [];
         } else if (!firstElemType.contains('style="vertical-align:bottom"')) {
           type = 'classandgrades';
-          className = docFrag.querySelector('body').text;
+          String tmpN = docFrag.querySelector('body').text;
+          className = tmpN?.trim();
           currentYear.classes.add(HistoricalClass(className));
           currentYear.classes.last.grades = List<String>();
         }
@@ -82,10 +84,11 @@ class HistoryAccessor {
               var attrElem =
                   curr.querySelector('span') ?? curr.querySelector('body');
               tempTerms
-                  .add(Term(attrElem.text, attrElem.attributes['tooltip']));
+                  .add(Term(attrElem.text?.trim(), attrElem.attributes['tooltip']?.trim()));
             } else {
+              String gr = curr.querySelector('body').text;
               currentYear.classes.last.grades
-                  .add(curr.querySelector('body').text);
+                  .add(gr?.trim());
             }
           }
         if (type == 'terms') currentYear.terms = tempTerms;
