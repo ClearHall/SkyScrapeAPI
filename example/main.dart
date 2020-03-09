@@ -18,7 +18,7 @@ void main() async {
     contents = await file.readAsString();
     List split = contents.toString().split('\n');
 
-    user = await SkyCore.getUserWith(split[0], split[1], skyward);
+    user = await SkyCore.login(split[0], split[1], skyward);
   }
 
   User a = User._();

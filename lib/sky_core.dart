@@ -18,7 +18,7 @@ import 'src/student_info/history.dart';
 /// Skyward API Core uses your [_user] and your [_pass] to retrieve your [_loginCache] from your [_baseURL] to get a login session.
 /// [_baseURL] is a private value and cannot be modified after it is created.
 class SkyCore {
-  static Future<User> getUserWith(String username, String pass, String url,
+  static Future<User> login(String username, String pass, String url,
       {refreshTimes: 10, shouldRefreshWhenFailedLogin: true}) async {
     User user = User._(
         url, shouldRefreshWhenFailedLogin, refreshTimes, username, pass);

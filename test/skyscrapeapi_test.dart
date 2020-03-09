@@ -77,7 +77,7 @@ void main() async {
   {
     test('test regular usage', () async {
       Map<String, String> env = Platform.environment;
-      User person = await SkyCore.getUserWith(env['USERNAME'], env['PASSWORD'], url);
+      User person = await SkyCore.login(env['USERNAME'], env['PASSWORD'], url);
       //person.switchUserIndex(1);
 
       try {
