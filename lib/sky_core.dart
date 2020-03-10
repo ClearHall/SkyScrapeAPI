@@ -2,6 +2,7 @@ library sky_core;
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
+import 'package:skyscrapeapi/src/student_related/student_info.dart';
 
 import 'src/skyward_utils.dart';
 import 'src/authenticator.dart';
@@ -20,8 +21,8 @@ import 'src/student_related/message.dart';
 class SkyCore {
   static Future<User> login(String username, String pass, String url,
       {refreshTimes: 10, shouldRefreshWhenFailedLogin: true}) async {
-    User user = User._(
-        url, shouldRefreshWhenFailedLogin, refreshTimes, username, pass);
+    User user =
+        User._(url, shouldRefreshWhenFailedLogin, refreshTimes, username, pass);
     if (await user.login()) {
       return user;
     } else {
@@ -101,9 +102,9 @@ class User {
       ];
     }, timesRan);
 
-    _homePage.then((val){
+    _homePage.then((val) {
       _children = val[0];
-      if (_children != null){
+      if (_children != null) {
         _isParent = true;
         _children.removeAt(0);
         switchUserIndex(0);
@@ -111,12 +112,13 @@ class User {
     });
   }
 
-  void debugPrint(){
+  void debugPrint() {
     print('Debug Log');
     print('Login Session Elements: $_loginCache');
     print('Base URL: $_baseURL');
     print('Credentials: \n\tUsername: $_user\n\tPassword: $_pass');
-    print('Settings: \n\tRefresh Times: $refreshTimes\n\tShould Refresh Login Credentials: $shouldRefreshWhenFailedLogin');
+    print(
+        'Settings: \n\tRefresh Times: $refreshTimes\n\tShould Refresh Login Credentials: $shouldRefreshWhenFailedLogin');
     print('Parent account? $_isParent');
   }
 
@@ -140,7 +142,7 @@ class User {
       return false;
   }
 
-  Future<String> getName() async{
+  Future<String> getName() async {
     List a = await _homePage;
     return a[1];
   }
@@ -198,14 +200,15 @@ class User {
     }
   }
 
-  List<String> getChildrenNames(){
-    if(isParent()) {
+  List<String> getChildrenNames() {
+    if (isParent()) {
       List<String> list = List();
       for (Child child in _children) {
         list.add(child.name);
       }
       return list;
-    } else return null;
+    } else
+      return null;
   }
 
   int numberOfChildren() {
@@ -242,15 +245,17 @@ class User {
       html = await attemptPost(_baseURL + page, postcodes);
 
       if (parseHTML != null) {
-        if(debug) print(html);
+        if (debug) print(html);
         return parseHTML(html);
       } else {
         if (html == null) throw SkywardError('HTML Still Null');
         return html;
       }
     } catch (e, s) {
+      print(s.toString());
       print(e.toString());
-      print('This error could be caused by a parent account not finished initializing or expired session code.');
+      print(
+          'This error could be caused by a parent account not finished initializing or expired session code.');
       if (shouldRefreshWhenFailedLogin) {
         await login();
         return _useSpecifiedFunctionsToRetrieveHTML(
@@ -281,7 +286,9 @@ class User {
     try {
       if (_internalGradebookStorage == null) {
         _internalGradebookStorage = await _useSpecifiedFunctionsToRetrieveHTML(
-                    'sfgradebook001.w', GradebookAccessor.initGradebookAndGradesHTML, timeRan);
+            'sfgradebook001.w',
+            GradebookAccessor.initGradebookAndGradesHTML,
+            timeRan);
       }
       _terms = GradebookAccessor.getTermsFromDocCode(_internalGradebookStorage);
       _gradebook = GradebookAccessor.getGradeBoxesFromDocCode(
@@ -336,8 +343,6 @@ class User {
     });
   }
 
-  
-
   /// Attempts to go to sfAcademicHistory if it's available. If not, it'll throw an error or return null.
   ///
   /// Returns a list of [SchoolYear].
@@ -347,5 +352,14 @@ class User {
       HistoryAccessor.parseGradebookHTML,
       timesRan,
     );
+  }
+
+  Future<StudentInfo> getStudentProfile({int timesRan = 0}) async {
+    StudentInfo info = await _useSpecifiedFunctionsToRetrieveHTML(
+        'sfstudentinfo001.w', StudentInfoParser.parseStudentID, timesRan);
+    if(info.studentAttributes.containsKey('Student Image Href Link')){
+      info.studentAttributes['Student Image Href Link'] = _baseURL + info.studentAttributes['Student Image Href Link'];
+    }
+    return info;
   }
 }

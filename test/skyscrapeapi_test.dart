@@ -118,10 +118,12 @@ void main() async {
         throw SkywardError('SHOULD SUCCEED');
       }
 
-      print(person.getChildrenNames());
-      print(terms);
-      print(gradebook);
-      print(await person.getHistory());
+      try {
+        print(await person.getStudentProfile());
+      } catch (e) {
+        print('Should succeed: ${e.toString()}');
+        throw SkywardError('SHOULD SUCCEED');
+      }
     });
   });
 }
