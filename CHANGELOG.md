@@ -1,6 +1,6 @@
-## [3.0.0+5] - Beta Version
+## [3.0.0+8] - Release Version
 
-This is a test version. **DO NOT USER THIS VERSION if you do not know what you are doing.**
+Completely changed how everything works. Will be posting full changelog and documentation later.
 
 ## [2.3.6+2] - Bug Fix
 

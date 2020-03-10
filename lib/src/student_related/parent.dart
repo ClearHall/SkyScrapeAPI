@@ -10,8 +10,8 @@ class ParentUtils {
     if (elems == null) return null;
     List<Child> skywardAccountList = [];
     for (Element htmlStudent in elems) {
-      skywardAccountList.add(Child(
-          htmlStudent.attributes['data-nameid'], htmlStudent.text));
+      skywardAccountList
+          .add(Child(htmlStudent.attributes['data-nameid'], htmlStudent.text));
     }
     return skywardAccountList;
   }

@@ -3,57 +3,52 @@ import 'package:skyscrapeapi/sky_core.dart';
 import 'dart:io';
 
 void main() async {
-  final skyward = "https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w";
+  final skyward =
+      "https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w";
   var file = File('test/testCredentials.txt');
-  User user;
   var contents;
   var terms;
-  var gradeBook;
-  var assignment;
-
-  int indexOfTestingGradeBook = 1;
-  int indexOfTestingAssignment = 4;
+  var gradebook;
+  User person;
 
   if (await file.exists()) {
     contents = await file.readAsString();
     List split = contents.toString().split('\n');
 
-    user = await SkyCore.login(split[0], split[1], skyward);
+    person = await SkyCore.login(split[0], split[1], skyward);
   }
 
-  User a = User._();
   try {
-    terms = await user.getTerms();
+    terms = await person.getTerms();
   } catch (e) {
     print('Should not fail: ' + e.toString());
     throw SkywardError('SHOULD SUCCEED');
   }
 
   try {
-    gradeBook = await user.getGradebook();
+    gradebook = await person.getGradebook();
   } catch (e) {
-    print('Should not fail: ' + e);
+    print('Should not fail: ' + e.toString());
     throw SkywardError('SHOULD SUCCEED');
   }
 
   try {
-    assignment = (await user.getAssignmentsFrom(gradeBook[indexOfTestingGradeBook]));
-  } catch (e) {
-    print('Should succeed: ${e}');
-    throw SkywardError('SHOULD SUCCEED');
-  }
-
-  try {
-    print(await user.getAssignmentDetailsFrom(assignment[indexOfTestingAssignment]));
+    List<AssignmentProperty> props =
+        (await person.getAssignmentDetailsFrom(gradebook.quickAssignments[0]));
+    print(props);
   } catch (e) {
     print('Should succeed: ${e.toString()}');
     throw SkywardError('SHOULD SUCCEED');
   }
 
   try {
-    print(await user.getHistory());
+    print(await person.getStudentProfile());
   } catch (e) {
     print('Should succeed: ${e.toString()}');
     throw SkywardError('SHOULD SUCCEED');
   }
+
+  print(terms);
+  print(gradebook);
+  print(await person.getHistory());
 }

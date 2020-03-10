@@ -23,7 +23,8 @@ class SkywardAuthenticator {
         DocumentFragment frag = DocumentFragment.html(postResponse);
         throw (frag.text);
       } else {
-        return Map.fromIterables(['dwd', 'wfaacl', 'encses', 'User-Type', 'sessionid'],
+        return Map.fromIterables(
+            ['dwd', 'wfaacl', 'encses', 'User-Type', 'sessionid'],
             [toks[0], toks[3], toks[14], toks[6], '${toks[1]}${toks[2]}']);
       }
     } else {

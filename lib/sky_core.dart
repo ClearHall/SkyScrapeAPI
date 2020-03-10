@@ -85,14 +85,14 @@ class User {
   ///
   /// The function checks for children accounts and initializes them if found. It also automatically initializes Skyward messages for you.
   void _initNewAccount({int timesRan = 0, forceRefresh = false}) async {
-    if(_homePage == null || forceRefresh) {
+    if (_homePage == null || forceRefresh) {
       _homePage =
-      await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
+          await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
         Document doc = parse(html);
         String delim = "sff.sv('sessionid', '";
         int startInd = html.indexOf(delim) + delim.length;
         String scrapedSessionid =
-        html.substring(startInd, html.indexOf("'", startInd));
+            html.substring(startInd, html.indexOf("'", startInd));
         _loginCache['sessionid'] = scrapedSessionid;
         return [
           ParentUtils.checkForParent(doc),
@@ -138,7 +138,7 @@ class User {
     if (loginSessionMap != null) {
       _loginCache = loginSessionMap;
       _isParent = (loginSessionMap['User-Type'] == '1');
-      if(isParent()) await _initNewAccount();
+      if (isParent()) await _initNewAccount();
       return true;
     } else if (shouldRefreshWhenFailedLogin) {
       return login(timesRan: timesRan + 1);
@@ -361,8 +361,9 @@ class User {
   Future<StudentInfo> getStudentProfile({int timesRan = 0}) async {
     StudentInfo info = await _useSpecifiedFunctionsToRetrieveHTML(
         'sfstudentinfo001.w', StudentInfoParser.parseStudentID, timesRan);
-    if(info.studentAttributes.containsKey('Student Image Href Link')){
-      info.studentAttributes['Student Image Href Link'] = _baseURL + info.studentAttributes['Student Image Href Link'];
+    if (info.studentAttributes.containsKey('Student Image Href Link')) {
+      info.studentAttributes['Student Image Href Link'] =
+          _baseURL + info.studentAttributes['Student Image Href Link'];
     }
     return info;
   }

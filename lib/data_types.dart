@@ -41,7 +41,7 @@ class Term {
   int get hashCode => termCode.hashCode;
 }
 
-class Gradebook{
+class Gradebook {
   List<Class> classes;
   List<Assignment> quickAssignments;
 
@@ -58,7 +58,7 @@ class Class {
 
   List<GradebookNode> grades;
 
-  Class(this.teacherName, this.timePeriod, this.courseName, {this.grades}){
+  Class(this.teacherName, this.timePeriod, this.courseName, {this.grades}) {
     grades = List<GradebookNode>();
   }
 
@@ -66,8 +66,6 @@ class Class {
   String toString() {
     return 'Class{teacherName: $teacherName, timePeriod: $timePeriod, courseName: $courseName, grades: $grades}';
   }
-
-
 }
 
 /// [GradebookNode] is a root that helps distinguish the difference between grades and teacher information
@@ -101,8 +99,7 @@ class Grade extends GradebookNode {
   String studentID;
 
   /// Identification for which term [Grade] is in.
-  Grade(this.courseNumber, Term term, this.grade, this.studentID)
-      : super(term);
+  Grade(this.courseNumber, Term term, this.grade, this.studentID) : super(term);
 
   //For debugging only.
   @override
@@ -480,14 +477,14 @@ class Link {
   }
 }
 
-class StudentInfo{
+class StudentInfo {
   String name;
   Map<String, String> studentAttributes;
   List<EmergencyContact> emergencyContacts;
   SchoolInfo currentSchool;
   List<Family> family;
 
-  StudentInfo(){
+  StudentInfo() {
     studentAttributes = Map();
     emergencyContacts = List();
     currentSchool = SchoolInfo();
@@ -500,11 +497,11 @@ class StudentInfo{
   }
 }
 
-class SchoolInfo{
+class SchoolInfo {
   String schoolName;
   Map<String, String> attributes;
 
-  SchoolInfo(){
+  SchoolInfo() {
     attributes = Map();
   }
 
@@ -514,11 +511,11 @@ class SchoolInfo{
   }
 }
 
-class EmergencyContact{
+class EmergencyContact {
   String name;
   Map<String, String> attributes;
 
-  EmergencyContact(){
+  EmergencyContact() {
     attributes = Map();
   }
 
@@ -528,11 +525,11 @@ class EmergencyContact{
   }
 }
 
-class Family{
+class Family {
   List<Guardian> guardians;
   Map<String, String> extraInfo;
 
-  Family(){
+  Family() {
     guardians = List();
     extraInfo = Map();
   }
@@ -543,11 +540,11 @@ class Family{
   }
 }
 
-class Guardian{
+class Guardian {
   String guardianName;
   Map<String, String> extraInfo;
 
-  Guardian(){
+  Guardian() {
     extraInfo = Map();
   }
 

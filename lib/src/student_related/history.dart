@@ -83,12 +83,11 @@ class HistoryAccessor {
             if (type == 'terms') {
               var attrElem =
                   curr.querySelector('span') ?? curr.querySelector('body');
-              tempTerms
-                  .add(Term(attrElem.text?.trim(), attrElem.attributes['tooltip']?.trim()));
+              tempTerms.add(Term(attrElem.text?.trim(),
+                  attrElem.attributes['tooltip']?.trim()));
             } else {
               String gr = curr.querySelector('body').text;
-              currentYear.classes.last.grades
-                  .add(gr?.trim());
+              currentYear.classes.last.grades.add(gr?.trim());
             }
           }
         if (type == 'terms') currentYear.terms = tempTerms;

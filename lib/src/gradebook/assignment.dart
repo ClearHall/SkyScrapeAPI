@@ -50,10 +50,11 @@ class AssignmentAccessor {
         Element assignment = row.querySelector('#showAssignmentInfo');
         List<String> tmpMoreAttr = List();
         for (Element td in tdVals) {
-          if(td.children.length == 2 && td.children[1].attributes.containsKey('data-info')){
+          if (td.children.length == 2 &&
+              td.children[1].attributes.containsKey('data-info')) {
             tmpMoreAttr.add(td.children[1].attributes['data-info']);
           }
-          if(td.attributes['type'] == '<img>') attributes.add('yes');
+          if (td.attributes['type'] == '<img>') attributes.add('yes');
           attributes.add(td.text);
         }
         if (assignment != null)

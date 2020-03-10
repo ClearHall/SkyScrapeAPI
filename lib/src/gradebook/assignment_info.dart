@@ -9,7 +9,8 @@ class AssignmentInfoAccessor {
     List<AssignmentProperty> assignInfoBox = [];
     List<Element> importantInfo = docFrag.querySelectorAll('td');
 
-    assignInfoBox.add(AssignmentProperty('Class', docFrag.querySelector('span').firstChild.text));
+    assignInfoBox.add(AssignmentProperty(
+        'Class', docFrag.querySelector('span').firstChild.text));
 
     for (int i = 0; i < importantInfo.length; i++) {
       if (i == 0 && (importantInfo[i + 1].querySelector('label') != null)) {
@@ -23,7 +24,8 @@ class AssignmentInfoAccessor {
           if (aElem != null) {
             String onClick = aElem.attributes['onclick'];
             List<String> diagAttr = onClick.split("\"");
-            AssignmentProperty assignmentInfoBox = AssignmentProperty(null, null);
+            AssignmentProperty assignmentInfoBox =
+                AssignmentProperty(null, null);
             for (int j = 0; j < diagAttr.length; j++) {
               if (diagAttr[j] == 'title') {
                 assignmentInfoBox.infoName = diagAttr[j + 2];
