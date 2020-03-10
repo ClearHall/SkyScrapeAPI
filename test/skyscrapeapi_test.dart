@@ -78,7 +78,6 @@ void main() async {
     test('test regular usage', () async {
       Map<String, String> env = Platform.environment;
       User person = await SkyCore.login(env['USERNAME'], env['PASSWORD'], url);
-      //person.switchUserIndex(1);
 
       try {
         terms = await person.getTerms();
@@ -124,6 +123,10 @@ void main() async {
         print('Should succeed: ${e.toString()}');
         throw SkywardError('SHOULD SUCCEED');
       }
+
+      print(terms);
+      print(gradebook);
+      print(await person.getHistory());
     });
   });
 }

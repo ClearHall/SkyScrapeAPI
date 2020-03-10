@@ -65,7 +65,7 @@ class User {
   Child _currentAccount;
 
   /// The name of the current user.
-  Future _homePage;
+  List _homePage;
 
   User._(this._baseURL, this.shouldRefreshWhenFailedLogin, this.refreshTimes,
       this._user, this._pass) {
@@ -84,32 +84,35 @@ class User {
   /// Initializes messages, children accounts, and student name.
   ///
   /// The function checks for children accounts and initializes them if found. It also automatically initializes Skyward messages for you.
-  void _initNewAccount({int timesRan = 0}) {
-    _homePage = _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
-      Document doc = parse(html);
-      String delim = "sff.sv('sessionid', '";
-      int startInd = html.indexOf(delim) + delim.length;
-      String scrapedSessionid =
-          html.substring(startInd, html.indexOf("'", startInd));
-      _loginCache['sessionid'] = scrapedSessionid;
-      return [
-        ParentUtils.checkForParent(doc),
-        doc
-            .getElementById('sf_UtilityArea')
-            ?.querySelector('.sf_utilUser')
-            ?.text
-            ?.trim()
-      ];
-    }, timesRan);
+  void _initNewAccount({int timesRan = 0, forceRefresh = false}) async {
+    if(_homePage == null || forceRefresh) {
+      _homePage =
+      await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
+        Document doc = parse(html);
+        String delim = "sff.sv('sessionid', '";
+        int startInd = html.indexOf(delim) + delim.length;
+        String scrapedSessionid =
+        html.substring(startInd, html.indexOf("'", startInd));
+        _loginCache['sessionid'] = scrapedSessionid;
+        return [
+          ParentUtils.checkForParent(doc),
+          doc
+              .getElementById('sf_UtilityArea')
+              ?.querySelector('.sf_utilUser')
+              ?.text
+              ?.trim()
+        ];
+      }, timesRan);
 
-    _homePage.then((val) {
-      _children = val[0];
-      if (_children != null) {
-        _isParent = true;
-        _children.removeAt(0);
-        switchUserIndex(0);
+      if (_isParent) {
+        List val = _homePage;
+        _children = val[0];
+        if (_children != null) {
+          _children.removeAt(0);
+          switchUserIndex(0);
+        }
       }
-    });
+    }
   }
 
   void debugPrint() {
@@ -134,7 +137,8 @@ class User {
         await SkywardAuthenticator.getNewSessionCodes(_user, _pass, _baseURL);
     if (loginSessionMap != null) {
       _loginCache = loginSessionMap;
-      _initNewAccount();
+      _isParent = (loginSessionMap['User-Type'] == '1');
+      if(isParent()) await _initNewAccount();
       return true;
     } else if (shouldRefreshWhenFailedLogin) {
       return login(timesRan: timesRan + 1);
@@ -143,8 +147,8 @@ class User {
   }
 
   Future<String> getName() async {
-    List a = await _homePage;
-    return a[1];
+    await _initNewAccount();
+    return _homePage[1];
   }
 
   Future<List<Message>> getMessages({int timesRan = 0}) async {

@@ -483,7 +483,7 @@ class Link {
 class StudentInfo{
   String name;
   Map<String, String> studentAttributes;
-  List<EmergencyContacts> emergencyContacts;
+  List<EmergencyContact> emergencyContacts;
   SchoolInfo currentSchool;
   List<Family> family;
 
@@ -514,8 +514,18 @@ class SchoolInfo{
   }
 }
 
-class EmergencyContacts{
+class EmergencyContact{
+  String name;
+  Map<String, String> attributes;
 
+  EmergencyContact(){
+    attributes = Map();
+  }
+
+  @override
+  String toString() {
+    return 'EmergencyContacts{name: $name, attributes: $attributes}';
+  }
 }
 
 class Family{

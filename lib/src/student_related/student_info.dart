@@ -6,15 +6,47 @@ class StudentInfoParser{
     Document doc = Document.html(html);
     StudentInfo info = StudentInfo();
 
-    Element family = doc.getElementById('sf_ContentBody').children[2];
+    Element cB = doc.getElementById('sf_ContentBody');
+    Element family = cB.children[2];
     info.family = (parseFamily(family));
-    Element sfTag = doc.querySelectorAll('.sfTag')[2];
+    Element sfTag = cB.querySelector('.sfTag');
     info.name = sfTag.text;
 
+    List<Element> tableList = sfTag.parent.querySelectorAll("table");
     info.studentAttributes = parseStudentAttr(sfTag.parent.querySelector('td'));
-    info.currentSchool = parseSchoolInfo(sfTag.parent.querySelectorAll('table')[4]);
+    info.currentSchool = parseSchoolInfo(tableList[4]);
+    info.emergencyContacts = parseEmergencyContacts(tableList[5]);
 
     return info;
+  }
+
+  static List<EmergencyContact> parseEmergencyContacts(Element table){
+    List<EmergencyContact> emergencyContacts = List();
+    List<String> attrHeaders = List();
+    Element thead = table.querySelector('thead');
+    Element tbody = table.querySelector('tbody');
+
+    List<Element> ths = thead.querySelectorAll('th');
+    for(Element th in ths){
+      attrHeaders.add(th.text);
+    }
+    attrHeaders.removeAt(0);
+
+    List<Element> trs = tbody.querySelectorAll('tr');
+    for(Element tr in trs){
+      EmergencyContact contact = EmergencyContact();
+      List<Element> tds = tr.querySelectorAll('td');
+      for(int i = 0; i < tds.length; i++){
+        if(i == 0)
+          contact.name = tds[i].text;
+        else{
+          contact.attributes[attrHeaders[i - 1]] = tds[i].text;
+        }
+      }
+      emergencyContacts.add(contact);
+    }
+
+    return emergencyContacts;
   }
 
   static Map<String, String> parseStudentAttr(Element stuAttrElem){
