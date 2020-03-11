@@ -2,22 +2,20 @@ library sky_core;
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-import 'package:skyscrapeapi/src/student_related/student_info.dart';
 
+import 'data_types.dart';
+
+import 'src/student_related/student_info.dart';
 import 'src/skyward_utils.dart';
 import 'src/authenticator.dart';
 import 'src/gradebook/gradebook.dart';
 import 'src/gradebook/assignment.dart';
-import 'data_types.dart';
 import 'src/gradebook/assignment_info.dart';
 import 'src/student_related/parent.dart';
 import 'src/student_related/history.dart';
 import 'src/student_related/message.dart';
 
-/// Skyward API Core is the heart of the API. It is essentially the only class you need to really use the API.
-///
-/// Skyward API Core uses your [_user] and your [_pass] to retrieve your [_loginCache] from your [_baseURL] to get a login session.
-/// [_baseURL] is a private value and cannot be modified after it is created.
+/// Root class that controls the creation of new [User] accounts.
 class SkyCore {
   static Future<User> login(String username, String pass, String url,
       {refreshTimes: 10, shouldRefreshWhenFailedLogin: true}) async {
@@ -31,6 +29,7 @@ class SkyCore {
   }
 }
 
+/// A logged in user that allows for all skyward actions to be executed.
 class User {
   /// Login session requirements retrieved
   Map<String, String> _loginCache;
@@ -54,9 +53,16 @@ class User {
   /// The amount of times to refresh skyward authentication.
   /// If this value is set to a value less than 1, then skyscrapeapi will throw an error.
   /// If this value is set too high and something went wrong with your server/app or the API, skyscrapeapi will not stop, it'll keep trying for a looooooong time.
+  ///
+  /// **KEY: THIS IS NOT A LIMIT TO HOW MANY TIMES THE OBJECT CAN REFRESH, [User] CAN REFRESH INFINITElY**
+  /// ## Benefits of this
+  /// - Prevents infinite loops
+  /// - Provides detailed error information to the console when an error occurs.
   int refreshTimes;
 
   /// Storing username and password for refresh when session expires
+  ///
+  /// These values are private for a reason.
   String _user, _pass;
 
   /// Children accounts if account is a parent. If account is not parent then [_children] and [_currentAccount] will stay null.
@@ -64,9 +70,10 @@ class User {
   List<Child> _children;
   Child _currentAccount;
 
-  /// The name of the current user.
+  /// A temporary future of the values retrieved from [_initNewAccount()] This an internal method and variable and does not need to be understood.
   List _homePage;
 
+  /// A private constructor only accessible to the [SkyCore] class.
   User._(this._baseURL, this.shouldRefreshWhenFailedLogin, this.refreshTimes,
       this._user, this._pass) {
     if (this.shouldRefreshWhenFailedLogin && this.refreshTimes < 1)
@@ -83,7 +90,7 @@ class User {
 
   /// Initializes messages, children accounts, and student name.
   ///
-  /// The function checks for children accounts and initializes them if found. It also automatically initializes Skyward messages for you.
+  /// The function checks for children accounts and initializes them if found.
   void _initNewAccount({int timesRan = 0, forceRefresh = false}) async {
     if (_homePage == null || forceRefresh) {
       _homePage =
