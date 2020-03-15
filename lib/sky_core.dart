@@ -77,7 +77,7 @@ class User {
   User._(this._baseURL, this.shouldRefreshWhenFailedLogin, this.refreshTimes,
       this._user, this._pass) {
     if (this.shouldRefreshWhenFailedLogin && this.refreshTimes < 1)
-      throw SkywardError('Refresh times cannot be set to a value less than 1');
+      throw SkywardError.usingErrorCode(ErrorCode.RefreshTimeLessThanOne);
     if (!this._baseURL.endsWith('/')) {
       this._baseURL =
           this._baseURL.substring(0, this._baseURL.lastIndexOf('/') + 1);
@@ -137,7 +137,7 @@ class User {
   }
 
   Future<bool> login({int timesRan = 0}) async {
-    if (timesRan > refreshTimes) throw SkywardError('Maintenence error.');
+    if (timesRan > refreshTimes) throw SkywardError.usingErrorCode(ErrorCode.UnderMaintenance);
     if (_user == null || _pass == null)
       throw SkywardError("User or password has not been initialized!");
     var loginSessionMap =
@@ -240,8 +240,7 @@ class User {
       String page, Function parseHTML, timesRan,
       {Function(Map) modifyLoginSess, bool debug = false}) async {
     if (timesRan > refreshTimes)
-      throw SkywardError(
-          'Still could not retrieve correct information from assignments');
+      throw SkywardError.usingErrorCode(ErrorCode.ExceededRefreshTimeLimit);
     var html;
 
     if (_currentAccount?.dataID == '0')
@@ -290,7 +289,7 @@ class User {
   /// The function initializes the grade book HTML for parsing use.
   _initGradeBook({int timeRan = 0}) async {
     if (timeRan > this.refreshTimes)
-      throw SkywardError('Gradebook initializing took too long. Failing!');
+      throw SkywardError.usingErrorCode(ErrorCode.ExceededRefreshTimeLimit);
     if (_children != null && _currentAccount == null)
       throw SkywardError(
           'It looks like this is a parent account. Please choose a child account before continuing!');

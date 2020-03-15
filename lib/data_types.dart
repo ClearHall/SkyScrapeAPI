@@ -226,6 +226,10 @@ class AssignmentProperty {
 
   AssignmentProperty(this.infoName, this.info);
 
+  String getDebug(){
+    return infoName + ':' + info;
+  }
+
   @override
   String toString() {
     return infoName +
@@ -400,25 +404,6 @@ class HistoricalClass {
   int get hashCode => name.hashCode;
 }
 
-/// SkyScrapeAPI Custom errors to locate errors and give proper causes.
-///
-/// **NOTE: THE WHOLE API WILL USE THIS EXCEPTION**
-class SkywardError implements Exception {
-  String cause;
-  ErrorCode errorCode;
-
-  SkywardError(this.cause);
-
-  String getErrorCode() {
-    return errorCode.toString().split('.')[1];
-  }
-
-  @override
-  String toString() {
-    return cause;
-  }
-}
-
 /// Account returned for internal API use when a parent account is parsed
 class Child {
   final String dataID, name;
@@ -582,7 +567,53 @@ class Guardian {
 }
 
 // TODO: Add more error codes and use error codes!!!
-enum ErrorCode { LoginFailed }
+enum ErrorCode { LoginError, RefreshTimeLessThanOne, UnderMaintenance, ExceededRefreshTimeLimit }
 
 /// Just ClassLevels, nothing special.
 enum ClassLevel { Regular, PreAP, AP, None }
+
+/// SkyScrapeAPI Custom errors to locate errors and give proper causes.
+///
+/// **NOTE: THE WHOLE API WILL USE THIS EXCEPTION**
+class SkywardError implements Exception {
+  String cause;
+  ErrorCode errorCode;
+
+  SkywardError(this.cause);
+  SkywardError.usingErrorCode(this.errorCode);
+
+  String getErrorCode() {
+    return errorCode.toString().split('.')[1];
+  }
+
+  String getErrorCodeMessage(){
+    if(errorCode != null) {
+      switch (errorCode) {
+        case ErrorCode.LoginError:
+          return 'An fatal unexpected error has occured while logging in!';
+          break;
+        case ErrorCode.RefreshTimeLessThanOne:
+          return 'Refresh times cannot be set to a value less than 1!';
+          break;
+        case ErrorCode.UnderMaintenance:
+          return 'Your district\'s Skyward seems like it\'s on maintenance';
+          break;
+        case ErrorCode.ExceededRefreshTimeLimit:
+          return 'Refresh times were exceeded. An unexpected error has occured. Please report this to the developer!';
+          break;
+        default:
+          return 'Could not retrieve an error message!';
+      }
+    }else{
+      return null;
+    }
+  }
+
+  @override
+  String toString() {
+    if(cause != null)
+      return cause;
+    else
+      return getErrorCode();
+  }
+}

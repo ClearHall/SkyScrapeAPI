@@ -1,5 +1,6 @@
 import 'package:html/dom.dart';
 import 'package:http/http.dart' as http;
+import 'package:skyscrapeapi/data_types.dart';
 
 class SkywardAuthenticator {
   static getNewSessionCodes(String user, String pass, String baseURL) async {
@@ -21,7 +22,7 @@ class SkywardAuthenticator {
       var toks = dissectedString.split('^');
       if (toks.length < 15) {
         DocumentFragment frag = DocumentFragment.html(postResponse);
-        throw (frag.text);
+        throw SkywardError(frag.text);
       } else {
         return Map.fromIterables(
             ['dwd', 'wfaacl', 'encses', 'User-Type', 'sessionid'],
