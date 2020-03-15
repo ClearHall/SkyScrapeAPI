@@ -295,6 +295,8 @@ class User {
       throw SkywardError(
           'It looks like this is a parent account. Please choose a child account before continuing!');
     try {
+      //TODO: TRY TO USE httploader.p?cfile=sfgradebook001.w instead and test speed. Try to att httploader in front of everything
+      //TODO: YOU CAN USE THE GRADEBOOK ASSIGNMENTS TO CHECK THE TERM OF EACH ASSINGMENT. USE THIS INFORMATION TO HELP YOU CALCULATE MOCK ASSIGNMENTS
       if (_internalGradebookStorage == null) {
         _internalGradebookStorage = await _useSpecifiedFunctionsToRetrieveHTML(
             'sfgradebook001.w',
@@ -324,7 +326,7 @@ class User {
   }
 
   /// The assignments from a specific term. Returns a list of [AssignmentNode].
-  Future<List<AssignmentNode>> getAssignmentsFrom(Grade gradeBox,
+  Future<DetailedGradingPeriod> getAssignmentsFrom(Grade gradeBox,
       {int timesRan = 0}) async {
     return await _useSpecifiedFunctionsToRetrieveHTML(
         'sfgradebook001.w', AssignmentAccessor.getAssignmentsDialog, timesRan,

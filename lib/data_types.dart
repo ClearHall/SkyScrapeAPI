@@ -45,6 +45,15 @@ class Gradebook {
   List<Class> classes;
   List<Assignment> quickAssignments;
 
+  /// This compares assignment's assignment ID!
+  /// This is useful if you are trying to find the term of an assignment in semesters.
+  String getAssignmentTerm(Assignment a){
+    for(Assignment b in quickAssignments){
+      if(a.assignmentID == b.assignmentID) return b.attributes['term'];
+    }
+    return null;
+  }
+  
   @override
   String toString() {
     return 'Gradebook{classes: $classes, quickAssignments: $quickAssignments}';
@@ -109,16 +118,27 @@ class Grade extends GradebookNode {
 }
 
 /// [AssignmentNode] is the parent of multiple child types that allow for more categorization
-class AssignmentNode {
+abstract class AssignmentNode {
   /// All the attributes like grades, post values, and more.
   /// **NOTE: THIS MAP IS NOT SAFE TO MODIFY IN YOUR CODE. DO IT WITH CAUTION**
+  String name;
   Map<String, String> attributes;
 
-  AssignmentNode(this.attributes);
+  AssignmentNode(this.name, this.attributes);
 
   @override
   String toString() {
     return "";
+  }
+
+  bool operator ==(other){
+    if(this is Assignment && other is Assignment){
+      return (this as Assignment).assignmentID == other.assignmentID;
+    }else if(other is AssignmentNode){
+      return name == other.name;
+    }else{
+      return false;
+    }
   }
 
   /// Attempts to get the assignment name
@@ -151,27 +171,35 @@ class AssignmentNode {
   }
 }
 
+class DetailedGradingPeriod{
+  Map<List<CategoryHeader>, List<Assignment>> assignments = Map();
+  Map<String, String> attributes = Map();
+
+  DetailedGradingPeriod();
+  DetailedGradingPeriod.define(this.assignments, this.attributes);
+
+  @override
+  String toString() {
+    return 'DetailedGradingPeriod{assignments: $assignments, attributes: $attributes}';
+  }
+}
+
 /// [Assignment] is an assignment scraped from the API
 ///
 /// [Assignment] is really hard to make, so custom declarations of Assignments is highly discouraged.
 class Assignment extends AssignmentNode {
-  /// Post required attribute. Do not worry about this value if you do not plan to modify [Assignment]
+  /// Post required attributes. Do not worry about this value if you do not plan to modify [Assignment]
   String studentID;
-
-  /// Post required attribute. Do not worry about this value if you do not plan to modify [Assignment]
   String assignmentID;
-
-  /// Post required attribute. Do not worry about this value if you do not plan to modify [Assignment]
   String gbID;
-  String assignmentName;
 
-  Assignment(this.studentID, this.assignmentID, this.gbID, this.assignmentName,
+  Assignment(this.studentID, this.assignmentID, this.gbID, String name,
       Map<String, String> attributes)
-      : super(attributes);
+      : super(name, attributes);
 
   @override
   String toString() {
-    return 'Assignment{studentID: $studentID, assignmentID: $assignmentID,gbID: $gbID, assignmentName: $assignmentName, attributes: $attributes}';
+    return 'Assignment{studentID: $studentID, assignmentID: $assignmentID,gbID: $gbID, assignmentName: $name, attributes: $attributes}';
   }
 }
 
@@ -179,15 +207,14 @@ class Assignment extends AssignmentNode {
 ///
 /// [CategoryHeader] marks the beginning of a new Category, so it contains weight information and juicy stuff that allows you to distinguish assignments from categories
 class CategoryHeader extends AssignmentNode {
-  String catName;
   String weight;
 
-  CategoryHeader(this.catName, this.weight, Map<String, String> attributes)
-      : super(attributes);
+  CategoryHeader(String name, this.weight, Map<String, String> attributes)
+      : super(name, attributes);
 
   @override
   String toString() {
-    return 'CategoryHeader{catName: $catName,weight: $weight}';
+    return 'CategoryHeader{catName: $name,weight: $weight}';
   }
 }
 
