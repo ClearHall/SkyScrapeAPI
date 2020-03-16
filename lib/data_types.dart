@@ -53,7 +53,7 @@ class Gradebook {
     }
     return null;
   }
-  
+
   @override
   String toString() {
     return 'Gradebook{classes: $classes, quickAssignments: $quickAssignments}';
@@ -119,9 +119,9 @@ class Grade extends GradebookNode {
 
 /// [AssignmentNode] is the parent of multiple child types that allow for more categorization
 abstract class AssignmentNode {
+  String name;
   /// All the attributes like grades, post values, and more.
   /// **NOTE: THIS MAP IS NOT SAFE TO MODIFY IN YOUR CODE. DO IT WITH CAUTION**
-  String name;
   Map<String, String> attributes;
 
   AssignmentNode(this.name, this.attributes);
