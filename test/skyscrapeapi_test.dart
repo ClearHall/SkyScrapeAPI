@@ -31,13 +31,12 @@ void main() async {
 
       //print(person.numberOfChildren());
 
-//      try {
-//        assignment = (await skyward.getAssignmentsFromGradeBox(gradeBook[indexOfTestingGradeBook]));
-//      } catch (e) {
-//        print('Should succeed: ${e}');
-//        throw SkywardError('SHOULD SUCCEED');
-//      }
-//
+      try {
+        print(await person.getAssignmentsFrom(gradebook.classes[0].grades[0]));
+      } catch (e) {
+        throw SkywardError('SHOULD SUCCEED');
+      }
+
 //      try {
 //        print(await skyward.getAssignmentInfoFromAssignment(assignment[indexOfTestingAssignment]));
 //      } catch (e) {
@@ -63,7 +62,6 @@ void main() async {
 
       print(terms);
       print(gradebook);
-      print(await person.getHistory());
     });
   });
 }

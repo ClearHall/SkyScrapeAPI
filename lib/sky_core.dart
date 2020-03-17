@@ -80,7 +80,7 @@ class User {
   User._(this._baseURL, this.shouldRefreshWhenFailedLogin, this.refreshTimes,
       this._user, this._pass, this._debugMessagesEnabled) {
     if (this.shouldRefreshWhenFailedLogin && this.refreshTimes < 1)
-      throw SkywardError('Refresh times cannot be set to a value less than 1');
+      throw SkywardError.usingErrorCode(ErrorCode.RefreshTimeLessThanOne);
     if (!this._baseURL.endsWith('/')) {
       this._baseURL =
           this._baseURL.substring(0, this._baseURL.lastIndexOf('/') + 1);
@@ -144,7 +144,7 @@ class User {
   ///
   /// If the user is a parent then the function will take a little longer to run because it will attempt to initialize the account automatically.
   Future<bool> login({int timesRan = 0}) async {
-    if (timesRan > refreshTimes) throw SkywardError('Maintenence error.');
+    if (timesRan > refreshTimes) throw SkywardError.usingErrorCode(ErrorCode.UnderMaintenance);
     if (_user == null || _pass == null)
       throw SkywardError("User or password has not been initialized!");
     var loginSessionMap =
@@ -258,8 +258,7 @@ class User {
       String page, Function parseHTML, timesRan,
       {Function(Map) modifyLoginSess}) async {
     if (timesRan > refreshTimes)
-      throw SkywardError(
-          'Still could not retrieve correct information from assignments');
+      throw SkywardError.usingErrorCode(ErrorCode.ExceededRefreshTimeLimit);
     var html;
 
     if (_currentAccount?.dataID == '0')
@@ -305,11 +304,13 @@ class User {
   /// Initializes and scrapes the grade book HTML. Internal method.
   _initGradeBook({int timeRan = 0}) async {
     if (timeRan > this.refreshTimes)
-      throw SkywardError('Gradebook initializing took too long. Failing!');
+      throw SkywardError.usingErrorCode(ErrorCode.ExceededRefreshTimeLimit);
     if (_children != null && _currentAccount == null)
       throw SkywardError(
           'It looks like this is a parent account. Please choose a child account before continuing!');
     try {
+      //TODO: TRY TO USE httploader.p?cfile=sfgradebook001.w instead and test speed. Try to att httploader in front of everything
+      //TODO: YOU CAN USE THE GRADEBOOK ASSIGNMENTS TO CHECK THE TERM OF EACH ASSINGMENT. USE THIS INFORMATION TO HELP YOU CALCULATE MOCK ASSIGNMENTS
       if (_internalGradebookStorage == null) {
         _internalGradebookStorage = await _useSpecifiedFunctionsToRetrieveHTML(
             'sfgradebook001.w',
@@ -339,7 +340,7 @@ class User {
   }
 
   /// The assignments from a specific term. Returns a list of [AssignmentNode].
-  Future<List<AssignmentNode>> getAssignmentsFrom(Grade gradeBox,
+  Future<DetailedGradingPeriod> getAssignmentsFrom(Grade gradeBox,
       {int timesRan = 0}) async {
     return await _useSpecifiedFunctionsToRetrieveHTML(
         'sfgradebook001.w', AssignmentAccessor.getAssignmentsDialog, timesRan,
