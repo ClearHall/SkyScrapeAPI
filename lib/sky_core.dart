@@ -18,9 +18,9 @@ import 'src/student_related/message.dart';
 /// Root class that controls the creation of new [User] accounts.
 class SkyCore {
   static Future<User> login(String username, String pass, String url,
-      {refreshTimes: 10, shouldRefreshWhenFailedLogin: true}) async {
+      {refreshTimes: 10, shouldRefreshWhenFailedLogin: true, ignoreExceptions: true}) async {
     User user =
-        User._(url, shouldRefreshWhenFailedLogin, refreshTimes, username, pass);
+        User._(url, shouldRefreshWhenFailedLogin, refreshTimes, username, pass, ignoreExceptions);
     if (await user.login()) {
       return user;
     } else {
@@ -33,6 +33,9 @@ class SkyCore {
 class User {
   /// Login session requirements retrieved
   Map<String, String> _loginCache;
+
+  /// Whether or not debug messages will be shown.
+  bool _debugMessagesEnabled;
 
   /// Base URL to use for skyward page navigation
   ///
@@ -75,7 +78,7 @@ class User {
 
   /// A private constructor only accessible to the [SkyCore] class.
   User._(this._baseURL, this.shouldRefreshWhenFailedLogin, this.refreshTimes,
-      this._user, this._pass) {
+      this._user, this._pass, this._debugMessagesEnabled) {
     if (this.shouldRefreshWhenFailedLogin && this.refreshTimes < 1)
       throw SkywardError('Refresh times cannot be set to a value less than 1');
     if (!this._baseURL.endsWith('/')) {
@@ -122,20 +125,24 @@ class User {
     }
   }
 
+  /// Prints detailed information about the object for debugging purposes.
   void debugPrint() {
     print('Debug Log');
     print('Login Session Elements: $_loginCache');
     print('Base URL: $_baseURL');
-    print('Credentials: \n\tUsername: $_user\n\tPassword: $_pass');
     print(
         'Settings: \n\tRefresh Times: $refreshTimes\n\tShould Refresh Login Credentials: $shouldRefreshWhenFailedLogin');
     print('Parent account? $_isParent');
   }
 
+  /// Just to see if the user is a parent or not.
   bool isParent() {
     return _isParent;
   }
 
+  /// Logs into the specified skyward links.
+  ///
+  /// If the user is a parent then the function will take a little longer to run because it will attempt to initialize the account automatically.
   Future<bool> login({int timesRan = 0}) async {
     if (timesRan > refreshTimes) throw SkywardError('Maintenence error.');
     if (_user == null || _pass == null)
@@ -153,11 +160,14 @@ class User {
       return false;
   }
 
+  /// Initializes and retrieves the user's name.
   Future<String> getName() async {
     await _initNewAccount();
     return _homePage[1];
   }
 
+  /// Scrapes the skyward account homepage messages. This takes a long time to run because it scrapes everything from top to bottom by date.
+  /// I recommend you run this function asynchronously on a separate thread to maximize efficiency.
   Future<List<Message>> getMessages({int timesRan = 0}) async {
     List<Message> messages = [];
     await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
@@ -211,6 +221,7 @@ class User {
     }
   }
 
+  /// Returns a list of the parent's children names. If the account is not a parent, then [null] will be returned.
   List<String> getChildrenNames() {
     if (isParent()) {
       List<String> list = List();
@@ -222,6 +233,7 @@ class User {
       return null;
   }
 
+  /// Retrieves the number of children that the parent contains. If the user is not a parent, then the function will return -1
   int numberOfChildren() {
     if (isParent())
       return _children.length;
@@ -229,6 +241,7 @@ class User {
       return -1;
   }
 
+  /// Returns the current child's information.
   Child retrieveAccountIfParent() {
     if (isParent())
       return _currentAccount;
@@ -236,9 +249,14 @@ class User {
       return null;
   }
 
+  void _internalPrint(String m){
+    if(_debugMessagesEnabled) print(m);
+  }
+
+  /// Internal support function!
   _useSpecifiedFunctionsToRetrieveHTML(
       String page, Function parseHTML, timesRan,
-      {Function(Map) modifyLoginSess, bool debug = false}) async {
+      {Function(Map) modifyLoginSess}) async {
     if (timesRan > refreshTimes)
       throw SkywardError(
           'Still could not retrieve correct information from assignments');
@@ -256,16 +274,16 @@ class User {
       html = await attemptPost(_baseURL + page, postcodes);
 
       if (parseHTML != null) {
-        if (debug) print(html);
+        _internalPrint(html);
         return parseHTML(html);
       } else {
         if (html == null) throw SkywardError('HTML Still Null');
         return html;
       }
     } catch (e, s) {
-      print(s.toString());
-      print(e.toString());
-      print(
+      _internalPrint(s.toString());
+      _internalPrint(e.toString());
+      _internalPrint(
           'This error could be caused by a parent account not finished initializing or expired session code.');
       if (shouldRefreshWhenFailedLogin) {
         await login();
@@ -279,15 +297,12 @@ class User {
     }
   }
 
+  /// Internal variables for caching grade book.
   List _internalGradebookStorage;
   List<Term> _terms;
   Gradebook _gradebook;
 
-  /// Initializes and scrapes the grade book HTML
-  ///
-  /// [timeRan] is the number of times the function ran. To avoid infinite loops, the function will throw an error if [timeRan] reaches a value greater than 10.
-  /// The function will attempt to log back in when your session expires or an errors occurs.
-  /// The function initializes the grade book HTML for parsing use.
+  /// Initializes and scrapes the grade book HTML. Internal method.
   _initGradeBook({int timeRan = 0}) async {
     if (timeRan > this.refreshTimes)
       throw SkywardError('Gradebook initializing took too long. Failing!');
@@ -306,7 +321,7 @@ class User {
           _internalGradebookStorage, _terms);
     } catch (e) {
       _internalGradebookStorage = null;
-      print("Couldn't get your gradebook! Trying again.");
+      _internalPrint("Couldn't get your gradebook! Trying again.");
       await _initGradeBook(timeRan: timeRan + 1);
     }
   }

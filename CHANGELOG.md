@@ -1,3 +1,7 @@
+## [3.0.0+9] - Release Version
+
+Added an option to ignore exceptions.
+
 ## [3.0.0+8] - Release Version
 
 Completely changed how everything works. Will be posting full changelog and documentation later.
