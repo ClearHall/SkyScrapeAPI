@@ -18,9 +18,11 @@ import 'src/student_related/message.dart';
 /// Root class that controls the creation of new [User] accounts.
 class SkyCore {
   static Future<User> login(String username, String pass, String url,
-      {refreshTimes: 10, shouldRefreshWhenFailedLogin: true, ignoreExceptions: true}) async {
-    User user =
-        User._(url, shouldRefreshWhenFailedLogin, refreshTimes, username, pass, ignoreExceptions);
+      {refreshTimes: 10,
+      shouldRefreshWhenFailedLogin: true,
+      ignoreExceptions: true}) async {
+    User user = User._(url, shouldRefreshWhenFailedLogin, refreshTimes,
+        username, pass, ignoreExceptions);
     if (await user.login()) {
       return user;
     } else {
@@ -144,7 +146,8 @@ class User {
   ///
   /// If the user is a parent then the function will take a little longer to run because it will attempt to initialize the account automatically.
   Future<bool> login({int timesRan = 0}) async {
-    if (timesRan > refreshTimes) throw SkywardError.usingErrorCode(ErrorCode.UnderMaintenance);
+    if (timesRan > refreshTimes)
+      throw SkywardError.usingErrorCode(ErrorCode.UnderMaintenance);
     if (_user == null || _pass == null)
       throw SkywardError("User or password has not been initialized!");
     var loginSessionMap =
@@ -249,8 +252,8 @@ class User {
       return null;
   }
 
-  void _internalPrint(String m){
-    if(_debugMessagesEnabled) print(m);
+  void _internalPrint(String m) {
+    if (_debugMessagesEnabled) print(m);
   }
 
   /// Internal support function!
@@ -273,7 +276,6 @@ class User {
       html = await attemptPost(_baseURL + page, postcodes);
 
       if (parseHTML != null) {
-        _internalPrint(html);
         return parseHTML(html);
       } else {
         if (html == null) throw SkywardError('HTML Still Null');
@@ -309,8 +311,6 @@ class User {
       throw SkywardError(
           'It looks like this is a parent account. Please choose a child account before continuing!');
     try {
-      //TODO: TRY TO USE httploader.p?cfile=sfgradebook001.w instead and test speed. Try to att httploader in front of everything
-      //TODO: YOU CAN USE THE GRADEBOOK ASSIGNMENTS TO CHECK THE TERM OF EACH ASSINGMENT. USE THIS INFORMATION TO HELP YOU CALCULATE MOCK ASSIGNMENTS
       if (_internalGradebookStorage == null) {
         _internalGradebookStorage = await _useSpecifiedFunctionsToRetrieveHTML(
             'sfgradebook001.w',

@@ -43,8 +43,7 @@ class AssignmentAccessor {
       List<String> attributes = [];
 
       if (row.classes.contains('sf_Section') && row.classes.contains('cat')) {
-        if(!wasLastCat)
-          if (tmp != null) gridBoxes[tmp] = assignList;
+        if (!wasLastCat) if (tmp != null) gridBoxes[tmp] = assignList;
         CategoryHeader catHeader = CategoryHeader(null, null, null);
         for (Element td in tdVals) {
           if (td.classes.contains('nWp') && td.classes.contains('noLBdr')) {
@@ -68,7 +67,7 @@ class AssignmentAccessor {
         }
         catHeader.name = attributes[1];
         catHeader.attributes = Map.fromIterables(headers, attributes);
-        if(!wasLastCat) tmp = List();
+        if (!wasLastCat) tmp = List();
         tmp.add(catHeader);
         assignList = List();
         wasLastCat = true;

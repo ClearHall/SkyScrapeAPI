@@ -47,9 +47,9 @@ class Gradebook {
 
   /// This compares assignment's assignment ID!
   /// This is useful if you are trying to find the term of an assignment in semesters.
-  String getAssignmentTerm(Assignment a){
-    for(Assignment b in quickAssignments){
-      if(a.assignmentID == b.assignmentID) return b.attributes['term'];
+  String getAssignmentTerm(Assignment a) {
+    for (Assignment b in quickAssignments) {
+      if (a.assignmentID == b.assignmentID) return b.attributes['term'];
     }
     return null;
   }
@@ -120,6 +120,7 @@ class Grade extends GradebookNode {
 /// [AssignmentNode] is the parent of multiple child types that allow for more categorization
 abstract class AssignmentNode {
   String name;
+
   /// All the attributes like grades, post values, and more.
   /// **NOTE: THIS MAP IS NOT SAFE TO MODIFY IN YOUR CODE. DO IT WITH CAUTION**
   Map<String, String> attributes;
@@ -131,12 +132,12 @@ abstract class AssignmentNode {
     return "";
   }
 
-  bool operator ==(other){
-    if(this is Assignment && other is Assignment){
+  bool operator ==(other) {
+    if (this is Assignment && other is Assignment) {
       return (this as Assignment).assignmentID == other.assignmentID;
-    }else if(other is AssignmentNode){
+    } else if (other is AssignmentNode) {
       return name == other.name;
-    }else{
+    } else {
       return false;
     }
   }
@@ -171,7 +172,7 @@ abstract class AssignmentNode {
   }
 }
 
-class DetailedGradingPeriod{
+class DetailedGradingPeriod {
   Map<List<CategoryHeader>, List<Assignment>> assignments = Map();
   Map<String, String> attributes = Map();
 
@@ -196,6 +197,12 @@ class Assignment extends AssignmentNode {
   Assignment(this.studentID, this.assignmentID, this.gbID, String name,
       Map<String, String> attributes)
       : super(name, attributes);
+
+  @override
+  bool operator ==(other) {
+    if (other is Assignment) return assignmentID == other.assignmentID;
+    return false;
+  }
 
   @override
   String toString() {
@@ -226,7 +233,7 @@ class AssignmentProperty {
 
   AssignmentProperty(this.infoName, this.info);
 
-  String getDebug(){
+  String getDebug() {
     return infoName + ':' + info;
   }
 
@@ -566,8 +573,12 @@ class Guardian {
   }
 }
 
-// TODO: Add more error codes and use error codes!!!
-enum ErrorCode { LoginError, RefreshTimeLessThanOne, UnderMaintenance, ExceededRefreshTimeLimit }
+enum ErrorCode {
+  LoginError,
+  RefreshTimeLessThanOne,
+  UnderMaintenance,
+  ExceededRefreshTimeLimit
+}
 
 /// Just ClassLevels, nothing special.
 enum ClassLevel { Regular, PreAP, AP, None }
@@ -586,8 +597,8 @@ class SkywardError implements Exception {
     return errorCode.toString().split('.')[1];
   }
 
-  String getErrorCodeMessage(){
-    if(errorCode != null) {
+  String getErrorCodeMessage() {
+    if (errorCode != null) {
       switch (errorCode) {
         case ErrorCode.LoginError:
           return 'An fatal unexpected error has occured while logging in!';
@@ -604,14 +615,14 @@ class SkywardError implements Exception {
         default:
           return 'Could not retrieve an error message!';
       }
-    }else{
+    } else {
       return null;
     }
   }
 
   @override
   String toString() {
-    if(cause != null)
+    if (cause != null)
       return cause;
     else
       return getErrorCode();

@@ -1,10 +1,22 @@
+## [3.0.0+10] - Git Errors
+
+Fixed upload errors.
+
 ## [3.0.0+9] - Release Version
 
 Added an option to ignore exceptions.
 
 ## [3.0.0+8] - Release Version
 
-Completely changed how everything works. Will be posting full changelog and documentation later.
+Completely changed how everything works.
+
+Some things that were changed:
+- Changed the list of Nodes into a Gradebook object
+- Added Class Object
+- Removed some unnecessary objects
+- Changed assignment to assignment page
+- More data type refactoring
+- Added more information to assignments, like exact weights, in extra information if they are found
 
 ## [2.3.6+2] - Bug Fix
 
