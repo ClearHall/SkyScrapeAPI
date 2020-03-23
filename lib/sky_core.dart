@@ -326,7 +326,8 @@ class User {
   }
 
   /// The gradebook retrieved!
-  Future<Gradebook> getGradebook({timesRan = 0}) async {
+  Future<Gradebook> getGradebook({timesRan = 0, forceRefresh = false}) async {
+    if (forceRefresh) _internalGradebookStorage = null;
     await _initGradeBook();
     return _gradebook;
   }

@@ -1,3 +1,7 @@
+## [3.0.0+12] - Force Refresh
+
+Added force refresh
+
 ## [3.0.0+11] - 简化
 
 Combined getTerms() and getGradebook() into getGradebook()
