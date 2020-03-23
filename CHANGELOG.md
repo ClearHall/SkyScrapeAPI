@@ -1,22 +1,6 @@
-## [3.0.0+12] - Force Refresh
+## [3.0.0+13] - DataType Change
 
-Added force refresh
-
-## [3.0.0+11] - 简化
-
-Combined getTerms() and getGradebook() into getGradebook()
-
-## [3.0.0+10] - Git Errors
-
-Fixed upload errors.
-
-## [3.0.0+9] - Release Version
-
-Added an option to ignore exceptions.
-
-## [3.0.0+8] - Release Version
-
-Completely changed how everything works.
+Deleted old changelogs cause they were too repetitive. Nothing major will happen with the API until version 4.
 
 Some things that were changed:
 - Changed the list of Nodes into a Gradebook object
@@ -25,6 +9,7 @@ Some things that were changed:
 - Changed assignment to assignment page
 - More data type refactoring
 - Added more information to assignments, like exact weights, in extra information if they are found
+- Added a find grade from term in the datatype class
 
 ## [2.3.6+2] - Bug Fix
 

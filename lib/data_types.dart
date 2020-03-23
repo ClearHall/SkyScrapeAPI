@@ -72,6 +72,13 @@ class Class {
     grades = List<GradebookNode>();
   }
 
+  GradebookNode retrieveNodeByTerm(Term term) {
+    for (GradebookNode node in grades) {
+      if (node.term == term) return node;
+    }
+    return null;
+  }
+
   @override
   String toString() {
     return 'Class{teacherName: $teacherName, timePeriod: $timePeriod, courseName: $courseName, grades: $grades}';

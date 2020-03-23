@@ -19,13 +19,6 @@ void main() async {
   }
 
   try {
-    terms = await person.getTerms();
-  } catch (e) {
-    print('Should not fail: ' + e.toString());
-    throw SkywardError('SHOULD SUCCEED');
-  }
-
-  try {
     gradebook = await person.getGradebook();
   } catch (e) {
     print('Should not fail: ' + e.toString());
