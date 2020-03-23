@@ -300,7 +300,6 @@ class User {
 
   /// Internal variables for caching grade book.
   List _internalGradebookStorage;
-  List<Term> _terms;
   Gradebook _gradebook;
 
   /// Initializes and scrapes the grade book HTML. Internal method.
@@ -317,20 +316,13 @@ class User {
             GradebookAccessor.initGradebookAndGradesHTML,
             timeRan);
       }
-      _terms = GradebookAccessor.getTermsFromDocCode(_internalGradebookStorage);
-      _gradebook = GradebookAccessor.getGradeBoxesFromDocCode(
-          _internalGradebookStorage, _terms);
+      _gradebook =
+          GradebookAccessor.getGradeBoxesFromDocCode(_internalGradebookStorage);
     } catch (e) {
       _internalGradebookStorage = null;
       _internalPrint("Couldn't get your gradebook! Trying again.");
       await _initGradeBook(timeRan: timeRan + 1);
     }
-  }
-
-  /// The terms retrieved from the grade book HTML. Returns a list of [Term].
-  Future<List<Term>> getTerms({timesRan = 0}) async {
-    await _initGradeBook();
-    return _terms;
   }
 
   /// The gradebook retrieved!

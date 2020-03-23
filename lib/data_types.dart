@@ -43,6 +43,7 @@ class Term {
 
 class Gradebook {
   List<Class> classes;
+  List<Term> terms;
   List<Assignment> quickAssignments;
 
   /// This compares assignment's assignment ID!
@@ -56,7 +57,7 @@ class Gradebook {
 
   @override
   String toString() {
-    return 'Gradebook{classes: $classes, quickAssignments: $quickAssignments}';
+    return 'Gradebook{terms: $terms, classes: $classes, quickAssignments: $quickAssignments}';
   }
 }
 

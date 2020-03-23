@@ -27,9 +27,11 @@ class GradebookAccessor {
     return terms;
   }
 
-  static Gradebook getGradeBoxesFromDocCode(List infoList, List<Term> terms) {
+  static Gradebook getGradeBoxesFromDocCode(List infoList) {
     Gradebook gradebook = new Gradebook();
     gradebook.quickAssignments = new List<Assignment>();
+    List<Term> terms = getTermsFromDocCode(infoList);
+    gradebook.terms = terms;
     List<Class> classes = [];
     var parsedHTML = parse(infoList[2]);
     for (var sffBrak in infoList[1]) {

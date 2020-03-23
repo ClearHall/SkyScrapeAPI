@@ -1,3 +1,7 @@
+## [3.0.0+11] - 简化
+
+Combined getTerms() and getGradebook() into getGradebook()
+
 ## [3.0.0+10] - Git Errors
 
 Fixed upload errors.
