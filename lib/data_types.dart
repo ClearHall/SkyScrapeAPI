@@ -50,7 +50,8 @@ class Gradebook {
   /// This is useful if you are trying to find the term of an assignment in semesters.
   String getAssignmentTerm(Assignment a) {
     for (Assignment b in quickAssignments) {
-      if (a.assignmentID == b.assignmentID) return b.attributes['term'];
+      if (a.assignmentID == b.assignmentID)
+        return b.attributes['term'].substring(1);
     }
     return null;
   }
@@ -68,7 +69,7 @@ class Class {
 
   List<GradebookNode> grades;
 
-  Class(this.teacherName, this.timePeriod, this.courseName, {this.grades}) {
+  Class(this.teacherName, this.courseName, this.timePeriod, {this.grades}) {
     grades = List<GradebookNode>();
   }
 

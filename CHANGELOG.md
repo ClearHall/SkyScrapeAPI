@@ -1,4 +1,4 @@
-## [3.0.0+13] - DataType Change
+## [3.0.0+16] - Bug Fix
 
 Deleted old changelogs cause they were too repetitive. Nothing major will happen with the API until version 4.
 
@@ -9,7 +9,9 @@ Some things that were changed:
 - Changed assignment to assignment page
 - More data type refactoring
 - Added more information to assignments, like exact weights, in extra information if they are found
-- Added a find grade from term in the datatype class
+- [14] Added a find grade from term in the datatype class
+- [15] Fixed bug on reversal of time period and course name
+- [16] Fixed bug where last category header would not show up!
 
 ## [2.3.6+2] - Bug Fix
 

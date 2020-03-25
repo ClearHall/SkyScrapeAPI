@@ -99,6 +99,7 @@ class AssignmentAccessor {
         }
       }
     }
+    gridBoxes[tmp] = assignList;
     return DetailedGradingPeriod.define(gridBoxes, extrAttr);
   }
 }

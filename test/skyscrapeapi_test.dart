@@ -25,7 +25,7 @@ void main() async {
       //print(person.numberOfChildren());
 
       try {
-        print(await person.getAssignmentsFrom(gradebook.classes[0].grades[0]));
+        print((await person.getAssignmentsFrom(gradebook.classes[0].grades[0])));
       } catch (e) {
         throw SkywardError('SHOULD SUCCEED');
       }
@@ -55,6 +55,7 @@ void main() async {
 
       print(terms);
       print(gradebook);
+      print(await person.getHistory());
     });
   });
 }
