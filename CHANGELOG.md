@@ -12,6 +12,7 @@ Some things that were changed:
 - [14] Added a find grade from term in the datatype class
 - [15] Fixed bug on reversal of time period and course name
 - [16] Fixed bug where last category header would not show up!
+- [17] Attempted to fix bug where history would sometimes bring null values!
 
 ## [2.3.6+2] - Bug Fix
 
