@@ -22,7 +22,7 @@ class SkyCore {
       shouldRefreshWhenFailedLogin: true,
       ignoreExceptions: true}) async {
     User user = User._(url, shouldRefreshWhenFailedLogin, refreshTimes,
-        username, pass, ignoreExceptions);
+        username, pass, !ignoreExceptions);
     if (await user.login()) {
       return user;
     } else {
@@ -276,7 +276,9 @@ class User {
       html = await attemptPost(_baseURL + page, postcodes);
 
       if (parseHTML != null) {
-        return parseHTML(html);
+        var a = parseHTML(html);
+        if(a == null) throw SkywardError('Object returned is null!');
+        else return a;
       } else {
         if (html == null) throw SkywardError('HTML Still Null');
         return html;

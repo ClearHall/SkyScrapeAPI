@@ -22,6 +22,7 @@ class AssignmentInfoAccessor {
 
           Element aElem = importantInfo[i + 1].querySelector('a');
           if (aElem != null) {
+//            try{
             String onClick = aElem.attributes['onclick'];
             List<String> diagAttr = onClick.split("\"");
             AssignmentProperty assignmentInfoBox =
@@ -36,6 +37,11 @@ class AssignmentInfoAccessor {
               }
             }
             assignInfoBox.add(assignmentInfoBox);
+//            }catch(e){
+//              print('PLEASE REPORT THIS ERROR AND SEND YOUR LOG!!');
+//              print(e);
+//              print(html);
+//            }
           }
 
           i = i + 1;
