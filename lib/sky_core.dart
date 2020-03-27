@@ -98,8 +98,8 @@ class User {
   /// The function checks for children accounts and initializes them if found.
   void _initNewAccount({int timesRan = 0, forceRefresh = false}) async {
     if (_homePage == null || forceRefresh) {
-      _homePage =
-          await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', _attemptInitHtml, timesRan);
+      _homePage = await _useSpecifiedFunctionsToRetrieveHTML(
+          'sfhome01.w', _attemptInitHtml, timesRan);
       if (_isParent) {
         _children = _homePage[0];
         if (_children != null) {
@@ -113,31 +113,31 @@ class User {
   List<Object> _attemptInitHtml(html) {
     try {
       Document doc = parse(html);
-      return [
-        ParentUtils.checkForParent(doc),
-        _findUserInfo(doc: doc)
-      ];
-    }catch(e){
-      _internalPrint(e.toString() + '\nAn error occured and we could not initialize your account!');
+      return [ParentUtils.checkForParent(doc), _findUserInfo(doc: doc)];
+    } catch (e) {
+      _internalPrint(e.toString() +
+          '\nAn error occured and we could not initialize your account!');
       return null;
     }
   }
 
-  String _findUserInfo({String html, Document doc}){
+  String _findUserInfo({String html, Document doc}) {
     try {
       if (html != null) {
-        String look = '<li class="sf_utilUser notranslate" valign="middle" align="center">';
+        String look =
+            '<li class="sf_utilUser notranslate" valign="middle" align="center">';
         int start = html.indexOf(look) + look.length;
-        return html.substring(start, html.indexOf('</li>', start));
-      }else if(doc != null){
+        return html.substring(start, html.indexOf('</li>', start)).trim();
+      } else if (doc != null) {
         return doc
             .getElementById('sf_UtilityArea')
             ?.querySelector('.sf_utilUser')
             ?.text
             ?.trim();
       }
-    }catch(e){
-      _internalPrint(e.toString() + '\nAn error occured and we could not initialize your account!');
+    } catch (e) {
+      _internalPrint(e.toString() +
+          '\nAn error occured and we could not initialize your account!');
       return null;
     }
     return null;
@@ -291,11 +291,13 @@ class User {
       }
       html = await attemptPost(_baseURL + page, postcodes);
 
-      if(_homePage == null) _homePage = [null, _findUserInfo(html: html)];
+      if (_homePage == null) _homePage = [null, _findUserInfo(html: html)];
       if (parseHTML != null) {
         var a = parseHTML(html);
-        if(a == null) throw SkywardError('Object returned is null!');
-        else return a;
+        if (a == null)
+          throw SkywardError('Object returned is null!');
+        else
+          return a;
       } else {
         if (html == null) throw SkywardError('HTML Still Null');
         return html;

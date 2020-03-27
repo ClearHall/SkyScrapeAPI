@@ -1,6 +1,7 @@
-## [3.0.1+1] - Better Account Initialization
+## [3.0.0+22] - Better Account Initialization
 
 If your account is a student account. The API will automatically try to initialize your account when any menu is clicked!
+22 fixed a bug where there was huge spaces after!
 
 ## [3.0.0+16] - Bug Fix
 

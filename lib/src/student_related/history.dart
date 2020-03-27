@@ -14,7 +14,8 @@ class HistoryAccessor {
   static parseGradebookHTML(String html) {
     var doc = Document.html(html);
     List<Element> elems = doc.querySelectorAll("script");
-    if(elems.length < 1) throw SkywardError('No historical classes found this is an error!');
+    if (elems.length < 1)
+      throw SkywardError('No historical classes found this is an error!');
 
     for (Element elem in elems) {
       if (elem.text.contains('sff.')) {
