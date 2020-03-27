@@ -99,32 +99,48 @@ class User {
   void _initNewAccount({int timesRan = 0, forceRefresh = false}) async {
     if (_homePage == null || forceRefresh) {
       _homePage =
-          await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', (html) {
-        Document doc = parse(html);
-        String delim = "sff.sv('sessionid', '";
-        int startInd = html.indexOf(delim) + delim.length;
-        String scrapedSessionid =
-            html.substring(startInd, html.indexOf("'", startInd));
-        _loginCache['sessionid'] = scrapedSessionid;
-        return [
-          ParentUtils.checkForParent(doc),
-          doc
-              .getElementById('sf_UtilityArea')
-              ?.querySelector('.sf_utilUser')
-              ?.text
-              ?.trim()
-        ];
-      }, timesRan);
-
+          await _useSpecifiedFunctionsToRetrieveHTML('sfhome01.w', _attemptInitHtml, timesRan);
       if (_isParent) {
-        List val = _homePage;
-        _children = val[0];
+        _children = _homePage[0];
         if (_children != null) {
           _children.removeAt(0);
           switchUserIndex(0);
         }
       }
     }
+  }
+
+  List<Object> _attemptInitHtml(html) {
+    try {
+      Document doc = parse(html);
+      return [
+        ParentUtils.checkForParent(doc),
+        _findUserInfo(doc: doc)
+      ];
+    }catch(e){
+      _internalPrint(e.toString() + '\nAn error occured and we could not initialize your account!');
+      return null;
+    }
+  }
+
+  String _findUserInfo({String html, Document doc}){
+    try {
+      if (html != null) {
+        String look = '<li class="sf_utilUser notranslate" valign="middle" align="center">';
+        int start = html.indexOf(look) + look.length;
+        return html.substring(start, html.indexOf('</li>', start));
+      }else if(doc != null){
+        return doc
+            .getElementById('sf_UtilityArea')
+            ?.querySelector('.sf_utilUser')
+            ?.text
+            ?.trim();
+      }
+    }catch(e){
+      _internalPrint(e.toString() + '\nAn error occured and we could not initialize your account!');
+      return null;
+    }
+    return null;
   }
 
   /// Prints detailed information about the object for debugging purposes.
@@ -166,7 +182,7 @@ class User {
   /// Initializes and retrieves the user's name.
   Future<String> getName() async {
     await _initNewAccount();
-    return _homePage[1];
+    return _homePage == null ? null : _homePage[1];
   }
 
   /// Scrapes the skyward account homepage messages. This takes a long time to run because it scrapes everything from top to bottom by date.
@@ -275,6 +291,7 @@ class User {
       }
       html = await attemptPost(_baseURL + page, postcodes);
 
+      if(_homePage == null) _homePage = [null, _findUserInfo(html: html)];
       if (parseHTML != null) {
         var a = parseHTML(html);
         if(a == null) throw SkywardError('Object returned is null!');

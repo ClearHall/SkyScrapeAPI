@@ -1,3 +1,7 @@
+## [3.0.1+1] - Better Account Initialization
+
+If your account is a student account. The API will automatically try to initialize your account when any menu is clicked!
+
 ## [3.0.0+16] - Bug Fix
 
 Deleted old changelogs cause they were too repetitive. Nothing major will happen with the API until version 4.
