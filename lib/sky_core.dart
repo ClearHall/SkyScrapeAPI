@@ -4,16 +4,15 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 
 import 'data_types.dart';
-
-import 'src/student_related/student_info.dart';
-import 'src/skyward_utils.dart';
 import 'src/authenticator.dart';
-import 'src/gradebook/gradebook.dart';
 import 'src/gradebook/assignment.dart';
 import 'src/gradebook/assignment_info.dart';
-import 'src/student_related/parent.dart';
+import 'src/gradebook/gradebook.dart';
+import 'src/skyward_utils.dart';
 import 'src/student_related/history.dart';
 import 'src/student_related/message.dart';
+import 'src/student_related/parent.dart';
+import 'src/student_related/student_info.dart';
 
 /// Root class that controls the creation of new [User] accounts.
 class SkyCore {
@@ -378,7 +377,7 @@ class User {
       codes['action'] = 'dialog';
       codes['ishttp'] = 'true';
       codes['assignId'] = assignment.assignmentID;
-      codes['gbId'] = assignment.gbID;
+      codes['gbId'] = assignment.courseID;
       codes['type'] = 'assignment';
       codes['student'] = assignment.studentID;
     });

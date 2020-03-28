@@ -1,6 +1,7 @@
-## [3.0.0+24] - Parenthesis Bug
+## [3.0.0+25] - Parenthesis Bug
 
 Fixed weird extra parenthesis in the beginning of the term attribute in quick assignments
+Changed gbID to courseID.
 
 ## [3.0.0+22] - Better Account Initialization
 

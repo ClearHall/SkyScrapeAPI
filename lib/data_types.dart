@@ -105,7 +105,7 @@ class Behavior extends GradebookNode {
 
   @override
   String toString() {
-    return term.toString() + ":" + behavior;
+    return 'Behavior{behavior: $behavior}';
   }
 }
 
@@ -199,9 +199,9 @@ class Assignment extends AssignmentNode {
   /// Post required attributes. Do not worry about this value if you do not plan to modify [Assignment]
   String studentID;
   String assignmentID;
-  String gbID;
+  String courseID;
 
-  Assignment(this.studentID, this.assignmentID, this.gbID, String name,
+  Assignment(this.studentID, this.assignmentID, this.courseID, String name,
       Map<String, String> attributes)
       : super(name, attributes);
 
@@ -213,7 +213,7 @@ class Assignment extends AssignmentNode {
 
   @override
   String toString() {
-    return 'Assignment{studentID: $studentID, assignmentID: $assignmentID,gbID: $gbID, assignmentName: $name, attributes: $attributes}';
+    return 'Assignment{studentID: $studentID, assignmentID: $assignmentID,gbID: $courseID, assignmentName: $name, attributes: $attributes}';
   }
 }
 
