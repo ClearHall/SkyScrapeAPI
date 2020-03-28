@@ -59,7 +59,7 @@ class GradebookAccessor {
                 'term',
                 'grade'
               ], [
-                assignmentLabels.substring(assignmentLabels.indexOf('('),
+                assignmentLabels.substring(assignmentLabels.indexOf('(') + 1,
                     assignmentLabels.indexOf(')')),
                 grade.toString()
               ]));

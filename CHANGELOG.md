@@ -1,3 +1,7 @@
+## [3.0.0+24] - Parenthesis Bug
+
+Fixed weird extra parenthesis in the beginning of the term attribute in quick assignments
+
 ## [3.0.0+22] - Better Account Initialization
 
 If your account is a student account. The API will automatically try to initialize your account when any menu is clicked!

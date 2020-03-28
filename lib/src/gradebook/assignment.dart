@@ -34,7 +34,7 @@ class AssignmentAccessor {
       for (Element a in setElems) {
         extrAttr['${a.attributes['label']} Weight'] = a.attributes['value'];
       }
-    } catch (e, s) {}
+    } catch (e) {}
     List<CategoryHeader> tmp;
     List<Assignment> assignList;
     bool wasLastCat = false;

@@ -50,8 +50,7 @@ class Gradebook {
   /// This is useful if you are trying to find the term of an assignment in semesters.
   String getAssignmentTerm(Assignment a) {
     for (Assignment b in quickAssignments) {
-      if (a.assignmentID == b.assignmentID)
-        return b.attributes['term'].substring(1);
+      if (a.assignmentID == b.assignmentID) return b.attributes['term'];
     }
     return null;
   }
@@ -119,10 +118,9 @@ class Grade extends GradebookNode {
   /// Identification for which term [Grade] is in.
   Grade(this.courseNumber, Term term, this.grade, this.studentID) : super(term);
 
-  //For debugging only.
   @override
   String toString() {
-    return "${this.term.toString()} for ${this.grade} for course # ${this.courseNumber} for student ${this.studentID}";
+    return 'Grade{courseNumber: $courseNumber, grade: $grade, studentID: $studentID}';
   }
 }
 

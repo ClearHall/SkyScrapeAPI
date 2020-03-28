@@ -15,6 +15,7 @@ void main() async {
       Map<String, String> env = Platform.environment;
       User person = await SkyCore.login(env['USERNAME'], env['PASSWORD'], url);
 
+      print(await person.getName());
       try {
         gradebook = await person.getGradebook();
       } catch (e) {
