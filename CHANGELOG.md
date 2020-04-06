@@ -1,7 +1,8 @@
-## [3.1.0+1] - Test Fix for Multiple StuGrades
+## [3.1.0+2] - Test Fix for Multiple StuGrades
 
 Attempt to fix summer grades and other districts by making a breaking change.
 - getGradebook() will now return a list of gradebooks
+- tooltips no longer required
 
 ## [3.0.0+25] - Parenthesis Bug
 

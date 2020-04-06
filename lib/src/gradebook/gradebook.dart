@@ -15,7 +15,8 @@ class GradebookAccessor {
 
   static getTermsFromDocCode(List infoList) {
     List<Term> terms = [];
-    for (Map termHTMLA in infoList[0]) {
+    for (int i = 1; i < infoList[0].length; i++) {
+      Map termHTMLA = infoList[0][i];
       String termHTML = termHTMLA['h'];
       termHTML =
           termHTML.replaceFirst('th', 'a').substring(0, termHTML.length - 4) +
@@ -24,7 +25,7 @@ class GradebookAccessor {
       final termDoc = DocumentFragment.html(termHTML);
       final tooltip = termDoc.querySelector('a').attributes['tooltip'];
 
-      if (tooltip != null) terms.add(Term(termDoc.text, tooltip));
+      terms.add(Term(termDoc.text, tooltip));
     }
     return terms;
   }
