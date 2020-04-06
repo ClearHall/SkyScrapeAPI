@@ -1,6 +1,8 @@
 import 'dart:convert';
-import 'package:html/parser.dart' show parse;
+
 import 'package:html/dom.dart';
+import 'package:html/parser.dart' show parse;
+
 import '../../data_types.dart';
 import '../skyward_utils.dart';
 
@@ -9,11 +11,11 @@ class GradebookAccessor {
   This decoded json string is super weird. Look at initGradebookHTML if you need to understand it.
    */
   static final _termJsonDeliminater =
-      "sff.sv('sf_gridObjects',\$.extend((sff.getValue('sf_gridObjects') ";
+      "sff.sv('sf_gridObjects',\$.extend((sff.getValue('sf_gridObjects') || {}), ";
 
   static getTermsFromDocCode(List infoList) {
     List<Term> terms = [];
-    for (var termHTMLA in infoList[0]) {
+    for (Map termHTMLA in infoList[0]) {
       String termHTML = termHTMLA['h'];
       termHTML =
           termHTML.replaceFirst('th', 'a').substring(0, termHTML.length - 4) +
@@ -97,17 +99,24 @@ class GradebookAccessor {
       if (elem.text.contains(_termJsonDeliminater)) {
         var needToDecodeJson = elem.text.substring(
             elem.text.indexOf(_termJsonDeliminater) +
-                _termJsonDeliminater.length,
-            elem.text.length - 5);
-        needToDecodeJson =
-            needToDecodeJson.substring(needToDecodeJson.indexOf(':') + 1);
-        var mapOfFutureParsedHTML = jsonDecode(needToDecodeJson);
+                _termJsonDeliminater.length -
+                1,
+            elem.text.length - 4);
+        int ind = needToDecodeJson.indexOf('\'stuGradesGrid');
+        while (ind > -1) {
+          needToDecodeJson = needToDecodeJson.replaceFirst("'", ' "', ind);
+          needToDecodeJson = needToDecodeJson.replaceFirst("'", '"', ind);
+          ind = needToDecodeJson.indexOf('\'stuGradesGrid');
+        }
+        var listOfStuGrids = jsonDecode(needToDecodeJson);
 
-        return [
-          mapOfFutureParsedHTML['th']['r'][0]['c'],
-          mapOfFutureParsedHTML['tb']['r'],
-          html
-        ];
+        List vals = List();
+        for (Map map in listOfStuGrids.values) {
+          vals.add([map['th']['r'][0]['c'], map['tb']['r'], html]);
+        }
+        vals.add(html);
+
+        return vals;
       } else {
         throw SkywardError(
             'Term JSON Deliminater missing. District not supported.');

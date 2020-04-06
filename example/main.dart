@@ -1,10 +1,12 @@
-import 'package:skyscrapeapi/data_types.dart';
-import 'package:skyscrapeapi/sky_core.dart';
 import 'dart:io';
 
+import 'package:skyscrapeapi/data_types.dart';
+import 'package:skyscrapeapi/sky_core.dart';
+
 void main() async {
+  print('start');
   final skyward =
-      "https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w";
+      "https://cors-anywhere.herokuapp.com/https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w";
   var file = File('test/testCredentials.txt');
   var contents;
   var terms;
@@ -27,7 +29,7 @@ void main() async {
 
   try {
     List<AssignmentProperty> props =
-        (await person.getAssignmentDetailsFrom(gradebook.quickAssignments[0]));
+    (await person.getAssignmentDetailsFrom(gradebook[0].quickAssignments[0]));
     print(props);
   } catch (e) {
     print('Should succeed: ${e.toString()}');

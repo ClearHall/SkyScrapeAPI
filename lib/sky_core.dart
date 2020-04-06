@@ -271,6 +271,7 @@ class User {
     if (_debugMessagesEnabled) print(m);
   }
 
+  //TODO: Create a base accessor class and pass that instead of parseHTML function!
   /// Internal support function!
   _useSpecifiedFunctionsToRetrieveHTML(
       String page, Function parseHTML, timesRan,
@@ -320,7 +321,7 @@ class User {
 
   /// Internal variables for caching grade book.
   List _internalGradebookStorage;
-  Gradebook _gradebook;
+  List<Gradebook> _gradebooks;
 
   /// Initializes and scrapes the grade book HTML. Internal method.
   _initGradeBook({int timeRan = 0}) async {
@@ -336,20 +337,27 @@ class User {
             GradebookAccessor.initGradebookAndGradesHTML,
             timeRan);
       }
-      _gradebook =
-          GradebookAccessor.getGradeBoxesFromDocCode(_internalGradebookStorage);
-    } catch (e) {
+      _gradebooks = [];
+      for (int i = 0; i < _internalGradebookStorage.length - 1; i++) {
+        _gradebooks.add(GradebookAccessor.getGradeBoxesFromDocCode(
+            _internalGradebookStorage[i]));
+      }
+    } catch (e, s) {
       _internalGradebookStorage = null;
-      _internalPrint("Couldn't get your gradebook! Trying again.");
+      _internalPrint(e.toString() +
+          "\n" +
+          s.toString() +
+          "\nCouldn't get your gradebook! Trying again.");
       await _initGradeBook(timeRan: timeRan + 1);
     }
   }
 
   /// The gradebook retrieved!
-  Future<Gradebook> getGradebook({timesRan = 0, forceRefresh = false}) async {
+  Future<List<Gradebook>> getGradebook(
+      {timesRan = 0, forceRefresh = false}) async {
     if (forceRefresh) _internalGradebookStorage = null;
     await _initGradeBook();
-    return _gradebook;
+    return _gradebooks;
   }
 
   /// The assignments from a specific term. Returns a list of [AssignmentNode].

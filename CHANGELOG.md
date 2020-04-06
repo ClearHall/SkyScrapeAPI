@@ -1,3 +1,8 @@
+## [3.1.0+1] - Test Fix for Multiple StuGrades
+
+Attempt to fix summer grades and other districts by making a breaking change.
+- getGradebook() will now return a list of gradebooks
+
 ## [3.0.0+25] - Parenthesis Bug
 
 Fixed weird extra parenthesis in the beginning of the term attribute in quick assignments
