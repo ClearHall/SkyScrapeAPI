@@ -7,17 +7,14 @@ import 'package:test/test.dart';
 void main() async {
   String url =
       'https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w';
-
+  Map<String, String> env = Platform.environment;
+  User person = await SkyCore.login(
+      env['USERNAME'], env['PASSWORD'], url, ignoreExceptions: false);
 //  List<Term> terms;
-  List<Gradebook> gradebook;
+  Gradebook gradebook;
 
   group('Group tests on network WITH enabled refresh', () {
     test('test regular usage', () async {
-      Map<String, String> env = Platform.environment;
-      User person = await SkyCore.login(
-          env['USERNAME'], env['PASSWORD'], url, ignoreExceptions: false);
-//
-//      print(await person.getName());
       try {
         gradebook = await person.getGradebook();
 //        var assignment = gradebook.quickAssignments.lastWhere((element) => element.name == 'Fall Concert Performance');

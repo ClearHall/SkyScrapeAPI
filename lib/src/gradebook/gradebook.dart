@@ -30,13 +30,13 @@ class GradebookAccessor {
     return terms;
   }
 
-  static Gradebook getGradeBoxesFromDocCode(List infoList) {
-    Gradebook gradebook = new Gradebook();
+  static GradebookSector getGradeBoxesFromDocCode(List infoList,
+      Document parsedHTML) {
+    GradebookSector gradebook = new GradebookSector();
     gradebook.quickAssignments = new List<Assignment>();
     List<Term> terms = getTermsFromDocCode(infoList);
     gradebook.terms = terms;
     List<Class> classes = [];
-    var parsedHTML = parse(infoList[2]);
     for (var sffBrak in infoList[1]) {
       for (var i = 0; i < sffBrak['c'].length; i++) {
         var c = sffBrak['c'][i];
@@ -80,8 +80,26 @@ class GradebookAccessor {
         } else if (c['cId'] != null) {
           var tdElement = parsedHTML.getElementById(c['cId']);
           var tdElements = (tdElement.children[0].querySelectorAll('td'));
-          classes.add(Class(
-              tdElements[3].text, tdElements[1].text, tdElements[2].text));
+          if (tdElements.length >= 4) {
+            Element secElem = tdElements[2];
+            classes.add(Class(
+                tdElements[3].text,
+                tdElements[1].text,
+                secElem
+                    .querySelector('label')
+                    .text +
+                    " " +
+                    secElem.nodes
+                        .firstWhere(
+                            (element) => element.nodeType == Node.TEXT_NODE)
+                        .text +
+                    " " +
+                    secElem
+                        .querySelector('span')
+                        .text));
+          } else {
+            classes.add(Class(tdElements[2].text, tdElements[1].text, null));
+          }
         } else if (cDoc.text.trim().isNotEmpty) {
           classes.last.grades.add(Behavior(cDoc.text, terms[i - 1]));
         }
@@ -113,7 +131,7 @@ class GradebookAccessor {
 
         List vals = List();
         for (Map map in listOfStuGrids.values) {
-          vals.add([map['th']['r'][0]['c'], map['tb']['r'], html]);
+          vals.add([map['th']['r'][0]['c'], map['tb']['r']]);
         }
         vals.add(html);
 

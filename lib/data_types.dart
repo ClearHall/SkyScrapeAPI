@@ -42,6 +42,42 @@ class Term {
 }
 
 class Gradebook {
+  final List<GradebookSector> gradebookSectors;
+
+  Gradebook(this.gradebookSectors);
+
+  List<Class> getAllClasses() {
+    return _addAll((g) => g.classes).cast<Class>();
+  }
+
+  List<Assignment> getAllQuickAssignments() {
+    return _addAll((g) => g.quickAssignments).cast<Assignment>();
+  }
+
+  List<Term> getAllTerms() {
+    return _addAll((g) => g.terms).cast<Term>();
+  }
+
+  List _addAll(List Function(GradebookSector) addTo) {
+    List finale = List();
+
+    for (GradebookSector g in gradebookSectors) {
+      finale.addAll(addTo(g));
+    }
+
+    return finale;
+  }
+
+  @override
+  String toString() {
+    return 'Gradebook{gradebookSectors: $gradebookSectors}';
+  }
+
+//TODO: toCompressedJson, fromCompressedJson
+/// Compressed JSON looks for similarities in things such as TERMS and will store <term ID> instead of the whole term.
+}
+
+class GradebookSector {
   List<Class> classes;
   List<Term> terms;
   List<Assignment> quickAssignments;
@@ -122,6 +158,25 @@ class Grade extends GradebookNode {
   String toString() {
     return 'Grade{courseNumber: $courseNumber, grade: $grade, studentID: $studentID}';
   }
+
+  Grade.fromJson(Map<String, dynamic> json) : super(Term.fromJson(json['t'])) {
+    if (json['gNID'] == 'g') {
+      courseNumber = json['cN'];
+      grade = json['g'];
+      studentID = json['sID'];
+    } else {
+      throw SkywardError('Incorrect type.');
+    }
+  }
+
+  Map<String, dynamic> toJson() =>
+      {
+        'cN': courseNumber,
+        'g': grade,
+        'sID': studentID,
+        't': term.toJson(),
+        'gNID': 'g'
+      };
 }
 
 /// [AssignmentNode] is the parent of multiple child types that allow for more categorization
@@ -213,7 +268,7 @@ class Assignment extends AssignmentNode {
 
   @override
   String toString() {
-    return 'Assignment{studentID: $studentID, assignmentID: $assignmentID,gbID: $courseID, assignmentName: $name, attributes: $attributes}';
+    return 'Assignment{studentID: $studentID, assignmentID: $assignmentID, courseID: $courseID, assignmentName: $name, attributes: $attributes}';
   }
 }
 

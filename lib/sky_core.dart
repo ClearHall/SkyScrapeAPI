@@ -321,7 +321,7 @@ class User {
 
   /// Internal variables for caching grade book.
   List _internalGradebookStorage;
-  List<Gradebook> _gradebooks;
+  List<GradebookSector> _gradebooks;
 
   /// Initializes and scrapes the grade book HTML. Internal method.
   _initGradeBook({int timeRan = 0}) async {
@@ -338,9 +338,10 @@ class User {
             timeRan);
       }
       _gradebooks = [];
+      Document parsed = parse(_internalGradebookStorage.last ?? "");
       for (int i = 0; i < _internalGradebookStorage.length - 1; i++) {
         _gradebooks.add(GradebookAccessor.getGradeBoxesFromDocCode(
-            _internalGradebookStorage[i]));
+            _internalGradebookStorage[i], parsed));
       }
     } catch (e, s) {
       _internalGradebookStorage = null;
@@ -353,11 +354,10 @@ class User {
   }
 
   /// The gradebook retrieved!
-  Future<List<Gradebook>> getGradebook(
-      {timesRan = 0, forceRefresh = false}) async {
+  Future<Gradebook> getGradebook({timesRan = 0, forceRefresh = false}) async {
     if (forceRefresh) _internalGradebookStorage = null;
     await _initGradeBook();
-    return _gradebooks;
+    return Gradebook(_gradebooks);
   }
 
   /// The assignments from a specific term. Returns a list of [AssignmentNode].

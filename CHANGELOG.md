@@ -1,4 +1,9 @@
-## [3.1.0+2] - Test Fix for Multiple StuGrades
+## [3.2.0+2] - Gradebook Object Update
+
+Gradebook is a separate class from GradebookSectors.
+- Gradebooks will contain a list of GradebookSectors and come with a bunch of functions to speed up the development of tools such as comparing
+
+## [3.1.0+2] - Fix for Multiple StuGrades
 
 Attempt to fix summer grades and other districts by making a breaking change.
 - getGradebook() will now return a list of gradebooks
@@ -33,9 +38,6 @@ Some things that were changed:
 ## [2.3.6+2] - Bug Fix
 
 Fixed dependencies
-
-## [2.3.6+1] - Bug Fix
-
 When grade bookk init gets a district not supported error. It'll try again, because this may be caused by a website session that has been inactive for too long.
 
 ## [2.3.5+3] - Assignment Info DataType getUIMessage
@@ -45,39 +47,13 @@ Now detects and puts a colon in the message if there is none.
 ## [2.3.5+2] - Fixed Comment Support
 
 Assignment info comment support.
-
-## [2.3.5+1] - Added Comment Support
-
 Assignment info comment support.
-
-## [2.3.4+1] - Code Speed Up
-
 Added a long lost if statement that reduced speed of getting gradebook.
 
 Tests were performed on decent internet.
 
 One action : 7s 645 ms -> 4s 984ms
 Three actions : 21 s -> 14 s
-
-## [2.3.3+1] - Final Bug Fix
-
-Finally fixed all bugs for messages for all districts by searching through all div's.
-
-## [2.3.2+2] - More Bug Fix
-
-Fix bug of insertion.
-
-## [2.3.2+1] - More Bug Fix
-
-Split's the text and inserts link in there.
-
-## [2.3.1+1] - Bug Fix
-
-Fixed bug where there was duplicate links.
-
-## [2.3.0+2] - Windows Retarded
-
-Windows RETARDED
 
 ## [2.3.0+1] - Messages
 
