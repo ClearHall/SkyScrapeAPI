@@ -1,5 +1,6 @@
 import 'package:html/dom.dart';
-import 'package:skyscrapeapi/data_types.dart';
+
+import '../core/data_types.dart';
 
 class ParentUtils {
   /// Tries to get student accounts from a parent. It will return null if no students are found.

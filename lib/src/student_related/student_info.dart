@@ -1,5 +1,6 @@
 import 'package:html/dom.dart';
-import 'package:skyscrapeapi/data_types.dart';
+
+import '../core/data_types.dart';
 
 class StudentInfoParser {
   static StudentInfo parseStudentID(String html) {

@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:skyscrapeapi/data_types.dart';
-import 'package:skyscrapeapi/sky_core.dart';
+import 'file:///C:/Users/Hunter%20Han/StudioProjects/SkyScrapeAPI/lib/src/core/data_types.dart';
+import 'file:///C:/Users/Hunter%20Han/StudioProjects/SkyScrapeAPI/lib/src/core/login.dart';
 
 void main() async {
   print('start');

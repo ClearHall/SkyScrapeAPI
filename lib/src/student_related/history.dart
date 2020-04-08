@@ -1,7 +1,9 @@
-import 'package:html/dom.dart';
-import '../skyward_utils.dart';
-import '../../data_types.dart';
 import 'dart:convert';
+
+import 'package:html/dom.dart';
+
+import '../core/data_types.dart';
+import '../misc/skyward_utils.dart';
 
 class HistoryAccessor {
   static final _termJsonDeliminater =

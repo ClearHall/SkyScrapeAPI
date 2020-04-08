@@ -1,5 +1,3 @@
-library sky_types;
-
 /// [Term] allow for the scrapers to sort through the grades and retrieve grades for certain terms.
 ///
 /// [Term] is JSON compatible and can be converted to a JSON if needed.
@@ -47,25 +45,16 @@ class Gradebook {
   Gradebook(this.gradebookSectors);
 
   List<Class> getAllClasses() {
-    return _addAll((g) => g.classes).cast<Class>();
+    return gradebookSectors.expand((element) => element.classes).toList();
   }
 
   List<Assignment> getAllQuickAssignments() {
-    return _addAll((g) => g.quickAssignments).cast<Assignment>();
+    return gradebookSectors.expand((element) => element.quickAssignments)
+        .toList();
   }
 
   List<Term> getAllTerms() {
-    return _addAll((g) => g.terms).cast<Term>();
-  }
-
-  List _addAll(List Function(GradebookSector) addTo) {
-    List finale = List();
-
-    for (GradebookSector g in gradebookSectors) {
-      finale.addAll(addTo(g));
-    }
-
-    return finale;
+    return gradebookSectors.expand((element) => element.terms).toList();
   }
 
   @override

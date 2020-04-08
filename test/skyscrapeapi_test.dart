@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:skyscrapeapi/data_types.dart';
 import 'package:skyscrapeapi/sky_core.dart';
 import 'package:test/test.dart';
 
@@ -57,7 +56,7 @@ void main() async {
 //      }
 //
 //      print(terms);
-      print(gradebook);
+      print(gradebook.getAllQuickAssignments());
 //      print(await person.getHistory());
     });
   });

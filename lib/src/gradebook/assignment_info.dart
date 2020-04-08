@@ -1,5 +1,6 @@
 import 'package:html/dom.dart';
-import '../../data_types.dart';
+
+import '../core/data_types.dart';
 
 class AssignmentInfoAccessor {
   static getAssignmentInfoBoxesFromHTML(String html) {

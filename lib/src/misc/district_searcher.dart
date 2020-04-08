@@ -1,9 +1,10 @@
 library skyward_district_searcher;
 
-import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
-import 'data_types.dart';
+import 'package:html/parser.dart' show parse;
+import 'package:http/http.dart' as http;
+
+import '../core/data_types.dart';
 
 /// [SkywardDistrictSearcher] is a completely static class that'll search for districts.
 ///

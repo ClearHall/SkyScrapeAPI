@@ -1,6 +1,7 @@
 import 'package:html/dom.dart';
 import 'package:http/http.dart' as http;
-import 'package:skyscrapeapi/data_types.dart';
+
+import '../core/data_types.dart';
 
 class SkywardAuthenticator {
   static getNewSessionCodes(String user, String pass, String baseURL) async {
