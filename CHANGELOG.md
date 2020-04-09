@@ -1,7 +1,8 @@
-## [3.2.0+2] - Gradebook Object Update
+## [3.2.0+3] - Gradebook Object Update
 
 Gradebook is a separate class from GradebookSectors.
 - Gradebooks will contain a list of GradebookSectors and come with a bunch of functions to speed up the development of tools such as comparing
+- Made importing easier, now you only need to import sky_core
 
 ## [3.1.0+2] - Fix for Multiple StuGrades
 

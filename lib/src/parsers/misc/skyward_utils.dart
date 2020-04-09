@@ -1,10 +1,8 @@
-library sky_universal;
-
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 
-import '../core/data_types.dart';
+import '../../core/data_types.dart';
 
 attemptPost(String url, Map postCodes) async {
   final postReq = await http.post(url, body: postCodes);

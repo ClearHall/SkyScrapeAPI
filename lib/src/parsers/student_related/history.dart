@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:html/dom.dart';
 
-import '../core/data_types.dart';
+import '../../core/data_types.dart';
 import '../misc/skyward_utils.dart';
 
 class HistoryAccessor {

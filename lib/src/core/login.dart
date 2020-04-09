@@ -3,14 +3,14 @@ library sky_core;
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 
-import '../gradebook/assignment.dart';
-import '../gradebook/assignment_info.dart';
-import '../gradebook/gradebook.dart';
-import '../misc/parent.dart';
-import '../misc/skyward_utils.dart';
-import '../student_related/history.dart';
-import '../student_related/message.dart';
-import '../student_related/student_info.dart';
+import '../parsers/gradebook/assignment.dart';
+import '../parsers/gradebook/assignment_info.dart';
+import '../parsers/gradebook/gradebook.dart';
+import '../parsers/misc/parent.dart';
+import '../parsers/misc/skyward_utils.dart';
+import '../parsers/student_related/history.dart';
+import '../parsers/student_related/message.dart';
+import '../parsers/student_related/student_info.dart';
 import 'authenticator.dart';
 import 'data_types.dart';
 

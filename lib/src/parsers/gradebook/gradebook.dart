@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 
-import '../core/data_types.dart';
+import '../../core/data_types.dart';
 import '../misc/skyward_utils.dart';
 
 class GradebookAccessor {
@@ -33,7 +33,6 @@ class GradebookAccessor {
   static GradebookSector getGradeBoxesFromDocCode(List infoList,
       Document parsedHTML) {
     GradebookSector gradebook = new GradebookSector();
-    gradebook.quickAssignments = new List<Assignment>();
     List<Term> terms = getTermsFromDocCode(infoList);
     gradebook.terms = terms;
     List<Class> classes = [];
@@ -101,7 +100,7 @@ class GradebookAccessor {
             classes.add(Class(tdElements[2].text, tdElements[1].text, null));
           }
         } else if (cDoc.text.trim().isNotEmpty) {
-          classes.last.grades.add(Behavior(cDoc.text, terms[i - 1]));
+          classes.last.grades.add(FixedGrade(cDoc.text, terms[i - 1]));
         }
       }
     }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:skyscrapeapi/sky_core.dart';
@@ -7,8 +8,8 @@ void main() async {
   String url =
       'https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w';
   Map<String, String> env = Platform.environment;
-  User person = await SkyCore.login(
-      env['USERNAME'], env['PASSWORD'], url, ignoreExceptions: false);
+  User person = await SkyCore.login(env['USERNAME'], env['PASSWORD'], url,
+      ignoreExceptions: false);
 //  List<Term> terms;
   Gradebook gradebook;
 
@@ -56,7 +57,12 @@ void main() async {
 //      }
 //
 //      print(terms);
-      print(gradebook.getAllQuickAssignments());
+      print(gradebook.toCompressedJson());
+      var dec = jsonDecode(jsonEncode(gradebook));
+      //for(dynamic f in dec) print(Gra.fromJson(f));
+      print(Gradebook.fromJson(
+          jsonDecode(jsonEncode(gradebook.toCompressedJson()))));
+      print(gradebook);
 //      print(await person.getHistory());
     });
   });

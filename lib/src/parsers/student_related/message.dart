@@ -1,7 +1,7 @@
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 
-import '../core/data_types.dart';
+import '../../core/data_types.dart';
 
 class MessageParser {
   static List<Message> parseMessage(String html) {

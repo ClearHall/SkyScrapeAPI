@@ -4,7 +4,7 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 
-import '../core/data_types.dart';
+import '../../core/data_types.dart';
 
 /// [SkywardDistrictSearcher] is a completely static class that'll search for districts.
 ///
