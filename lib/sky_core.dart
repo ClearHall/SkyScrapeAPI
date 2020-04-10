@@ -1,4 +1,4 @@
-library skyscrape;
+library skyscrapeapi;
 
 export 'src/core/data_types.dart';
 export 'src/core/login.dart';

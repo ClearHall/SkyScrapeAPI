@@ -57,12 +57,15 @@ void main() async {
 //      }
 //
 //      print(terms);
-      print(gradebook.toCompressedJson());
+//      print(gradebook.toCompressedJson());
+      print(gradebook.toString() + "\n\n\n\n\n\n\n\n");
       var dec = jsonDecode(jsonEncode(gradebook));
-      //for(dynamic f in dec) print(Gra.fromJson(f));
-      print(Gradebook.fromJson(
-          jsonDecode(jsonEncode(gradebook.toCompressedJson()))));
-      print(gradebook);
+      print(dec.toString() + "\n\n\n\n\n\n\n\n");
+      print(Gradebook.fromJson(dec));
+      //for(dynamic f in dec) print(Grade.fromJson(f));
+//      print(Gradebook.fromJson(
+//          jsonDecode(jsonEncode(gradebook.toCompressedJson()))));
+//      print(gradebook);
 //      print(await person.getHistory());
     });
   });

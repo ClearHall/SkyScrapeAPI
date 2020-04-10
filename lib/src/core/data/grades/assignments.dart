@@ -94,17 +94,30 @@ class Assignment extends AssignmentNode {
   }
 
   Assignment.fromJson(Map<String, dynamic> json)
-      : studentID = json['sID'],
-        assignmentID = json['aID'],
-        courseID = json['cID'],
-        super(json['n'], json['attr'].cast<String, String>());
+      : studentID = (json['sID'] ?? json['studentID']),
+        assignmentID = (json['aID'] ?? json['assignmentID']),
+        courseID = (json['cID'] ?? json['courseID']),
+        super(
+          (json['n'] ?? json['name']),
+          (json['attributes'] ?? _recoverAttr(json['a']))
+              .cast<String, String>());
+
+  static Map _recoverAttr(Map attr) {
+    if (attr.containsKey('g') && attr.containsKey('t')) {
+      attr['term'] = attr['t'];
+      attr['grade'] = attr['g'];
+      attr.remove('g');
+      attr.remove('t');
+    }
+    return attr;
+  }
 
   Map<String, dynamic> toJson() => {
-        'sID': studentID,
-        'aID': assignmentID,
-        'cID': courseID,
-        'n': name,
-        'attr': attributes
+    'studentID': studentID,
+    'assignmentID': assignmentID,
+    'courseID': courseID,
+    'name': name,
+    'attributes': attributes
       };
 }
 

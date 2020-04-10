@@ -1,15 +1,12 @@
 import 'dart:convert';
 
+import '../parsers/misc/skyward_utils.dart';
+
 part 'data/district_search.dart';
-
 part 'data/grades/academic_history.dart';
-
 part 'data/grades/assignments.dart';
-
 part 'data/grades/gradebook.dart';
-
 part 'data/messages.dart';
-
 part 'data/student_info.dart';
 
 /// [Term] allow for the scrapers to sort through the grades and retrieve grades for certain terms.
@@ -35,8 +32,8 @@ class Term {
         termName = json['termName'] ?? json['tN'];
 
   Map<String, dynamic> toJson() => {
-    'tC': termCode,
-    'tN': termName,
+    'termCode': termCode,
+    'termName': termName,
   };
 
   /// Compares the term codes only

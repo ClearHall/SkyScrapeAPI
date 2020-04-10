@@ -27,3 +27,14 @@ bool didSessionExpire(String doc) {
 
   return false;
 }
+
+String simplify(String a) {
+  String f = "";
+  int i = 0;
+  a.runes.forEach((element) {
+    String char = String.fromCharCode(element);
+    if (i == 0 || char.toUpperCase() == char) f += char;
+    i++;
+  });
+  return f;
+}

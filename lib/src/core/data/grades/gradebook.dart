@@ -29,30 +29,43 @@ class Gradebook {
             (json['c'] == null ? _getSectorList(json) : _fromCompressed(json));
 
   static List<GradebookSector> _getSectorList(Map<String, dynamic> json) {
-    return json['g']
+    return (json['gradebookSectors'] ?? json['gS'])
         .map((value) => GradebookSector.fromJson(value))
         .toList()
         .cast<GradebookSector>();
   }
 
+  /// 其实挺简单的！
+  /// It loops through the encoded map and finds things such as student ID, course ID, and terms. The three most commonly repeated variables.
+  /// By taking those variables out and associating a specific index of a separate designated set for them, we can eliminate many duplicates and save a lot of space.
+  /// For example, compressing can turn {sID: 30012} into {sID: 0}, while in another location {0: 30012} is stored. If we have multiple elements with that same sID, it'll save a lot of space by eliminating the need to have 30012 over and over again.
   static List<GradebookSector> _fromCompressed(Map<String, dynamic> json) {
-    for (Map sec in json['g']) {
+    for (Map sec in json['gS']) {
       for (int i = 0; i < sec['t'].length; i++)
         sec['t'][i] = json['c'][sec['t'][i]];
       for (Map classes in sec['c']) {
         for (Map grades in classes['g']) {
           grades['t'] = json['c'][grades['t']];
-          if (grades.containsKey('cN') && grades.containsKey('sID')) {
+          if (grades.containsKey('cN')) {
             grades['cN'] = json['cID'][grades['cN']];
-            grades['sID'] = json['s'][grades['sID']];
+            if (grades.containsKey('sID'))
+              grades['sID'] = json['s'][grades['sID']];
+            else
+              grades['sID'] = json['s'][0];
           }
         }
       }
+
+      int tmp;
       for (Map qAssign in sec['qA']) {
-        if (qAssign.containsKey('cID') && qAssign.containsKey('sID')) {
-          qAssign['cID'] = json['cID'][qAssign['cID']];
-          qAssign['sID'] = json['s'][qAssign['sID']];
+        if (qAssign.containsKey('cID')) {
+          tmp = qAssign['cID'];
         }
+        qAssign['cID'] = json['cID'][tmp];
+        if (qAssign.containsKey('sID'))
+          qAssign['sID'] = json['s'][qAssign['sID']];
+        else
+          qAssign['sID'] = json['s'][0];
       }
     }
     json.remove('c');
@@ -61,7 +74,7 @@ class Gradebook {
     return _getSectorList(json);
   }
 
-  Map<String, dynamic> toJson() => {'g': gradebookSectors};
+  Map<String, dynamic> toJson() => {'gradebookSectors': gradebookSectors};
 
   Map<String, dynamic> toCompressedJson() {
     Map<String, dynamic> json = jsonDecode(jsonEncode(toJson()));
@@ -69,7 +82,9 @@ class Gradebook {
     Set<String> studentID = Set();
     Set<String> courseID = Set();
 
-    for (Map sec in json['g']) {
+    _simplifyMap(json);
+
+    for (Map sec in json['gS']) {
       for (int i = 0; i < sec['t'].length; i++)
         sec['t'][i] = _checkTermElems(sec['t'][i], termCache);
       for (Map classes in sec['c']) {
@@ -78,13 +93,22 @@ class Gradebook {
           if (grades.containsKey('cN') && grades.containsKey('sID')) {
             _singleSetAdd(courseID, grades, 'cN');
             _singleSetAdd(studentID, grades, 'sID');
+            if (grades['sID'] == 0) grades.remove('sID');
           }
         }
       }
+
+      int tmp;
       for (Map qAssign in sec['qA']) {
         if (qAssign.containsKey('cID') && qAssign.containsKey('sID')) {
           _singleSetAdd(courseID, qAssign, 'cID');
+          if (tmp != qAssign['cID']) {
+            tmp = qAssign['cID'];
+          } else {
+            qAssign.remove('cID');
+          }
           _singleSetAdd(studentID, qAssign, 'sID');
+          if (qAssign['sID'] == 0) qAssign.remove('sID');
         }
       }
     }
@@ -93,6 +117,25 @@ class Gradebook {
     json['cID'] = courseID.toList();
     json['c'] = termCache;
     return json;
+  }
+
+  void _simplifyMap(Map<String, dynamic> a) {
+    List<String> keys = a.keys.toList();
+    for (int i = keys.length - 1; i >= 0; i--) {
+      String simplified = simplify(keys[i]);
+      a[simplified] = a[keys[i]];
+      a.remove(keys[i]);
+      _checkValue(a[simplified]);
+    }
+  }
+
+  void _checkValue(x) {
+    if (x is Map)
+      _simplifyMap(x);
+    else if (x is List)
+      for (var v in x) {
+        _checkValue(v);
+      }
   }
 
   void _singleSetAdd(Set<String> set, Map grades, String id) {
@@ -134,21 +177,25 @@ class GradebookSector {
   }
 
   GradebookSector.fromJson(Map<String, dynamic> json)
-      : classes = json['c']
+      : classes = (json['c'] ?? json['classes'])
             .map((value) => Class.fromJson(value))
             .toList()
             .cast<Class>(),
-        terms = json['t']
+        terms = (json['t'] ?? json['terms'])
             .map((value) => Term.fromJson(value))
             .toList()
             .cast<Term>(),
-        quickAssignments = json['qA']
+        quickAssignments = (json['qA'] ?? json['quickAssignments'])
             .map((value) => Assignment.fromJson(value))
             .toList()
             .cast<Assignment>();
 
   Map<String, dynamic> toJson() =>
-      {'t': terms, 'c': classes, 'qA': quickAssignments};
+      {
+        'terms': terms,
+        'classes': classes,
+        'quickAssignments': quickAssignments
+      };
 }
 
 class Class {
@@ -175,10 +222,10 @@ class Class {
   }
 
   Class.fromJson(Map<String, dynamic> json)
-      : teacherName = json['tN'],
-        timePeriod = json['tP'],
-        courseName = json['cN'],
-        grades = json['g']
+      : teacherName = (json['tN'] ?? json['teacherName']),
+        timePeriod = (json['tP'] ?? json['timePeriod']),
+        courseName = (json['cN'] ?? json['courseName']),
+        grades = (json['g'] ?? json['grades'])
             .map((value) => value.length == 2
                 ? FixedGrade.fromJson(value)
                 : Grade.fromJson(value))
@@ -186,7 +233,12 @@ class Class {
             .cast<GradebookNode>();
 
   Map<String, dynamic> toJson() =>
-      {'tN': teacherName, 'tP': timePeriod, 'cN': courseName, 'g': grades};
+      {
+        'teacherName': teacherName,
+        'timePeriod': timePeriod,
+        'courseName': courseName,
+        'grades': grades
+      };
 }
 
 /// [GradebookNode] is a root that helps distinguish the difference between grades and teacher information
@@ -202,10 +254,10 @@ abstract class GradebookNode {
   GradebookNode(this.term, this.grade, this.containsMoreData);
 
   GradebookNode.fromJson(Map<String, dynamic> json, this.containsMoreData)
-      : term = Term.fromJson(json['t']),
-        grade = json['g'];
+      : term = Term.fromJson((json['t'] ?? json['term'])),
+        grade = (json['g'] ?? json['grade']);
 
-  Map<String, dynamic> toJson() => {'g': grade, 't': term.toJson()};
+  Map<String, dynamic> toJson() => {'grade': grade, 'term': term.toJson()};
 }
 
 class FixedGrade extends GradebookNode {
@@ -238,13 +290,13 @@ class Grade extends GradebookNode {
   }
 
   Grade.fromJson(Map<String, dynamic> json)
-      : courseNumber = json['cN'],
-        studentID = json['sID'],
+      : courseNumber = (json['cN'] ?? json['courseNumber']),
+        studentID = (json['sID'] ?? json['studentID']),
         super.fromJson(json, true);
 
   Map<String, dynamic> toJson() => super.toJson()
     ..addAll({
-      'cN': courseNumber,
-      'sID': studentID,
+      'courseNumber': courseNumber,
+      'studentID': studentID,
     });
 }

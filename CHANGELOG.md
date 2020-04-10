@@ -1,3 +1,16 @@
+## [4.0.0+2] - The Persistence Update
+
+Renamed Behavior class to FixedGrade: changed behavior property to grade and added isGradeBehavior() function.
+A bunch of organization updates: data_types.dart is no longer one file, but many joined together with **part** and  **part of**.
+Again, please only import sky_core.dart! Importing anything else may not work and if it does, will expose internal functions that should not be used.
+Added support for encoding to JSON for these classes
+- Gradebook
+- GradebookSector
+- Class
+- Assignment
+- FixedGrade
+- Grade
+
 ## [3.2.0+3] - Gradebook Object Update
 
 Gradebook is a separate class from GradebookSectors.
