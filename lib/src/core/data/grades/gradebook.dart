@@ -152,6 +152,7 @@ class Gradebook {
 }
 
 class GradebookSector {
+  String name;
   List<Class> classes;
   List<Term> terms;
   List<Assignment> quickAssignments;
@@ -173,14 +174,14 @@ class GradebookSector {
 
   @override
   String toString() {
-    return 'Gradebook{terms: $terms, classes: $classes, quickAssignments: $quickAssignments}';
+    return 'Gradebook{terms: $terms, classes: $classes, quickAssignments: $quickAssignments, name: $name}';
   }
 
   GradebookSector.fromJson(Map<String, dynamic> json)
       : classes = (json['c'] ?? json['classes'])
-            .map((value) => Class.fromJson(value))
-            .toList()
-            .cast<Class>(),
+      .map((value) => Class.fromJson(value))
+      .toList()
+      .cast<Class>(),
         terms = (json['t'] ?? json['terms'])
             .map((value) => Term.fromJson(value))
             .toList()
@@ -188,13 +189,15 @@ class GradebookSector {
         quickAssignments = (json['qA'] ?? json['quickAssignments'])
             .map((value) => Assignment.fromJson(value))
             .toList()
-            .cast<Assignment>();
+            .cast<Assignment>(),
+        name = json['n'] ?? json['name'];
 
   Map<String, dynamic> toJson() =>
       {
         'terms': terms,
         'classes': classes,
-        'quickAssignments': quickAssignments
+        'quickAssignments': quickAssignments,
+        'name': name
       };
 }
 

@@ -35,6 +35,17 @@ class GradebookAccessor {
     GradebookSector gradebook = new GradebookSector();
     List<Term> terms = getTermsFromDocCode(infoList);
     gradebook.terms = terms;
+    Element name =
+    parsedHTML.querySelector('#grid_' + infoList[2] + '_gridWrap');
+    gradebook.name = name
+        .querySelector('span')
+        .text +
+        (name
+            .querySelector('div[class="sfTag"]')
+            .nodes
+            .firstWhere((element) => element.nodeType == Node.TEXT_NODE)
+            .text);
+    gradebook.name = gradebook.name.trim();
     List<Class> classes = [];
     for (var sffBrak in infoList[1]) {
       for (var i = 0; i < sffBrak['c'].length; i++) {
@@ -126,12 +137,12 @@ class GradebookAccessor {
           needToDecodeJson = needToDecodeJson.replaceFirst("'", '"', ind);
           ind = needToDecodeJson.indexOf('\'stuGradesGrid');
         }
-        var listOfStuGrids = jsonDecode(needToDecodeJson);
+        Map listOfStuGrids = jsonDecode(needToDecodeJson);
 
         List vals = List();
-        for (Map map in listOfStuGrids.values) {
-          vals.add([map['th']['r'][0]['c'], map['tb']['r']]);
-        }
+        listOfStuGrids.forEach((key, value) {
+          vals.add([value['th']['r'][0]['c'], value['tb']['r'], key]);
+        });
         vals.add(html);
 
         return vals;

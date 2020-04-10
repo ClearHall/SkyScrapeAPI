@@ -59,7 +59,7 @@ void main() async {
 //      print(terms);
 //      print(gradebook.toCompressedJson());
       print(gradebook.toString() + "\n\n\n\n\n\n\n\n");
-      var dec = jsonDecode(jsonEncode(gradebook));
+      var dec = jsonDecode(jsonEncode(gradebook.toCompressedJson()));
       print(dec.toString() + "\n\n\n\n\n\n\n\n");
       print(Gradebook.fromJson(dec));
       //for(dynamic f in dec) print(Grade.fromJson(f));
