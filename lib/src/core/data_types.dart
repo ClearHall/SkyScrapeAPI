@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:skyscrapeapi/sky_core.dart';
+
 import '../parsers/misc/skyward_utils.dart';
 
 part 'data/district_search.dart';

@@ -73,10 +73,16 @@ abstract class AssignmentNode {
 ///
 /// [Assignment] is really hard to make, so custom declarations of Assignments is highly discouraged.
 class Assignment extends AssignmentNode {
+  User _user;
+
   /// Post required attributes. Do not worry about this value if you do not plan to modify [Assignment]
   String studentID;
   String assignmentID;
   String courseID;
+
+  void storeUserObject(User u) {
+    _user = u;
+  }
 
   Assignment(this.studentID, this.assignmentID, this.courseID, String name,
       Map<String, String> attributes)
@@ -118,7 +124,7 @@ class Assignment extends AssignmentNode {
     'courseID': courseID,
     'name': name,
     'attributes': attributes
-      };
+  };
 }
 
 /// [CategoryHeader] is an category scraped from the API

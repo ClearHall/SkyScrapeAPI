@@ -357,6 +357,17 @@ class User {
   Future<Gradebook> getGradebook({timesRan = 0, forceRefresh = false}) async {
     if (forceRefresh) _internalGradebookStorage = null;
     await _initGradeBook();
+
+    for (GradebookSector sector in _gradebooks) {
+      for (Class classobj in sector.classes) {
+        for (GradebookNode node in classobj.grades) {
+          if (node is Grade) {
+            node.storeUserObject(this);
+          }
+        }
+      }
+    }
+
     return Gradebook(_gradebooks);
   }
 

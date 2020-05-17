@@ -106,9 +106,11 @@ class GradebookAccessor {
                     " " +
                     secElem
                         .querySelector('span')
-                        .text));
+                        .text,
+                c['cId']));
           } else {
-            classes.add(Class(tdElements[2].text, tdElements[1].text, null));
+            classes.add(
+                Class(tdElements[2].text, tdElements[1].text, null, c['cId']));
           }
         } else if (cDoc.text.trim().isNotEmpty) {
           classes.last.grades.add(FixedGrade(cDoc.text, terms[i - 1]));

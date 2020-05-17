@@ -17,7 +17,8 @@ void main() async {
     test('test regular usage', () async {
       try {
         gradebook = await person.getGradebook();
-//        var assignment = gradebook.quickAssignments.lastWhere((element) => element.name == 'Fall Concert Performance');
+        var assignment = gradebook.getAllClasses();
+        print(assignment);
 //        print("${assignment.name} (${assignment.getIntGrade() ?? "Empty"})");
 //        print(await person.getAssignmentDetailsFrom(assignment));
       } catch (e) {

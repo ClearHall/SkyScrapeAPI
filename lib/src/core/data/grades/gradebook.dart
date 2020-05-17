@@ -77,6 +77,7 @@ class Gradebook {
   Map<String, dynamic> toJson() => {'gradebookSectors': gradebookSectors};
 
   Map<String, dynamic> toCompressedJson() {
+    // Is there a better way to improve this statement here?
     Map<String, dynamic> json = jsonDecode(jsonEncode(toJson()));
     List<Map> termCache = List<Map>();
     Set<String> studentID = Set();
@@ -206,9 +207,12 @@ class Class {
   String timePeriod;
   String courseName;
 
+  String courseID;
+
   List<GradebookNode> grades;
 
-  Class(this.teacherName, this.courseName, this.timePeriod, {this.grades}) {
+  Class(this.teacherName, this.courseName, this.timePeriod, this.courseID,
+      {this.grades}) {
     grades = List<GradebookNode>();
   }
 
@@ -233,14 +237,16 @@ class Class {
                 ? FixedGrade.fromJson(value)
                 : Grade.fromJson(value))
             .toList()
-            .cast<GradebookNode>();
+            .cast<GradebookNode>(),
+        courseID = (json['cI'] ?? json['courseId']);
 
   Map<String, dynamic> toJson() =>
       {
         'teacherName': teacherName,
         'timePeriod': timePeriod,
         'courseName': courseName,
-        'grades': grades
+        'grades': grades,
+        'courseId': courseID
       };
 }
 
@@ -280,8 +286,14 @@ class FixedGrade extends GradebookNode {
 
 /// [Grade] is most likely a clickable numbered grade part of a specific term
 class Grade extends GradebookNode {
+  User _user;
+
   String courseNumber;
   String studentID;
+
+  void storeUserObject(User u) {
+    _user = u;
+  }
 
   /// Identification for which term [Grade] is in.
   Grade(this.courseNumber, Term term, String grade, this.studentID)
@@ -302,4 +314,14 @@ class Grade extends GradebookNode {
       'courseNumber': courseNumber,
       'studentID': studentID,
     });
+
+  Future<DetailedGradingPeriod> getAssignments() async {
+    DetailedGradingPeriod gradingPeriod = await _user.getAssignmentsFrom(this);
+    gradingPeriod.assignments.forEach((key, value) {
+      for (Assignment a in value) {
+        a.storeUserObject(_user);
+      }
+    });
+    return gradingPeriod;
+  }
 }
