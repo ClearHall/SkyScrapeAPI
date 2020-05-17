@@ -380,7 +380,7 @@ class User {
       codes['action'] = 'viewGradeInfoDialog';
       codes['fromHttp'] = 'yes';
       codes['ishttp'] = 'true';
-      codes['corNumId'] = gradeBox.courseNumber;
+      codes['corNumId'] = gradeBox.courseID;
       codes['bucket'] = gradeBox.term.termName;
     });
   }

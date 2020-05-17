@@ -46,8 +46,8 @@ class Gradebook {
       for (Map classes in sec['c']) {
         for (Map grades in classes['g']) {
           grades['t'] = json['c'][grades['t']];
-          if (grades.containsKey('cN')) {
-            grades['cN'] = json['cID'][grades['cN']];
+          if (grades.containsKey('cID')) {
+            grades['cID'] = json['cID'][grades['cID']];
             if (grades.containsKey('sID'))
               grades['sID'] = json['s'][grades['sID']];
             else
@@ -91,8 +91,8 @@ class Gradebook {
       for (Map classes in sec['c']) {
         for (Map grades in classes['g']) {
           grades['t'] = _checkTermElems(grades['t'], termCache);
-          if (grades.containsKey('cN') && grades.containsKey('sID')) {
-            _singleSetAdd(courseID, grades, 'cN');
+          if (grades.containsKey('cID') && grades.containsKey('sID')) {
+            _singleSetAdd(courseID, grades, 'cID');
             _singleSetAdd(studentID, grades, 'sID');
             if (grades['sID'] == 0) grades.remove('sID');
           }
@@ -288,7 +288,7 @@ class FixedGrade extends GradebookNode {
 class Grade extends GradebookNode {
   User _user;
 
-  String courseNumber;
+  String courseID;
   String studentID;
 
   void storeUserObject(User u) {
@@ -296,22 +296,22 @@ class Grade extends GradebookNode {
   }
 
   /// Identification for which term [Grade] is in.
-  Grade(this.courseNumber, Term term, String grade, this.studentID)
+  Grade(this.courseID, Term term, String grade, this.studentID)
       : super(term, grade, true);
 
   @override
   String toString() {
-    return 'Grade{courseNumber: $courseNumber, grade: $grade, studentID: $studentID}';
+    return 'Grade{courseNumber: $courseID, grade: $grade, studentID: $studentID}';
   }
 
   Grade.fromJson(Map<String, dynamic> json)
-      : courseNumber = (json['cN'] ?? json['courseNumber']),
+      : courseID = (json['cID'] ?? json['courseID']),
         studentID = (json['sID'] ?? json['studentID']),
         super.fromJson(json, true);
 
   Map<String, dynamic> toJson() => super.toJson()
     ..addAll({
-      'courseNumber': courseNumber,
+      'courseID': courseID,
       'studentID': studentID,
     });
 
