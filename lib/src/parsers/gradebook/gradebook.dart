@@ -107,7 +107,10 @@ class GradebookAccessor {
                     secElem
                         .querySelector('span')
                         .text,
-                c['cId']));
+                tdElement
+                    .querySelector('div')
+                    .id
+                    .split('_')[3]));
           } else {
             classes.add(
                 Class(tdElements[2].text, tdElements[1].text, null, c['cId']));

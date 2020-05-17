@@ -44,6 +44,7 @@ class Gradebook {
       for (int i = 0; i < sec['t'].length; i++)
         sec['t'][i] = json['c'][sec['t'][i]];
       for (Map classes in sec['c']) {
+        classes['cID'] = json['cID'][classes['cID']];
         for (Map grades in classes['g']) {
           grades['t'] = json['c'][grades['t']];
           if (grades.containsKey('cID')) {
@@ -89,6 +90,8 @@ class Gradebook {
       for (int i = 0; i < sec['t'].length; i++)
         sec['t'][i] = _checkTermElems(sec['t'][i], termCache);
       for (Map classes in sec['c']) {
+        courseID.add(classes['cID']);
+        classes['cID'] = courseID.toList().indexOf(classes['cID']);
         for (Map grades in classes['g']) {
           grades['t'] = _checkTermElems(grades['t'], termCache);
           if (grades.containsKey('cID') && grades.containsKey('sID')) {
@@ -225,20 +228,20 @@ class Class {
 
   @override
   String toString() {
-    return 'Class{teacherName: $teacherName, timePeriod: $timePeriod, courseName: $courseName, grades: $grades}';
+    return 'Class{teacherName: $teacherName, timePeriod: $timePeriod, courseName: $courseName, courseID: $courseID, grades: $grades}';
   }
 
   Class.fromJson(Map<String, dynamic> json)
       : teacherName = (json['tN'] ?? json['teacherName']),
         timePeriod = (json['tP'] ?? json['timePeriod']),
         courseName = (json['cN'] ?? json['courseName']),
+        courseID = (json['cID'] ?? json['courseID']),
         grades = (json['g'] ?? json['grades'])
             .map((value) => value.length == 2
                 ? FixedGrade.fromJson(value)
                 : Grade.fromJson(value))
             .toList()
-            .cast<GradebookNode>(),
-        courseID = (json['cI'] ?? json['courseId']);
+            .cast<GradebookNode>();
 
   Map<String, dynamic> toJson() =>
       {
@@ -246,7 +249,7 @@ class Class {
         'timePeriod': timePeriod,
         'courseName': courseName,
         'grades': grades,
-        'courseId': courseID
+        'courseID': courseID
       };
 }
 
