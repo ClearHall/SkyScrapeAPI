@@ -49,6 +49,7 @@ class Gradebook {
           grades['t'] = json['c'][grades['t']];
           if (grades.containsKey('cID')) {
             grades['cID'] = json['cID'][grades['cID']];
+            grades['cIDS'] = json['cID'][grades['cIDS']];
             if (grades.containsKey('sID'))
               grades['sID'] = json['s'][grades['sID']];
             else
@@ -96,6 +97,7 @@ class Gradebook {
           grades['t'] = _checkTermElems(grades['t'], termCache);
           if (grades.containsKey('cID') && grades.containsKey('sID')) {
             _singleSetAdd(courseID, grades, 'cID');
+            _singleSetAdd(courseID, grades, 'cIDS');
             _singleSetAdd(studentID, grades, 'sID');
             if (grades['sID'] == 0) grades.remove('sID');
           }
@@ -294,28 +296,33 @@ class Grade extends GradebookNode {
   String courseID;
   String studentID;
 
+  String courseIDSecondary;
+
   void storeUserObject(User u) {
     _user = u;
   }
 
   /// Identification for which term [Grade] is in.
-  Grade(this.courseID, Term term, String grade, this.studentID)
+  Grade(this.courseID, Term term, String grade, this.studentID,
+      this.courseIDSecondary)
       : super(term, grade, true);
 
   @override
   String toString() {
-    return 'Grade{courseNumber: $courseID, grade: $grade, studentID: $studentID}';
+    return 'Grade{courseNumber: $courseID, courseNumberSecondary: $courseIDSecondary, grade: $grade, studentID: $studentID}';
   }
 
   Grade.fromJson(Map<String, dynamic> json)
       : courseID = (json['cID'] ?? json['courseID']),
         studentID = (json['sID'] ?? json['studentID']),
+        courseIDSecondary = (json['cIDS'] ?? json['courseIDSecondary']),
         super.fromJson(json, true);
 
   Map<String, dynamic> toJson() => super.toJson()
     ..addAll({
       'courseID': courseID,
       'studentID': studentID,
+      'courseIDSecondary': courseIDSecondary,
     });
 
   Future<DetailedGradingPeriod> getAssignments() async {

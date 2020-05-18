@@ -17,8 +17,7 @@ void main() async {
     test('test regular usage', () async {
       try {
         gradebook = await person.getGradebook();
-        var assignment = gradebook.getAllClasses();
-        print(assignment);
+        print(gradebook.getAllAssignments()[0].getClass(gradebook));
 //        print("${assignment.name} (${assignment.getIntGrade() ?? "Empty"})");
 //        print(await person.getAssignmentDetailsFrom(assignment));
       } catch (e) {

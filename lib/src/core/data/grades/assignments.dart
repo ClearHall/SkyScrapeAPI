@@ -125,6 +125,20 @@ class Assignment extends AssignmentNode {
     'name': name,
     'attributes': attributes
   };
+
+  Class getClass(Gradebook gradebook) {
+    for (GradebookSector sec in gradebook.gradebookSectors) {
+      return sec.classes.firstWhere((element) {
+        if (element.grades.length <= 0)
+          return false;
+        else if (element.grades.first is Grade)
+          return (element.grades.first as Grade).courseIDSecondary ==
+              this.courseID;
+        else
+          return false;
+      });
+    }
+  }
 }
 
 /// [CategoryHeader] is an category scraped from the API
