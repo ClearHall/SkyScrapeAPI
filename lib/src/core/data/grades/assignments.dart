@@ -128,16 +128,15 @@ class Assignment extends AssignmentNode {
 
   Class getClass(Gradebook gradebook) {
     for (GradebookSector sec in gradebook.gradebookSectors) {
-      return sec.classes.firstWhere((element) {
-        if (element.grades.length <= 0)
-          return false;
-        else if (element.grades.first is Grade)
-          return (element.grades.first as Grade).courseIDSecondary ==
-              this.courseID;
-        else
-          return false;
-      });
+      Class c = sec.classes.firstWhere((element) {
+        for (GradebookNode g in element.grades) {
+          if (g is Grade) return g.courseIDSecondary == this.courseID;
+        }
+        return false;
+      }, orElse: () => null);
+      if (c != null) return c;
     }
+    throw SkywardError('No class found!');
   }
 }
 

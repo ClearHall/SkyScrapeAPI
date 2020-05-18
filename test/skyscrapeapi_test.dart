@@ -20,7 +20,8 @@ void main() async {
         print(gradebook.getAllAssignments()[0].getClass(gradebook));
 //        print("${assignment.name} (${assignment.getIntGrade() ?? "Empty"})");
 //        print(await person.getAssignmentDetailsFrom(assignment));
-      } catch (e) {
+      } catch (e, s) {
+        print(s);
         print('Should not fail: ' + e.toString());
         throw SkywardError('SHOULD SUCCEED');
       }
