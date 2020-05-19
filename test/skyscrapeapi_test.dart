@@ -17,7 +17,10 @@ void main() async {
     test('test regular usage', () async {
       try {
         gradebook = await person.getGradebook();
-        print(gradebook.getAllAssignments()[0].getClass(gradebook));
+        DetailedGradingPeriod assignes = await (gradebook.getAllClasses()[2]
+            .grades.last as Grade).getAssignments();
+        //print(assignes);
+        print(await assignes.assignments.values.first[5].getProperties());
 //        print("${assignment.name} (${assignment.getIntGrade() ?? "Empty"})");
 //        print(await person.getAssignmentDetailsFrom(assignment));
       } catch (e, s) {

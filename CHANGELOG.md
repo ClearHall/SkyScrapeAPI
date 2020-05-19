@@ -1,3 +1,14 @@
+## [4.1.0+1] - Easier to Use
+
+Fixed some consistency issues.
+Fixed a bug where sometimes "section" was required to get assignment data.
+Added useful methods to Assignment and Grade.
+
+**WARNING:** Do not use the async methods in Grade and Assignment when you retrieve them from JSON! Due to security, user credentials aren't revealed in JSON.
+Grade got the async method getAssignment() as an easier way to access assignments!
+Assignment got the async method getProperties() as an easier way to access assignment properties!
+Assignment also got the method getClass(gradebook) to search for the class the assignment originated from in the gradebook object.
+
 ## [4.0.0+2] - The Persistence Update
 
 Renamed Behavior class to FixedGrade: changed behavior property to grade and added isGradeBehavior() function.

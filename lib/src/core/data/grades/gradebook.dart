@@ -296,6 +296,8 @@ class Grade extends GradebookNode {
   String courseID;
   String studentID;
 
+  /// Section is completely internal to Skyward and I have no idea why it's required for some reason?
+  String section;
   String courseIDSecondary;
 
   void storeUserObject(User u) {
@@ -304,18 +306,19 @@ class Grade extends GradebookNode {
 
   /// Identification for which term [Grade] is in.
   Grade(this.courseID, Term term, String grade, this.studentID,
-      this.courseIDSecondary)
+      this.courseIDSecondary, this.section)
       : super(term, grade, true);
 
   @override
   String toString() {
-    return 'Grade{courseNumber: $courseID, courseNumberSecondary: $courseIDSecondary, grade: $grade, studentID: $studentID}';
+    return 'Grade{courseNumber: $courseID, courseNumberSecondary: $courseIDSecondary, grade: $grade, studentID: $studentID, section: $section}';
   }
 
   Grade.fromJson(Map<String, dynamic> json)
       : courseID = (json['cID'] ?? json['courseID']),
         studentID = (json['sID'] ?? json['studentID']),
         courseIDSecondary = (json['cIDS'] ?? json['courseIDSecondary']),
+        section = (json['s'] ?? json['section']),
         super.fromJson(json, true);
 
   Map<String, dynamic> toJson() => super.toJson()
@@ -323,9 +326,13 @@ class Grade extends GradebookNode {
       'courseID': courseID,
       'studentID': studentID,
       'courseIDSecondary': courseIDSecondary,
+      'section': section,
     });
 
   Future<DetailedGradingPeriod> getAssignments() async {
+    if (_user == null) throw SkywardError(
+        'Cannot get assignments from a pure data object retrieved from json! You need to provide credentials using the SkyCore object!');
+
     DetailedGradingPeriod gradingPeriod = await _user.getAssignmentsFrom(this);
     gradingPeriod.assignments.forEach((key, value) {
       for (Assignment a in value) {

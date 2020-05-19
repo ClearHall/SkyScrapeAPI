@@ -374,7 +374,7 @@ class User {
   /// The assignments from a specific term. Returns a list of [AssignmentNode].
   Future<DetailedGradingPeriod> getAssignmentsFrom(Grade gradeBox,
       {int timesRan = 0}) async {
-    return await _useSpecifiedFunctionsToRetrieveHTML(
+    DetailedGradingPeriod det = await _useSpecifiedFunctionsToRetrieveHTML(
         'sfgradebook001.w', AssignmentAccessor.getAssignmentsDialog, timesRan,
         modifyLoginSess: (codes) {
       codes['action'] = 'viewGradeInfoDialog';
@@ -382,7 +382,15 @@ class User {
       codes['ishttp'] = 'true';
       codes['corNumId'] = gradeBox.courseID;
       codes['bucket'] = gradeBox.term.termName;
+      codes['gbId'] = gradeBox.courseIDSecondary;
+      codes['section'] = gradeBox.section;
     });
+
+    det.assignments.forEach((key, value) {
+      for (Assignment assignT in value)
+        assignT.storeUserObject(this);
+    });
+    return det;
   }
 
   /// The assignment info boxes from a specific assignment. Returns a list of [AssignmentProperty].

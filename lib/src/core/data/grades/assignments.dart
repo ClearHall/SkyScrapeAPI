@@ -138,6 +138,13 @@ class Assignment extends AssignmentNode {
     }
     throw SkywardError('No class found!');
   }
+
+  Future<List<AssignmentProperty>> getProperties() async {
+    if (_user == null) throw SkywardError(
+        'Cannot get assignments from a pure data object retrieved from json! You need to provide credentials using the SkyCore object!');
+
+    return await _user.getAssignmentDetailsFrom(this);
+  }
 }
 
 /// [CategoryHeader] is an category scraped from the API

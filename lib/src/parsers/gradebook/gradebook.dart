@@ -86,8 +86,8 @@ class GradebookAccessor {
                   gradeElem.attributes['data-bkt']),
               gradeElem.text,
               gradeElem.attributes['data-sid'],
-              gradeElem.attributes['data-gid']);
-
+              gradeElem.attributes['data-gid'],
+              gradeElem.attributes['data-sec']);
           classes.last.grades.add(x);
         } else if (c['cId'] != null) {
           var tdElement = parsedHTML.getElementById(c['cId']);
