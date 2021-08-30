@@ -30,16 +30,14 @@ class GradebookAccessor {
     return terms;
   }
 
-  static GradebookSector getGradeBoxesFromDocCode(List infoList,
-      Document parsedHTML) {
+  static GradebookSector getGradeBoxesFromDocCode(
+      List infoList, Document parsedHTML) {
     GradebookSector gradebook = new GradebookSector();
     List<Term> terms = getTermsFromDocCode(infoList);
     gradebook.terms = terms;
     Element name =
-    parsedHTML.querySelector('#grid_' + infoList[2] + '_gridWrap');
-    gradebook.name = name
-        .querySelector('span')
-        .text +
+        parsedHTML.querySelector('#grid_' + infoList[2] + '_gridWrap');
+    gradebook.name = name.querySelector('span').text +
         (name
             .querySelector('div[class="sfTag"]')
             .nodes
@@ -97,22 +95,15 @@ class GradebookAccessor {
             classes.add(Class(
                 tdElements[3].text,
                 tdElements[1].text,
-                secElem
-                    .querySelector('label')
-                    .text +
+                secElem.querySelector('label').text +
                     " " +
                     secElem.nodes
                         .firstWhere(
                             (element) => element.nodeType == Node.TEXT_NODE)
                         .text +
                     " " +
-                    secElem
-                        .querySelector('span')
-                        .text,
-                tdElement
-                    .querySelector('div')
-                    .id
-                    .split('_')[3]));
+                    secElem.querySelector('span').text,
+                tdElement.querySelector('table').id.split('_')[2]));
           } else {
             classes.add(
                 Class(tdElements[2].text, tdElements[1].text, null, c['cId']));

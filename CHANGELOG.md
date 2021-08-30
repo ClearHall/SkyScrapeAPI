@@ -1,3 +1,7 @@
+## [4.1.1+1] - Bug Fix
+
+Something broke, and now here's an easy fix.
+
 ## [4.1.0+1] - Easier to Use
 
 Fixed some consistency issues.

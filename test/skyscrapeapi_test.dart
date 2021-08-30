@@ -8,8 +8,12 @@ void main() async {
   String url =
       'https://skyward-fbprod.iscorp.com/scripts/wsisa.dll/WService=wsedufortbendtx/seplog01.w';
   Map<String, String> env = Platform.environment;
-  User person = await SkyCore.login(env['USERNAME'], env['PASSWORD'], url,
-      ignoreExceptions: false);
+  User person = await SkyCore.login(
+    env['USERNAME'],
+    env['PASSWORD'],
+    url,
+    ignoreExceptions: false,
+  );
 //  List<Term> terms;
   Gradebook gradebook;
 
@@ -17,10 +21,11 @@ void main() async {
     test('test regular usage', () async {
       try {
         gradebook = await person.getGradebook();
-        DetailedGradingPeriod assignes = await (gradebook.getAllClasses()[2]
-            .grades.last as Grade).getAssignments();
+        DetailedGradingPeriod assignes =
+            await (gradebook.getAllClasses()[1].grades.last as Grade)
+                .getAssignments();
         //print(assignes);
-        print(await assignes.assignments.values.first[5].getProperties());
+        print(await assignes.assignments);
 //        print("${assignment.name} (${assignment.getIntGrade() ?? "Empty"})");
 //        print(await person.getAssignmentDetailsFrom(assignment));
       } catch (e, s) {

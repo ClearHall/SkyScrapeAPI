@@ -1,7 +1,6 @@
 import 'dart:io';
 
-import 'file:///C:/Users/Hunter%20Han/StudioProjects/SkyScrapeAPI/lib/src/core/data_types.dart';
-import 'file:///C:/Users/Hunter%20Han/StudioProjects/SkyScrapeAPI/lib/src/core/login.dart';
+import 'package:skyscrapeapi/sky_core.dart';
 
 void main() async {
   print('start');
@@ -28,8 +27,8 @@ void main() async {
   }
 
   try {
-    List<AssignmentProperty> props =
-    (await person.getAssignmentDetailsFrom(gradebook[0].quickAssignments[0]));
+    List<AssignmentProperty> props = (await person
+        .getAssignmentDetailsFrom(gradebook[0].quickAssignments[0]));
     print(props);
   } catch (e) {
     print('Should succeed: ${e.toString()}');
